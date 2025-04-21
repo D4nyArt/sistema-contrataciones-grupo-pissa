@@ -42,7 +42,7 @@ export default function UserInfo({ id }: { id: string }) {
           Contratos
         </button>
 
-        {active === "contratos" && <ViewContract />}
+        {active === "contratos" && <ViewContract contractId="" />}
         {active === "expediente" && (
           <ExpedienteCandidato userId={id} role="admin" />
         )}
