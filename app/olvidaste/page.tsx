@@ -1,4 +1,4 @@
-import FormularioOlvide from "../components/form-olvide";
+import FormularioOlvide from "../components/olvideContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
 import FondoBlanco from "../components/fondo-blanco";
@@ -24,7 +24,7 @@ export default function Olvidaste() {
             <strong>Cambiar contraseña</strong>
           </h1>
           <p className="text-[#001e2b] text-center antialiased pb-8">
-            Ingresa tu correo, tu nueva contraseña y manda tu solicitud.
+            Ingresa tu correo, y manda tu solicitud.
           </p>
           <FormularioOlvide></FormularioOlvide>
         </FondoBlanco>
