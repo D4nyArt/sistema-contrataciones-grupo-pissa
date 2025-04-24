@@ -97,7 +97,7 @@ export default function ListUsers() {
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          className="border p-1 rounded-lg bg-[#2d4583] text-white"
+          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white"
         >
           <option value="">Ordenar por</option>
           <option value="nombreAZ">Nombre A → Z</option>
@@ -105,17 +105,17 @@ export default function ListUsers() {
           <option value="apellidoAZ">Apellido A → Z</option>
           <option value="apellidoZA">Apellido Z → A</option>
         </select>
-        <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden">
+        <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden text-[#495057]">
           <button
           onClick={() => setActivo("grid")} 
-          className={`rounded-lg  p-1 pl-2 pr-2 transition-colors border ${
+          className={`cursor-pointer rounded-lg  p-1 pl-2 pr-2 transition-colors border ${
             activo === "grid"
             ? "border-[#2d4583] text-[#2d4583]"
             : "border-transparent hover:text-[#2d4583]"
           }`}><LayoutGrid/></button>
           <button
           onClick={() => setActivo("tabla")} 
-          className={`rounded-lg p-1 pl-2 pr-2 transition-colors border ${
+          className={`cursor-pointer rounded-lg p-1 pl-2 pr-2 transition-colors border ${
             activo === "tabla"
             ? "border-[#2d4583] text-[#2d4583]"
             : "border-transparent hover:text-[#2d4583]"

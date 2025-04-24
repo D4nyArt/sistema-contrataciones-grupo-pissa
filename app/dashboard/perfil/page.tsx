@@ -2,6 +2,7 @@
 import React from 'react';
 import {useRouter} from 'next/navigation'
 import ProfilePicture from '@/app/components/profile-picture';
+import { urbanist } from '@/app/components/fonts';
 
 export default function Settings() {
   
@@ -12,9 +13,9 @@ export default function Settings() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="h-full flex items-center overflow-y-auto flex-col p-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Perfil de Usuario</h2>
+        <h2 className={`text-2xl font-bold mb-6 text-center ${urbanist.className}`}>Perfil de Usuario</h2>
         <div className="flex justify-center mb-6">
           <ProfilePicture nombre={`user.name`} width={"w-15"} height={"h-15"} textSize={"text-3xl"}/>
         </div>

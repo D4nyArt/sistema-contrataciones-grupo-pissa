@@ -5,7 +5,7 @@ import {database} from "../../firebaseConfig"
 import {ref, get, set} from "firebase/database"
 import path from "path";
 import ProfilePicture from "./profile-picture";
-import { CircleCheck, CircleUser, Lock, LockOpen, Mail, Phone, UserMinus, UserPlus } from "lucide-react";
+import { CircleCheck, CircleUser, Clock, Lock, LockOpen, Mail, Phone, UserMinus, UserPlus } from "lucide-react";
 import { urbanist } from "./fonts";
 
 
@@ -129,6 +129,12 @@ export default function Usuarios() {
                     <p className="pl-1 text-red-800 capitalize text-xs">Dado de Baja</p>
                   </div>
                 )}
+                {status === "enProceso" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                    <Clock className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 capitalize text-xs">En proceso</p>
+                  </div>
+                )}
               </div>
             </div>
             <p className="text-[#2975a0]">{role}</p>
@@ -140,8 +146,8 @@ export default function Usuarios() {
           <button className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex" onClick={handleRemoval}><UserMinus className="pr-2"/> Dar de baja</button>
         </div>
       </div>
-      <div className="pt-6">
-        <table className="table-auto">
+      <div className="pb-6 pt-6 border-b border-gray-300 text-sm">
+        <table className="table-auto text-[#495057]">
           <tbody>
             <tr>
               <td className="inline-flex pr-8"><CircleUser className="pr-2"/>ID del Usuario</td>
