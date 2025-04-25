@@ -42,9 +42,15 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       await update(ref(database, `usuarios/${uid}`), {
         contrato_activo: contract.name,
       });
+
       // Actualiza contrato_activo en expedientes/expediente{uid}/contratos
       await update(ref(database, `expedientes/expediente${uid}/contratos`), {
         contrato_activo: contract.name,
+      });
+
+      // Actualiza id en expedientes/expediente{uid}/contratos
+      await update(ref(database, `expedientes/expediente${uid}/contratos`), {
+        id: contract.id,
       });
       console.log("Contrato enviado:", contract.name);
     } catch (err) {
