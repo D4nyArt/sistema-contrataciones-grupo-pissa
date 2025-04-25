@@ -6,6 +6,7 @@ import { database } from "@/firebaseConfig";
 
 export default function ShowCurrentContract({ uid }: { uid: string }) {
   const [activeContract, setActiveContract] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActiveContract = async () => {
@@ -15,6 +16,10 @@ export default function ShowCurrentContract({ uid }: { uid: string }) {
           ref(database, `expedientes/expediente${uid}/contratos/id`)
         );
         const contractId = userSnap.val();
+
+        const roleSnap = await get(ref(database, `usuarios/${uid}/rol`));
+        const role = roleSnap.val();
+        setUserRole(role);
 
         // Esto separa entre el contrato de corporativo y el de proyectos
         let path = "";
@@ -42,8 +47,15 @@ export default function ShowCurrentContract({ uid }: { uid: string }) {
   return (
     <div className="mb-4 p-4">
       {/*Si tiene contrato activo, lo muestra, si no muestra mensaje*/}
+      {/*Si el rol del usuario es candidato, significa que no ha sido revisado su documento
+      por lo que muestra el mensaje de "Contrato en revisión". Este rol se actualiza en reviewContract.tsx*/}
       {activeContract ? (
-        <span className="font-semibold">Contrato activo: {activeContract}</span>
+        <span className="font-semibold">
+          {userRole === "candidato"
+            ? "Contrato en revisión: "
+            : "Contrato Activo: "}
+          {activeContract}
+        </span>
       ) : (
         <span className="text-gray-500">
           Este usuario no tiene contratos asignados
