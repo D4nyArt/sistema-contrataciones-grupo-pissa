@@ -37,8 +37,8 @@ export default function NavLinks() {
             className={`flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
               ${
                 isActive
-                  ? "bg-[#2975a0] text-[#e6f2f8] md:rounded-xl rounded-full"
-                  : "text-[#e9ecef] hover:bg-[#2974a04b] hover:text-[#e6f2f8] rounded-xl"
+                  ? "bg-[#2975a0] text-white md:rounded-xl rounded-full"
+                  : "text-[#cdd0d3] hover:bg-[#2974a04b] hover:text-white rounded-xl"
               }`}
           >
             <LinkIcon className="w-6" />

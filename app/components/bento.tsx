@@ -1,6 +1,7 @@
 import { UserPlus, Users } from "lucide-react";
 import CountUsers from "./countusers";
 import CantCandidatos from "./cantidad-candidatos";
+import CantProyectos from "./cantidad-usr-proyectos";
 
 export default function Bento() {
   return (
@@ -10,7 +11,7 @@ export default function Bento() {
           <Users />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Total de empleados</h2>
+          <h2 className="text-[#495057]">Empleados</h2>
           <CountUsers />
         </div>
       </div>
@@ -19,14 +20,26 @@ export default function Bento() {
           <UserPlus />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Total de candidatos</h2>
+          <h2 className="text-[#495057]">Candidatos</h2>
           <CantCandidatos />
         </div>
       </div>
-      <div className="bg-gray-300 rounded-xl"></div>
+      <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8">
+        <div>icon</div>
+        <div className="flex flex-col">
+          <h2 className="text-[#495057]">Proyecto</h2>
+          <CantProyectos/>
+        </div>
+      </div>
       <div className="bg-gray-300 rounded-xl col-span-3 row-span-4 col-start-1 row-start-2"></div>
       <div className="bg-gray-300 rounded-xl row-span-4 col-start-4 row-start-2"></div>
-      <div className="bg-gray-300 rounded-xl col-start-4 row-start-1"></div>
+      <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8 col-start-4 row-start-1">
+        <div>icon</div>
+        <div className="flex flex-col">
+          <h2 className="text-[#495057]">Corporativo</h2>
+          <CantProyectos/>
+        </div>
+      </div>
     </div>
   );
 }

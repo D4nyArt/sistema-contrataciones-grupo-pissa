@@ -20,7 +20,7 @@ export default function VistaUsuarios() {
           className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
             activo === "recursos humanos"
               ? "border-[#2d4583] text-[#2d4583]"
-              : "border-transparent text-gray-500 hover:text-[#2d4583]"
+              : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"
           }`}
         >
           Recursos Humanos
@@ -31,7 +31,7 @@ export default function VistaUsuarios() {
           className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
             activo === "empleados"
               ? "border-[#2d4583] text-[#2d4583]"
-              : "border-transparent text-gray-500 hover:text-[#2d4583]"
+              : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"
           }`}
         >
           Empleados
