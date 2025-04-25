@@ -30,6 +30,7 @@ export default function CreateCredentials() {
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
+  const [contrato_activo, setContratoActivo] = useState("NaC");
   const [role, setRole] = useState("");
   const [cand_disabled, setcand_disabled] = useState(false);
   const [rh_disabled, setrh_disabled] = useState(false);
@@ -56,6 +57,7 @@ export default function CreateCredentials() {
         nombre: name,
         rol: role,
         telefono: phone,
+        contrato_activo: "NaC",
       };
 
       // Guardamos los datos del usuario usando el UID como key
@@ -114,7 +116,11 @@ export default function CreateCredentials() {
               <input
                 type="checkbox"
                 value="candidato"
-                onChange={(event) => {setRole(event.target.value); setcand_disabled(false); setrh_disabled(!rh_disabled);}}
+                onChange={(event) => {
+                  setRole(event.target.value);
+                  setcand_disabled(false);
+                  setrh_disabled(!rh_disabled);
+                }}
                 disabled={cand_disabled}
               />
             </div>
@@ -123,7 +129,11 @@ export default function CreateCredentials() {
               <input
                 type="checkbox"
                 value="rh"
-                onChange={(event) => {setRole(event.target.value); setcand_disabled(!cand_disabled); setrh_disabled(false);}}
+                onChange={(event) => {
+                  setRole(event.target.value);
+                  setcand_disabled(!cand_disabled);
+                  setrh_disabled(false);
+                }}
                 disabled={rh_disabled}
               />
             </div>
