@@ -17,7 +17,7 @@ interface User {
   telefono?: string;
 }
 
-export default function Usuarios() {
+export default function phoneUsuarios() {
   const router = useRouter();
   const pathname = usePathname();
   const searchparams = useSearchParams();
