@@ -10,6 +10,16 @@ import PopUp from "./pop-up";
 import { ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 
+type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
+
+// Constantes de estados
+const CONTRACT_STATES: Record<string, ContractState> = {
+  APROBADO: "aprobado",
+  REVISANDO: "revisando",
+  RECHAZADO: "rechazado",
+  NO_FIRMADO: "no_firmado",
+};
+
 export default function ContractSendAndPreview({ uid }: { uid: string }) {
   const [selectedProject, setSelectedProject] =
     useState<ProjectContract | null>(null);
@@ -35,7 +45,6 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
 
   // Acción al confirmar el envío
   const handleSend = async () => {
-    // modified
     if (!contract) return;
     try {
       // Actualiza contrato_activo en usuarios/{uid}
@@ -46,12 +55,10 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       // Actualiza contrato_activo en expedientes/expediente{uid}/contratos
       await update(ref(database, `expedientes/expediente${uid}/contratos`), {
         contrato_activo: contract.name,
+        id: contract.id,
+        estado: CONTRACT_STATES.NO_FIRMADO,
       });
 
-      // Actualiza id en expedientes/expediente{uid}/contratos
-      await update(ref(database, `expedientes/expediente${uid}/contratos`), {
-        id: contract.id,
-      });
       console.log("Contrato enviado:", contract.name);
     } catch (err) {
       console.error("Error enviando contrato:", err);

@@ -12,7 +12,7 @@ export default function ContractsPage({ uid }: { uid: string }) {
         <ContractSendAndPreview uid={uid} />
       </div>
       <div>
-        <ReviewContract />
+        <ReviewContract uid={uid} />
       </div>
     </div>
   );

@@ -24,7 +24,6 @@ const CONTRACT_STATES: Record<string, ContractState> = {
 
 export default function CandidateContractsPage({ uid }: { uid: string }) {
   const [contract, setContract] = useState<Contract | null>(null);
-  const [signedContract, setSignedContract] = useState<Contract | null>(null);
   const [folder, setFolder] = useState<string>("");
 
   useEffect(() => {
@@ -69,11 +68,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
 
   // Manejar carga de archivos y actualizar contrato_activo
   const handleFileUpload = async (fileName: string, snapshot: unknown) => {
-    // Actualizar local signedContract state
-    setSignedContract((prev) =>
-      prev ? { ...prev, url: fileName, contractState: "revisando" } : null
-    );
-
     // Actualizar contrato_activo in usuarios/{uid}
     try {
       await update(ref(database, `usuarios/${uid}`), {
@@ -82,6 +76,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       // Actualizar contrato_activo in expedientes/expediente{uid}/contratos
       await update(ref(database, `expedientes/expediente${uid}/contratos`), {
         contrato_activo: fileName,
+        estado: CONTRACT_STATES.REVISANDO,
       });
     } catch (dbError) {
       console.error("Error actualizando contrato_activo:", dbError);

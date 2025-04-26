@@ -48,6 +48,8 @@ export default function ManagerViewer({
         : `${folder}/${fileName}`;
   }
 
+  // console.log("Ruta del archivo:", filePath);
+
   // Obtener la URL de descarga cuando el componente se monta
   useEffect(() => {
     const fetchPdfUrl = async () => {
