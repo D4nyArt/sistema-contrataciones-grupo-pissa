@@ -110,7 +110,7 @@ export default function ListRecursos() {
           placeholder="Buscar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-400 rounded-lg w-full"
+          className="p-2 border border-gray-400 rounded-lg w-full bg-white"
         />
         <select
           value={sortOption}

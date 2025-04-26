@@ -71,17 +71,19 @@ export default function ListEmpleados() {
 
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
+    const esEmpleado = user.rol?.toUpperCase() === "enProyecto" && user.rol?.toUpperCase() === "enCorporativo";
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""
     }`.toLocaleLowerCase();
 
     return (
-      user.id?.toLowerCase().includes(buscar) ||
+      esEmpleado &&
+      (user.id?.toLowerCase().includes(buscar) ||
       user.nombre?.toLowerCase().includes(buscar) ||
       user.apellidos?.toLowerCase().includes(buscar) ||
       user.email?.toLowerCase().includes(buscar) ||
       user.telefono?.includes(buscar) ||
-      nombreCompleto.includes(buscar)
+      nombreCompleto.includes(buscar))
     );
   });
 
@@ -108,7 +110,7 @@ export default function ListEmpleados() {
           placeholder="Buscar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-400 rounded-lg w-full"
+          className="p-2 border border-gray-400 rounded-lg w-full bg-white"
         />
         <select
           value={sortOption}

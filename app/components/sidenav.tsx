@@ -4,10 +4,10 @@ import { LogOut } from "lucide-react";
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
+    <div className="flex h-full flex-col px-3 py-4 md:py-2 md:px-0">
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-21">
-        <div className="h-auto w-full grow rounded-xl bg-[#0d324f] md:block flex flex-row">
-          <div className="w-full flex items-center md:pl-5 md:pt-6 md:pr-8 md:pb-8 pl-4">
+        <div className="h-auto w-full grow rounded-4xl bg-[#0d324f] md:block flex flex-row">
+          <div className="w-full flex items-center md:pl-6 md:pt-6 md:pr-8 md:pb-12 pl-4">
             <Image
               width={100}
               height={50}

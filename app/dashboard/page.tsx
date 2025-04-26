@@ -31,10 +31,10 @@ export default async function Inicio() {
 
   return (
     <div>
-      <h2 className={`${urbanist.className} text-2xl pl-8 text-[#495057]`}>
+      <h2 className={`${urbanist.className} text-3xl pl-8 text-[#495057]`}>
         Hola {usuario}.
       </h2>
-      <h1 className={`${urbanist.className} text-3xl text-[#212529] pl-8`}>
+      <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-8`}>
         <strong>{obtenerSaludo()}</strong>
       </h1>
       <div className="flex h-full w-full p-8 ">
