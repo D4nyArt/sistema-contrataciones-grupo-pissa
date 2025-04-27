@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ref, get } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import ManagerViewer from "./ManagerViewer";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
@@ -38,8 +38,33 @@ export default function ReviewContract({ uid }: ReviewContractProps) {
     fetchInfo();
   }, [uid]);
 
-  const handleContractReview = (approve: boolean) => {
-    // lógica de aprobación/rechazo aquí...
+  const handleContractReview = async (approve: boolean) => {
+    const newState = approve
+      ? CONTRACT_STATES.APROBADO
+      : CONTRACT_STATES.RECHAZADO;
+
+    try {
+      // Actualiza el estado del contrato en la base de datos
+      await update(ref(database, `expedientes/expediente${uid}/contratos`), {
+        estado: newState,
+      });
+      const userSnap = await get(
+        ref(database, `expedientes/expediente${uid}/contratos/id`)
+      );
+      const contractId = userSnap.val();
+      if (approve) {
+        // Si se aprueba, actualiza el rol del usuario
+        await update(ref(database, `usuarios/${uid}`), {
+          rol: contractId.startsWith("conproy")
+            ? "enProyecto"
+            : "enCorporativo",
+        });
+      }
+    } catch (error) {
+      console.error("Error al actualizar el estado del contrato:", error);
+    }
+
+    console.log(`El contrato ha sido ${approve ? "aprobado" : "rechazado"}`);
   };
 
   return (
@@ -75,8 +100,6 @@ export default function ReviewContract({ uid }: ReviewContractProps) {
           <span>Contrato rechazado</span>
         </div>
       )}
-
-      {/* Título */}
 
       {/* Vista previa del contrato subido por el candidato */}
       {contratosInfo?.contrato_activo ? (
