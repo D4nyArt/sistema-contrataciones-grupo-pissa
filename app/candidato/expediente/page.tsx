@@ -1,5 +1,4 @@
-"use client";
-import { cookies } from "next/headers";
+import { cookies } from "next/headers"; //Cookie del lado del servidor; todo lo que tiene que ver con headers es del servidor 
 import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 
 export default async function UserInformation() {
