@@ -222,6 +222,14 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
                 campos: {},
               },
             },
+            contratos: {
+              contrato_activo: null,
+              duracion: null,
+              estado: "no_firmado",
+              fecha_firmado: null,
+              fecha_vencimiento: null,
+              id: null,
+            },
           });
 
           // Obtener el ID generado

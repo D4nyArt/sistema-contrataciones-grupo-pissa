@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
     // Obtener el contrato activo del usuario
     const recSnap = await get(ref(database, `expedientes/expediente${uid}/contratos`));
     if (!recSnap.exists()) {
-      return NextResponse.json({ role, contract: null, state: null });
+      return NextResponse.json({ role, contract: null, state: null, duration: null }, { status: 404 });
     }
-    const { id: contractId, estado: state } = recSnap.val();
+    const { id: contractId, estado: state, duracion: duration} = recSnap.val();
 
     // Determinar la carpeta y la ruta de datos según el ID del contrato
     let folder = "";
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       role,
       state,
+      duration,
       contract: {
         id: contractId,
         name: info.name+".pdf",

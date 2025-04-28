@@ -12,20 +12,13 @@ import { database } from "@/firebaseConfig";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
-// Constantes de estados
-const CONTRACT_STATES: Record<string, ContractState> = {
-  APROBADO: "aprobado",
-  REVISANDO: "revisando",
-  RECHAZADO: "rechazado",
-  NO_FIRMADO: "no_firmado",
-};
-
 export default function ContractSendAndPreview({ uid }: { uid: string }) {
   const [selectedProject, setSelectedProject] =
     useState<ProjectContract | null>(null);
   const [selectedCorporate, setSelectedCorporate] =
     useState<CorpContract | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [duration, setDuration] = useState<number>(0); // Duración del contrato en meses
 
   const handleProjectSelect = (c: ProjectContract | null) => {
     setSelectedProject(c);
@@ -56,7 +49,8 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       await update(ref(database, `expedientes/expediente${uid}/contratos`), {
         contrato_activo: contract.name,
         id: contract.id,
-        estado: CONTRACT_STATES.NO_FIRMADO,
+        estado: "no_firmado",
+        duracion: duration,
       });
 
       console.log("Contrato enviado:", contract.name);
@@ -81,6 +75,18 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           onSelect={handleCorporateSelect}
           disabled={!!selectedProject}
         />
+        {/*Seleccionar duración del contrato*/}
+        <select
+          value={duration}
+          onChange={(e) => setDuration(Number(e.target.value))}
+          className="border p-1 rounded"
+        >
+          <option value="6">6 meses</option>
+          <option value="12">1 año</option>
+          <option value="24">2 años</option>
+          <option value="36">3 años</option>
+          <option value="60">5 años</option>
+        </select>
         <button
           onClick={() => setShowConfirm(true)}
           disabled={!contract}

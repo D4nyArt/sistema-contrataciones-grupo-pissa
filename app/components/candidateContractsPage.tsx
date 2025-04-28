@@ -11,6 +11,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     url: string;
     folder: string;
     state: string;
+    duration: number;
   } | null>(null);
 
   useEffect(() => {
@@ -25,20 +26,28 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   }, [uid]);
 
   const handleFileUpload = async (fileName: string) => {
-    // update both user and expediente…
+    if (!contract) {
+      return <p className="text-gray-500">No hay contratos disponibles.</p>;
+    }
+
+    const now = new Date();
+    const signedDate = now.toISOString();
+
+    // 2) Calcular fecha de vencimiento sumando 'duration' meses
+    const expiration = new Date(now);
+    expiration.setMonth(expiration.getMonth() + contract.duration);
+    const expirationDate = expiration.toISOString();
+
     await update(ref(database, `usuarios/${uid}`), {
       contrato_activo: fileName,
     });
     await update(ref(database, `expedientes/expediente${uid}/contratos`), {
       contrato_activo: fileName,
       estado: "revisando",
-      fecha_firmado: new Date().toISOString(),
+      fecha_firmado: signedDate,
+      fecha_vencimiento: expirationDate,
     });
   };
-
-  if (!contract) {
-    return <p className="text-gray-500">No hay contratos disponibles.</p>;
-  }
 
   return (
     <div>
