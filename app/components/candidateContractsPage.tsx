@@ -1,91 +1,44 @@
+import { useState, useEffect } from "react";
 import ManagerViewer from "./ManagerViewer";
-import { useEffect, useState } from "react";
-import { ref, get, update, set } from "firebase/database";
-import { database } from "@/firebaseConfig";
 import Uploader from "./Uploader";
-
-/** Possible states for a contract */
-type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
-
-interface Contract {
-  id: string;
-  name: string;
-  url?: string;
-  contractState: ContractState;
-}
-
-// Constantes de estados
-const CONTRACT_STATES: Record<string, ContractState> = {
-  APROBADO: "aprobado",
-  REVISANDO: "revisando",
-  RECHAZADO: "rechazado",
-  NO_FIRMADO: "no_firmado",
-};
+import { update, ref } from "firebase/database";
+import { database } from "@/firebaseConfig";
 
 export default function CandidateContractsPage({ uid }: { uid: string }) {
-  const [contract, setContract] = useState<Contract | null>(null);
-  const [folder, setFolder] = useState<string>("");
+  const [contract, setContract] = useState<{
+    id: string;
+    name: string;
+    url: string;
+    folder: string;
+    state: string;
+  } | null>(null);
 
   useEffect(() => {
-    const fetchActiveContract = async () => {
-      try {
-        // 1. Get user's active contract from /usuarios/uid/contrato_activo
-        const userSnap = await get(
-          ref(database, `expedientes/expediente${uid}/contratos/id`)
-        );
-        const contractId = userSnap.val();
-
-        let path = "";
-        if (contractId.startsWith("conproy")) {
-          path = `contratos/proyectos/${contractId}`;
-          setFolder("pruebaInicial/contratos/proyectos");
-        } else if (contractId.startsWith("concorp")) {
-          path = `contratos/corporativo/${contractId}`;
-          setFolder("pruebaInicial/contratos/corporativo");
-        } else {
-          return;
-        }
-
-        const contractSnap = await get(ref(database, path));
-        if (contractSnap.exists()) {
-          const data = contractSnap.val();
-          const fileName: string = data.name.endsWith(".pdf")
-            ? data.name
-            : `${data.name}.pdf`;
-          setContract({
-            id: contractId,
-            name: fileName,
-            url: data.url,
-            contractState: CONTRACT_STATES.NO_FIRMADO,
-          });
-        }
-      } catch (error) {
-        console.error("Error obteniendo el contrato activo:", error);
-      }
-    };
-    fetchActiveContract();
+    async function fetchInfo() {
+      const res = await fetch(`/api/getContractInformation?uid=${uid}`);
+      const data = await res.json();
+      setContract(
+        data.contract ? { ...data.contract, state: data.state } : null
+      );
+    }
+    fetchInfo();
   }, [uid]);
 
-  // Manejar carga de archivos y actualizar contrato_activo
-  const handleFileUpload = async (fileName: string, snapshot: unknown) => {
-    // Actualizar contrato_activo in usuarios/{uid}
-    try {
-      await update(ref(database, `usuarios/${uid}`), {
-        contrato_activo: fileName,
-      });
-      // Actualizar contrato_activo in expedientes/expediente{uid}/contratos
-      await update(ref(database, `expedientes/expediente${uid}/contratos`), {
-        contrato_activo: fileName,
-        estado: CONTRACT_STATES.REVISANDO,
-      });
-    } catch (dbError) {
-      console.error("Error actualizando contrato_activo:", dbError);
-    }
-
-    console.log("Archivo subido:", fileName, snapshot);
+  const handleFileUpload = async (fileName: string) => {
+    // update both user and expediente…
+    await update(ref(database, `usuarios/${uid}`), {
+      contrato_activo: fileName,
+    });
+    await update(ref(database, `expedientes/expediente${uid}/contratos`), {
+      contrato_activo: fileName,
+      estado: "revisando",
+      fecha_firmado: new Date().toISOString(),
+    });
   };
-  console.log("folder:", folder);
-  console.log(`Using path: ${folder}/${contract?.name}`);
+
+  if (!contract) {
+    return <p className="text-gray-500">No hay contratos disponibles.</p>;
+  }
 
   return (
     <div>
@@ -95,7 +48,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           <ManagerViewer
             expedienteId={uid}
             fileName={contract.name}
-            folder={folder}
+            folder={contract.folder}
             userRole="candidato"
             contrato={true}
           />

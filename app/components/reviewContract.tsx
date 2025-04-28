@@ -1,111 +1,81 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ref, get, update } from "firebase/database";
-import { database } from "@/firebaseConfig";
-import ManagerViewer from "./ManagerViewer";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
+import { update, ref } from "firebase/database";
+import ManagerViewer from "./ManagerViewer";
+import { database } from "@/firebaseConfig";
 
-// contract states
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
-const CONTRACT_STATES: Record<string, ContractState> = {
-  APROBADO: "aprobado",
-  REVISANDO: "revisando",
-  RECHAZADO: "rechazado",
-  NO_FIRMADO: "no_firmado",
+
+const stateMap: Record<
+  ContractState,
+  {
+    Icon: React.FC<{ size?: number; className?: string }>;
+    text: string;
+    color: string;
+  }
+> = {
+  revisando: { Icon: Clock, text: "En revisión", color: "text-blue-600" },
+  no_firmado: { Icon: X, text: "Contrato no firmado", color: "text-gray-600" },
+  aprobado: {
+    Icon: ThumbsUp,
+    text: "Contrato aprobado",
+    color: "text-green-600",
+  },
+  rechazado: {
+    Icon: ThumbsDown,
+    text: "Contrato rechazado",
+    color: "text-red-600",
+  },
 };
 
-interface ReviewContractProps {
-  uid: string;
-}
-
-export default function ReviewContract({ uid }: ReviewContractProps) {
-  // carga nombre de archivo y estado desde la base de datos
-  const [contratosInfo, setContratosInfo] = useState<{
-    contrato_activo: string;
-    estado: ContractState;
-  } | null>(null);
+export default function ReviewContract({ uid }: { uid: string }) {
+  const [info, setInfo] = useState<{
+    state: ContractState | null;
+    contract: { id: string; name: string } | null;
+  }>({ state: null, contract: null });
 
   useEffect(() => {
-    const fetchInfo = async () => {
-      const snap = await get(
-        ref(database, `expedientes/expediente${uid}/contratos`)
-      );
-      if (snap.exists()) {
-        setContratosInfo(snap.val());
-      }
-    };
+    async function fetchInfo() {
+      const res = await fetch(`/api/getContractInformation?uid=${uid}`);
+      const data = await res.json();
+      setInfo({ state: data.state, contract: data.contract });
+    }
     fetchInfo();
   }, [uid]);
 
   const handleContractReview = async (approve: boolean) => {
-    const newState = approve
-      ? CONTRACT_STATES.APROBADO
-      : CONTRACT_STATES.RECHAZADO;
-
-    try {
-      // Actualiza el estado del contrato en la base de datos
-      await update(ref(database, `expedientes/expediente${uid}/contratos`), {
-        estado: newState,
-      });
-      const userSnap = await get(
-        ref(database, `expedientes/expediente${uid}/contratos/id`)
-      );
-      const contractId = userSnap.val();
-      if (approve) {
-        // Si se aprueba, actualiza el rol del usuario
-        await update(ref(database, `usuarios/${uid}`), {
-          rol: contractId.startsWith("conproy")
-            ? "enProyecto"
-            : "enCorporativo",
-        });
-      }
-    } catch (error) {
-      console.error("Error al actualizar el estado del contrato:", error);
+    if (!info.contract) return;
+    const newState: ContractState = approve ? "aprobado" : "rechazado";
+    await update(ref(database, `expedientes/expediente${uid}/contratos`), {
+      estado: newState,
+    });
+    if (approve) {
+      const newRole = info.contract.id.startsWith("conproy")
+        ? "enProyecto"
+        : "enCorporativo";
+      await update(ref(database, `usuarios/${uid}`), { rol: newRole });
     }
-
-    console.log(`El contrato ha sido ${approve ? "aprobado" : "rechazado"}`);
+    setInfo((cur) => ({ ...cur, state: newState }));
   };
+
+  const current = info.state ? stateMap[info.state] : null;
 
   return (
     <div className="space-y-4">
-      {/* Icono de reloj si está en revisión */}
-      {contratosInfo?.estado === CONTRACT_STATES.REVISANDO && (
-        <div className="flex items-center text-blue-600">
-          <Clock size={20} className="mr-2" />
-          <span>En revisión</span>
-        </div>
-      )}
-
-      {/* Icono de X si el candidato no ha subido documentos */}
-      {contratosInfo?.estado === CONTRACT_STATES.NO_FIRMADO && (
-        <div className="flex items-center text-gray-600">
-          <X size={20} className="mr-2" />
-          <span>Contrato no firmado</span>
-        </div>
-      )}
-
-      {/* Icono de ThumbsUp si el contrato está aprobado */}
-      {contratosInfo?.estado === CONTRACT_STATES.APROBADO && (
-        <div className="flex items-center text-green-600">
-          <ThumbsUp size={20} className="mr-2" />
-          <span>Contrato aprobado</span>
-        </div>
-      )}
-
-      {/* Icono de ThumbsDown si el contrato está rechazado */}
-      {contratosInfo?.estado === CONTRACT_STATES.RECHAZADO && (
-        <div className="flex items-center text-red-600">
-          <ThumbsDown size={20} className="mr-2" />
-          <span>Contrato rechazado</span>
+      {current && (
+        <div className={`flex items-center ${current.color}`}>
+          <current.Icon size={20} className="mr-2" />
+          <span>{current.text}</span>
         </div>
       )}
 
       {/* Vista previa del contrato subido por el candidato */}
-      {contratosInfo?.contrato_activo ? (
+      {info.contract ? (
         <ManagerViewer
           expedienteId={`expediente${uid}`}
-          fileName={contratosInfo.contrato_activo}
+          fileName={info.contract.name}
           folder="pruebaInicial/expedientes"
           userRole="rh"
           contrato={true}
