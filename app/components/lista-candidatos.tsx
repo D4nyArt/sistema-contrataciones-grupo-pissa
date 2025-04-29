@@ -158,25 +158,19 @@ export default function ListUsers() {
 
       {activo === "tabla" && (
         <div>
-          <table className="table-auto w-full">
+          <table className="table-auto w-full border-separate border-spacing-y-2">
             <thead>
-              <tr>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
-                  ID
-                </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+              <tr className="shadow-xs rounded-xl">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
                   Nombre
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
-                  Apellidos
-                </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Rol
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Correo
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
                   Teléfono
                 </th>
               </tr>
@@ -185,7 +179,7 @@ export default function ListUsers() {
               {sortedUsers.length === 0 ? (
                 <tr>
                   <td
-                    className="border-b border-gray-300 px-2 py-1 text-center"
+                    className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
                     colSpan={6}
                   >
                     No se encontraron usuarios.
@@ -194,22 +188,24 @@ export default function ListUsers() {
               ) : (
                 sortedUsers.map((user) => (
                   <tr key={user.id}>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.id}
+                    <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
+                      <ProfilePicture
+                        nombre={`${user.nombre || ""}`}
+                        width={"w-8"}
+                        height={"h-8"}
+                        textSize={"text-xl"}
+                      />
+                      {user.nombre || "N/A"} {user.apellidos || "N/A"}
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.nombre || "N/A"}
+                    <td className="px-4 py-4 bg-white">
+                      <div className="bg-blue-100 text-blue-800 rounded-lg w-25 pl-2">
+                        {user.rol || "N/A"}
+                      </div>
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.apellidos || "N/A"}
-                    </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.rol || "N/A"}
-                    </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
+                    <td className="px-4 py-4 bg-white">
                       {user.email || "N/A"}
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
+                    <td className="px-4 py-4 bg-white rounded-r-xl">
                       {user.telefono || "N/A"}
                     </td>
                   </tr>

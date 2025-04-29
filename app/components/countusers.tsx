@@ -1,8 +1,18 @@
 import { ref, get } from "firebase/database";
 import { database } from "../../firebaseConfig";
 
-export default async function CountUsers() {
-  var totalUsers = (await get(ref(database, "usuarios"))).size;
+export default async function CantCorporativo() {
+  const snapshot = await get(ref(database, "usuarios"));
+  let totalUsers = 0;
+
+  if (snapshot.exists()) {
+    const usuarios = snapshot.val();
+    for (let key in usuarios) {
+      if (usuarios[key].rol === "rh" || usuarios[key].rol === "enCorporativo" || usuarios[key].rol ==="enProyecto") {
+        totalUsers++;
+      }
+    }
+  }
 
   return (
     <div className="flex flex-col">
