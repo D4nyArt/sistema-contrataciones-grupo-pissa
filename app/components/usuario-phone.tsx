@@ -2,7 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
+<<<<<<< HEAD
 import { ref, get } from "firebase/database";
+=======
+import { ref, get, set } from "firebase/database";
+>>>>>>> 4123d81 (Minor changes)
 import ProfilePicture from "./profile-picture";
 import Link from "next/link";
 import {

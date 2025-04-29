@@ -2,7 +2,7 @@
 
 import { Bolt, KeyRound, User, Users, House, Archive, Handshake, UserPlus} from "lucide-react";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // ✅ para App Router
+import { usePathname } from 'next/navigation';
 
 const linksRH = [
   { name: 'Inicio', href: '/dashboard', icon: House },
@@ -22,7 +22,7 @@ const linksCandidato = [
 ];
 
 export default function NavLinks({ roleView }: { roleView: string }) {
-  const pathname = usePathname(); // ✅ obtiene la ruta actual
+  const pathname = usePathname();
   const links = roleView === "RH" ? linksRH : linksCandidato;
   return (
     <>
