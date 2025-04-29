@@ -1,6 +1,4 @@
-import Image from "next/image";
 import NavLinks from "./nav-links";
-import { LogOut } from "lucide-react";
 
 interface SideNavPhoneProps {
   roleView: string;
