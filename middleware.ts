@@ -62,6 +62,7 @@ export const config = {
   matcher: [
     "/auth/redirector",
     "/dashboard/:path*",
+    "/dashboard/perfil",
     "/candidato/:path*"
   ],
 };
