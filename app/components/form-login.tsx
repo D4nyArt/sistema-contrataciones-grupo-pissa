@@ -99,7 +99,7 @@ export default function Formulario() {
 console.error("No se encontraron datos del usuario en la base de datos");
 router.push("/auth/redirector"); // Redirigimos al flujo normal por defecto
 }
-} catch (err: any) {
+} catch (err: unknown) {
 console.error("Error during login:", err);
 setAlertaAcceso({
 type: "denegado",

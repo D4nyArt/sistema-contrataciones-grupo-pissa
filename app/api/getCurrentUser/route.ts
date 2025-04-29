@@ -4,7 +4,7 @@ import { ref, get } from 'firebase/database';
 import { database } from "@/firebaseConfig";
 
 
-export async function GET(req: Request) {
+export async function GET() {
   const dbref = database;
 
 

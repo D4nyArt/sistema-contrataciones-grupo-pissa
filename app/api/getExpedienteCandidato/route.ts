@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
       // const {candidato} = await request.json(); // Leer el cuerpo de la solicitud
   

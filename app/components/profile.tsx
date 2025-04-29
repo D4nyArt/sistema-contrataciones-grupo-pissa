@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfilePicture from "@/app/components/profile-picture";
-import { ref, get } from "firebase/database";
-import { database } from "@/firebaseConfig";
 //import {deleteCookie} from '@/app/components/deleteCookie'
 
 export default function Profile() {
@@ -15,8 +13,8 @@ export default function Profile() {
   const router = useRouter();
   useEffect(() => {
     const getUserData = async () => {
-      const UID = await fetch("/api/getCurrentUser").then(async (res) => {
-        let jason = await res.json();
+      await fetch("/api/getCurrentUser").then(async (res) => {
+        const jason = await res.json();
         console.log("UID: ", jason.apellidos);
 
         setname(jason.nombre);
@@ -25,8 +23,8 @@ export default function Profile() {
         setrole(jason.rol);
       });
 
-      const dbref = database;
-      const usuariosref = ref(dbref, "/usuarios/");
+      //const dbref = database;
+      //const usuariosref = ref(dbref, "/usuarios/");
       // const usuarios = await get(usuariosref);
       //console.log(usuarios.val());
     };
