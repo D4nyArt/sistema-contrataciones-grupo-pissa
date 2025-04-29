@@ -1,4 +1,14 @@
-export default function ProfilePicture({ nombre, width, height, textSize }) {
+export default function ProfilePicture({
+  nombre,
+  width,
+  height,
+  textSize,
+}: {
+  nombre: string;
+  width: string;
+  height: string;
+  textSize: string;
+}) {
   const getInitials = (name: string) => {
     if (!name) return "??";
     const parts = name.split(" ");

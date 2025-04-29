@@ -2,7 +2,6 @@ import EstablecerContrasena from "../../components/establecerContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
 import FondoBlanco from "../../components/fondo-blanco";
-import CardWithPopup from "../../components/pop-up";
 
 export default function Establecer() {
   return (
@@ -20,8 +19,7 @@ export default function Establecer() {
         <FondoBlanco>
           <h1
             className={`text-[#001e2b] text-center text-2xl md:text-3xl pb-4 ${urbanist.className}`}
-          >
-          </h1>
+          ></h1>
           <EstablecerContrasena></EstablecerContrasena>
         </FondoBlanco>
       </div>
@@ -36,10 +34,8 @@ export default function Establecer() {
           />
           <h1
             className={`text-[#001e2b] text-3xl md:text-4xl pb-4 ${urbanist.className}`}
-          >
-  
-          </h1>
-        
+          ></h1>
+
           <EstablecerContrasena></EstablecerContrasena>
         </div>
       </div>

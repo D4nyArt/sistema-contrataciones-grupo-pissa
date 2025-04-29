@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
-import path from "path";
 import ProfilePicture from "./profile-picture";
 import {
   CircleCheck,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { urbanist } from "./fonts";
 
+/*
 interface User {
   id: string;
   nombre?: string;
@@ -23,12 +23,12 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
-}
+}*/
 
 export default function phoneUsuarios() {
-  const router = useRouter();
+  // const router = useRouter();
   const pathname = usePathname();
-  const searchparams = useSearchParams();
+  // const searchparams = useSearchParams();
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");
@@ -37,6 +37,7 @@ export default function phoneUsuarios() {
   const [status, setStatus] = useState("");
   const id = pathname.split("/")[2];
 
+  /*
   const handleRemoval = async () => {
     //console.log("something is happening")
     await set(
@@ -45,8 +46,9 @@ export default function phoneUsuarios() {
     ).then(() => {
       setStatus("dado de baja");
     });
-  };
+  };*/
 
+  /*
   const handleBlock = async () => {
     if (status != "dado de baja") {
       await set(
@@ -58,8 +60,9 @@ export default function phoneUsuarios() {
     } else {
       alert("No se puede bloquear un usuario que ya esta dado de baja.");
     }
-  };
+  };*/
 
+  /*
   const handleUnblock = async () => {
     if (status != "dado de baja") {
       await set(ref(database, `usuarios/${id}/estadoUsuario`), "normal").then(
@@ -70,7 +73,7 @@ export default function phoneUsuarios() {
     } else {
       alert("No se puede desbloquear un usuario que esta dado de baja.");
     }
-  };
+  };*/
 
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))

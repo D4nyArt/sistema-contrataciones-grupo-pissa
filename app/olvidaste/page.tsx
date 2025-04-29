@@ -2,7 +2,6 @@ import FormularioOlvide from "../components/olvideContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
 import FondoBlanco from "../components/fondo-blanco";
-import CardWithPopup from "../components/pop-up";
 
 export default function Olvidaste() {
   return (

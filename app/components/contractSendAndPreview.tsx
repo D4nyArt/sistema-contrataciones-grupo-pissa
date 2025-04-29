@@ -10,7 +10,7 @@ import PopUp from "./pop-up";
 import { ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 
-type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
+// type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
 export default function ContractSendAndPreview({ uid }: { uid: string }) {
   const [selectedProject, setSelectedProject] =

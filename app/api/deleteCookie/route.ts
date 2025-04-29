@@ -1,7 +1,6 @@
 // pages/api/logout.ts
-import { NextApiRequest, NextApiResponse } from 'next';
 import { cookies } from 'next/headers';
-import {NextRequest, NextResponse} from 'next/server'
+import { NextResponse} from 'next/server'
 
 export async function DELETE(req: Request) {
     

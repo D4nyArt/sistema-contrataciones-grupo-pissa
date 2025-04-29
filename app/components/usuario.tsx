@@ -1,9 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
-import path from "path";
 import ProfilePicture from "./profile-picture";
 import {
   CircleCheck,
@@ -14,10 +13,10 @@ import {
   Mail,
   Phone,
   UserMinus,
-  UserPlus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
 
+/*
 interface User {
   id: string;
   nombre?: string;
@@ -25,12 +24,12 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
-}
+}*/
 
 export default function Usuarios() {
-  const router = useRouter();
+  // const router = useRouter();
   const pathname = usePathname();
-  const searchparams = useSearchParams();
+  // const searchparams = useSearchParams();
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");

@@ -1,9 +1,5 @@
 "use client";
-import {
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { ref as storageRef, uploadBytes } from "firebase/storage";
 import { ref as dbRef, update, get } from "firebase/database";
 import React, { useRef, useState } from "react";
 import { storage, database } from "../../firebaseConfig";

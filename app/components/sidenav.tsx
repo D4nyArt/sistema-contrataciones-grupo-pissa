@@ -1,6 +1,5 @@
 import Image from "next/image";
 import NavLinks from "./nav-links";
-import { LogOut } from "lucide-react";
 
 interface SideNavProps {
   roleView: string;
@@ -19,7 +18,7 @@ export default function SideNav({ roleView }: SideNavProps) {
               src="/logo-blanco.png"
             />
           </div>
-          <NavLinks roleView={roleView}/>
+          <NavLinks roleView={roleView} />
         </div>
       </div>
     </div>

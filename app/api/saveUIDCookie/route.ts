@@ -1,12 +1,9 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server"; 
-import { getDatabase, ref, get, child} from 'firebase/database';
-import { database } from "@/firebaseConfig";
-
 
 export async function POST(req: Request) {
   const { uid } = await req.json();
-  const dbref = database;
+  // const dbref = database;
 
 
 
