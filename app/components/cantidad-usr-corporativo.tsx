@@ -7,7 +7,7 @@ export default async function CantCorporativo() {
 
   if (snapshot.exists()) {
     const usuarios = snapshot.val();
-    for (let key in usuarios) {
+    for (const key in usuarios) {
       if (usuarios[key].rol === "enCorporativo") {
         usersInCorporate++;
       }

@@ -7,7 +7,7 @@ export default async function CantProyectos() {
 
   if (snapshot.exists()) {
     const usuarios = snapshot.val();
-    for (let key in usuarios) {
+    for (const key in usuarios) {
       if (usuarios[key].rol === "enProyecto") {
         usersInProyect++;
       }

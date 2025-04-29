@@ -17,20 +17,22 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
+//import crypto from "crypto";
 
-import crypto from "crypto";
-
-const generatePassword = (length: any = 16) => {
-  //return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
+const generatePassword = () => {
   return "123456";
 };
+
+/*
+const generatePassword = (length: number = 16) => {
+  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
+};*/
 
 export default function CreateCredentials() {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
-  const [contrato_activo, setContratoActivo] = useState("NaC");
   const [role, setRole] = useState("");
   const [cand_disabled, setcand_disabled] = useState(false);
   const [rh_disabled, setrh_disabled] = useState(false);
