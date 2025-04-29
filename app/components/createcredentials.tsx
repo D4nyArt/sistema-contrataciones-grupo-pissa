@@ -68,9 +68,14 @@ export default function CreateCredentials() {
       alert(
         "Se han creado las credenciales exitosamente. UID del usuario: " + uid
       );
-    } catch (error: any) {
-      console.error("Error al crear el usuario:", error);
-      alert("Error al crear credenciales: " + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error al crear el usuario:", error);
+        alert("Error al crear credenciales: " + error.message);
+      } else {
+        console.error("Error al crear el usuario:", error);
+        alert("Error al crear credenciales.");
+      }
     }
   };
 

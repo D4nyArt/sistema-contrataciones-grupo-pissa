@@ -106,7 +106,7 @@ export default function Usuarios() {
       }
     };
     fetchUser();
-  }, []);
+  }, [id]);
 
   return (
     <div>
