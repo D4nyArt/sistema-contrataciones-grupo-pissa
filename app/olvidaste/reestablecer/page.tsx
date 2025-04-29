@@ -1,10 +1,10 @@
-import FormularioOlvide from "../components/olvideContrasena";
+import EstablecerContrasena from "../../components/establecerContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
-import FondoBlanco from "../components/fondo-blanco";
-import CardWithPopup from "../components/pop-up";
+import FondoBlanco from "../../components/fondo-blanco";
+import CardWithPopup from "../../components/pop-up";
 
-export default function Olvidaste() {
+export default function Establecer() {
   return (
     <div className="bg-[#2d4583] md:bg-white h-screen p-8 md:justify-around md:flex">
       <div className="md:justify-center md:items-center md:flex md:absolute">
@@ -21,12 +21,8 @@ export default function Olvidaste() {
           <h1
             className={`text-[#001e2b] text-center text-2xl md:text-3xl pb-4 ${urbanist.className}`}
           >
-            <strong>Cambiar contraseña</strong>
           </h1>
-          <p className="text-[#001e2b] text-center antialiased pb-8">
-            Ingresa tu correo, y manda tu solicitud.
-          </p>
-          <FormularioOlvide></FormularioOlvide>
+          <EstablecerContrasena></EstablecerContrasena>
         </FondoBlanco>
       </div>
       <div className="hidden md:flex md:justify-center md:items-center w-1/2 flex-col">
@@ -41,12 +37,10 @@ export default function Olvidaste() {
           <h1
             className={`text-[#001e2b] text-3xl md:text-4xl pb-4 ${urbanist.className}`}
           >
-            <strong>Cambiar contraseña</strong>
+  
           </h1>
-          <p className="text-[#001e2b] antialiased pb-8">
-            Ingresa tu correo, tu nueva contraseña y manda tu solicitud.
-          </p>
-          <FormularioOlvide></FormularioOlvide>
+        
+          <EstablecerContrasena></EstablecerContrasena>
         </div>
       </div>
       <div className="hidden md:flex md:justify-start md:items-center md:rounded-4xl bg-[url(/personas.png)] w-3/5 h-full md:bg-cover md:bg-center"></div>
