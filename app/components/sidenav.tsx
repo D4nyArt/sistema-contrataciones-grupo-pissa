@@ -2,7 +2,11 @@ import Image from "next/image";
 import NavLinks from "./nav-links";
 import { LogOut } from "lucide-react";
 
-export default function SideNav() {
+interface SideNavProps {
+  roleView: string;
+}
+
+export default function SideNav({ roleView }: SideNavProps) {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:py-2 md:px-0">
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-21">
@@ -15,7 +19,7 @@ export default function SideNav() {
               src="/logo-blanco.png"
             />
           </div>
-          <NavLinks />
+          <NavLinks roleView={roleView}/>
         </div>
       </div>
     </div>
