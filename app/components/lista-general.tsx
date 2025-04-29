@@ -11,6 +11,7 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
+  status?: string;
 }
 
 const UserCard = ({ user }: { user: User }) => {
@@ -61,6 +62,7 @@ export default function ListEmpleados() {
       try {
         const res = await fetch("/api/users");
         const data = await res.json();
+        console.log(data);
         setUsers(data);
       } catch (err) {
         console.error("Error al cargar usuarios", err);
@@ -71,7 +73,7 @@ export default function ListEmpleados() {
 
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
-    const esEmpleado = user.rol?.toUpperCase() === "enProyecto" && user.rol?.toUpperCase() === "enCorporativo";
+    const esEmpleado = user.rol === "enProyecto" || user.rol === "enCorporativo";
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""
     }`.toLocaleLowerCase();
@@ -83,6 +85,7 @@ export default function ListEmpleados() {
       user.apellidos?.toLowerCase().includes(buscar) ||
       user.email?.toLowerCase().includes(buscar) ||
       user.telefono?.includes(buscar) ||
+      user.status?.includes(buscar) ||
       nombreCompleto.includes(buscar))
     );
   });
@@ -157,25 +160,19 @@ export default function ListEmpleados() {
 
       {activo === "tabla" && (
         <div>
-          <table className="table-auto w-full">
+          <table className="table-auto w-full border-separate border-spacing-y-2">
             <thead>
-              <tr>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
-                  ID
-                </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+              <tr className="shadow-xs rounded-xl">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
                   Nombre
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
-                  Apellidos
-                </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Rol
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Correo
                 </th>
-                <th className="border-b border-gray-300 px-2 py-1 text-start">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
                   Teléfono
                 </th>
               </tr>
@@ -184,7 +181,7 @@ export default function ListEmpleados() {
               {sortedUsers.length === 0 ? (
                 <tr>
                   <td
-                    className="border-b border-gray-300 px-2 py-1 text-center"
+                    className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
                     colSpan={6}
                   >
                     No se encontraron usuarios.
@@ -193,23 +190,28 @@ export default function ListEmpleados() {
               ) : (
                 sortedUsers.map((user) => (
                   <tr key={user.id}>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.id}
+                    <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
+                      <ProfilePicture
+                        nombre={`${user.nombre || ""}`}
+                        height={"h-8"}
+                        width={"w-8"}
+                        textSize={"text-xl"}
+                      />
+                      {user.nombre || "N/A"} {user.apellidos || "N/A"}
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.nombre || "N/A"}
+                    <td className="px-4 py-4 bg-white">
+                      <div className="bg-blue-100 text-blue-800 rounded-lg w-auto pl-2">
+                        {user.rol || "N/A"}
+                      </div>
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.apellidos || "N/A"}
-                    </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
-                      {user.rol || "N/A"}
-                    </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
+                    <td className="px-4 py-4 bg-white">
                       {user.email || "N/A"}
                     </td>
-                    <td className="border-b border-gray-300 px-2 py-1">
+                    <td className="px-4 py-4 bg-white rounded-r-xl">
                       {user.telefono || "N/A"}
+                    </td>
+                    <td>
+                      {user.status || "N/A"}
                     </td>
                   </tr>
                 ))
