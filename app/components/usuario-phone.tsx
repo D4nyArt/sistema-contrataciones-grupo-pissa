@@ -6,6 +6,9 @@ import { database } from "../../firebaseConfig";
 import { ref, get } from "firebase/database";
 =======
 import { ref, get, set } from "firebase/database";
+<<<<<<< HEAD
+>>>>>>> 4123d81 (Minor changes)
+=======
 >>>>>>> 4123d81 (Minor changes)
 import ProfilePicture from "./profile-picture";
 import Link from "next/link";
