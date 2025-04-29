@@ -21,14 +21,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import {
   fetchSignInMethodsForEmail,
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { get, ref, update } from "firebase/database";
 import { auth, database } from "../../firebaseConfig";
-
+import Link from "next/link";
 import { Alerta } from "./alertaPantalla";
 
 export default function FormularioOlvide() {
@@ -84,12 +84,12 @@ export default function FormularioOlvide() {
       console.log("Verificando email:", email);
 
       // Paso 1: Intentar verificar en Firebase Authentication
-      let emailExisteEnAuth = false;
+      // let emailExisteEnAuth = false;
 
       try {
         const signInMethods = await fetchSignInMethodsForEmail(auth, email);
         if (signInMethods.length > 0) {
-          emailExisteEnAuth = true;
+          // emailExisteEnAuth = true;
           console.log("Email encontrado en Authentication");
         } else {
           console.log("Email no encontrado en Authentication");
@@ -101,7 +101,6 @@ export default function FormularioOlvide() {
 
       // Paso 2: Buscar el usuario en la base de datos
       let uid: string | null = null;
-      const usersRef = ref(database, "usuarios");
 
       try {
         const usersRef = ref(database, "usuarios");
@@ -310,7 +309,7 @@ export default function FormularioOlvide() {
         )}
 
         <div className="pt-6 flex items-center justify-center">
-          <a
+          <Link
             href="/"
             className="items-center flex hover:text-[#08b177] text-[#2975a0] group"
           >
@@ -330,7 +329,7 @@ export default function FormularioOlvide() {
               <path d="M2 12H22" />
             </svg>
             <span className="pl-2">Regresar</span>
-          </a>
+          </Link>
         </div>
       </form>
     </>

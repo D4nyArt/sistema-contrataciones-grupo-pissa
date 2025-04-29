@@ -18,7 +18,6 @@ export interface SelectProjectContractsProps {
 
 // TODO quitar el uid y todo lo que dependa de el por el id del contrato
 export default function SelectProjectContracts({
-  uid,
   onSelect,
   disabled = false,
 }: SelectProjectContractsProps) {

@@ -17,7 +17,6 @@ export interface SelectCorporateContractsProps {
 }
 
 export default function SelectCorporateContracts({
-  uid,
   onSelect,
   disabled = false,
 }: SelectCorporateContractsProps) {

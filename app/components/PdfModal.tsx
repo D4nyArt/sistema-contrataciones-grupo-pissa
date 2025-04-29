@@ -7,7 +7,10 @@ interface PdfModalProps {
   onClose: () => void;
 }
 
-export default function PdfModal({ pdfUrl, onClose }: PdfModalProps): any {
+export default function PdfModal({
+  pdfUrl,
+  onClose,
+}: PdfModalProps): React.ReactElement {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-4 rounded-lg max-w-4xl w-full max-h-screen overflow-auto">
