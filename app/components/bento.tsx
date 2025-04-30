@@ -34,8 +34,6 @@ export default function Bento() {
           <CantProyectos />
         </div>
       </div>
-      <div className="bg-gray-300 rounded-xl col-span-3 row-span-4 col-start-1 row-start-2"></div>
-      <div className="bg-gray-300 rounded-xl row-span-4 col-start-4 row-start-2"></div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8 col-start-4 row-start-1">
         <div className="bg-[#aec5eb] rounded-full p-4 text-white">
           <FileUser />
@@ -45,6 +43,8 @@ export default function Bento() {
           <CantCorporativo />
         </div>
       </div>
+      <div className="bg-gray-300 rounded-xl col-span-3 row-span-4 col-start-1 row-start-2"></div>
+      <div className="bg-gray-300 rounded-xl row-span-4 col-start-4 row-start-2"></div>
     </div>
   );
 }
