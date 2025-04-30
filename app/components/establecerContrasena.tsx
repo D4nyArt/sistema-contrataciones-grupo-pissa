@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ref, update, get } from "firebase/database";
-import { updatePassword } from "firebase/auth"; // <--- SIN confirmPasswordReset
+import { updatePassword } from "firebase/auth";
 import { auth, database } from "../../firebaseConfig";
 
 import { CampoContrasena } from "./campoContrasena";
@@ -14,7 +15,6 @@ export default function EstablecerContrasena() {
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
     const [tokenVerificado, setTokenVerificado] = useState(false);
     const [cargando, setCargando] = useState(true);
-    const [errorContrasena, setErrorContrasena] = useState(false);
     const [errorConfirmacion, setErrorConfirmacion] = useState(false);
     const [alerta, setAlerta] = useState<{
         type: 'aprobado' | 'denegado' | 'errorSist' | 'info';
@@ -23,7 +23,6 @@ export default function EstablecerContrasena() {
 
     const router = useRouter();
 
-    // Verificar el estado del usuario al cargar la página
     useEffect(() => {
         const verificarEstadoUsuario = async () => {
             try {
@@ -36,6 +35,7 @@ export default function EstablecerContrasena() {
                     setCargando(false);
                     return;
                 }
+
                 const uid = usuarioActual.uid;
                 const userRef = ref(database, `usuarios/${uid}`);
                 const snapshot = await get(userRef);
@@ -107,15 +107,14 @@ export default function EstablecerContrasena() {
 
         try {
             setCargando(true);
-
             const usuarioActual = auth.currentUser;
+
             if (!usuarioActual) {
                 throw new Error('Usuario no autenticado.');
             }
 
             await updatePassword(usuarioActual, nuevaContrasena);
 
-            // Actualizar estadoUsuario a 'normal'
             const uid = usuarioActual.uid;
             await update(ref(database, `usuarios/${uid}`), {
                 estadoUsuario: 'normal'
@@ -129,16 +128,19 @@ export default function EstablecerContrasena() {
             setTimeout(() => {
                 router.push('/');
             }, 3000);
-
-        } catch (error: any) {
-            console.error("Error al actualizar la contraseña:", error);
-
+        } catch (error: unknown) {
             let mensajeError = 'Ocurrió un error al actualizar la contraseña';
-            if (error.code === 'auth/weak-password') {
-                mensajeError = 'La contraseña es demasiado débil';
-            } else if (error.code === 'auth/requires-recent-login') {
-                mensajeError = 'Por seguridad, vuelva a iniciar sesión para cambiar la contraseña';
+
+            if (typeof error === 'object' && error !== null && 'code' in error) {
+                const code = (error as { code: string }).code;
+                if (code === 'auth/weak-password') {
+                    mensajeError = 'La contraseña es demasiado débil';
+                } else if (code === 'auth/requires-recent-login') {
+                    mensajeError = 'Por seguridad, vuelva a iniciar sesión para cambiar la contraseña';
+                }
             }
+
+            console.error("Error al actualizar la contraseña:", error);
 
             setAlerta({
                 type: 'errorSist',
@@ -166,12 +168,12 @@ export default function EstablecerContrasena() {
                     funCerrar={() => setAlerta(null)}
                 />
                 <div className="mt-6 flex justify-center">
-                    <a href="/" className="items-center flex hover:text-[#08b177] text-[#2975a0] group">
+                    <Link href="/" className="items-center flex hover:text-[#08b177] text-[#2975a0] group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left transition-all group-hover:scale-x-125">
                             <path d="M6 8L2 12L6 16"/><path d="M2 12H22"/>
                         </svg>
                         <span className="pl-2">Regresar al inicio</span>
-                    </a>
+                    </Link>
                 </div>
             </div>
         );
@@ -190,23 +192,16 @@ export default function EstablecerContrasena() {
             )}
 
             <form onSubmit={handleSubmit}>
-                {/* Nueva contraseña */}
                 <div className="mb-4">
                     <label className="block text-gray-700 mb-1">Nueva contraseña</label>
                     <CampoContrasena
                         value={nuevaContrasena}
                         onChange={handleNuevaContrasenaChange}
                         placeholder="Nueva contraseña"
-                        error={errorContrasena}
+                        error={false}
                     />
-                    {errorContrasena && (
-                        <p className="text-red-500 text-sm mt-1">
-                            La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y caracteres especiales
-                        </p>
-                    )}
                 </div>
 
-                {/* Confirmar contraseña */}
                 <div className="mb-6">
                     <label className="block text-gray-700 mb-1">Confirmar contraseña</label>
                     <CampoContrasena
@@ -222,7 +217,6 @@ export default function EstablecerContrasena() {
                     )}
                 </div>
 
-                {/* Botón */}
                 <div className="mb-6">
                     <button
                         type="submit"
@@ -237,14 +231,13 @@ export default function EstablecerContrasena() {
                     </button>
                 </div>
 
-                {/* Cancelar */}
                 <div className="flex items-center justify-center">
-                    <a href="/" className="items-center flex hover:text-[#08b177] text-[#2975a0] group">
+                    <Link href="/" className="items-center flex hover:text-[#08b177] text-[#2975a0] group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left transition-all group-hover:scale-x-125">
                             <path d="M6 8L2 12L6 16"/><path d="M2 12H22"/>
                         </svg>
                         <span className="pl-2">Cancelar</span>
-                    </a>
+                    </Link>
                 </div>
             </form>
         </div>

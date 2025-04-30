@@ -32,12 +32,13 @@ import Link from "next/link";
 import { Alerta } from "./alertaPantalla";
 
 export default function FormularioOlvide() {
-  const [email, setEmail] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [alertaRecuperar, setAlertaRecuperar] = useState<{
     type: "aprobado" | "denegado" | "errorSist" | "info";
     mensaje: string;
   } | null>(null);
+
   // const router = useRouter();
 
   const cambioEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,7 +161,7 @@ export default function FormularioOlvide() {
         }
 
         // Obtener el valor real del snapshot
-        const estadoUsuario = snapshot.val();
+        const estadoUsuario: string = snapshot.val();
         console.log("Estado del usuario:", estadoUsuario);
 
         // Paso 4: Procesar según el estado del usuario
@@ -241,19 +242,19 @@ export default function FormularioOlvide() {
             "Error al obtener el estado del usuario. Intente de nuevo más tarde.",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error general:", error);
 
       let errorMessage = "Ocurrió un error. Intente de nuevo.";
-      if (error.code) {
-        console.error("Código de error:", error.code);
+      if ((error as { code: string }).code) {
+        console.error("Código de error:", (error as { code: string }).code);
 
-        if (error.code === "auth/invalid-email") {
+        if ((error as { code: string }).code === "auth/invalid-email") {
           errorMessage = "El formato del correo electrónico es inválido.";
-        } else if (error.code === "auth/too-many-requests") {
+        } else if ((error as { code: string }).code === "auth/too-many-requests") {
           errorMessage = "Demasiados intentos. Intente de nuevo más tarde.";
         } else {
-          errorMessage = `Error: ${error.code}. Intente de nuevo más tarde.`;
+          errorMessage = `Error: ${(error as { code: string }).code}. Intente de nuevo más tarde.`;
         }
       }
 
