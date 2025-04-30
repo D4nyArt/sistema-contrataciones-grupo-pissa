@@ -210,9 +210,6 @@ export default function ListEmpleados() {
                     <td className="px-4 py-4 bg-white rounded-r-xl">
                       {user.telefono || "N/A"}
                     </td>
-                    <td>
-                      {user.status || "N/A"}
-                    </td>
                   </tr>
                 ))
               )}
