@@ -5,6 +5,7 @@ import { ref as storageRef, getDownloadURL } from 'firebase/storage';
 import { ref as dbRef, update } from 'firebase/database';
 import { storage, database, auth } from '../../firebaseConfig';
 import PdfModal from '@/app/components/OnboardingModal';
+import { File } from "lucide-react";
 
 interface OnboardingCardProps {
   fileName: string;
@@ -64,13 +65,13 @@ export default function OnboardingCard({
 
   return (
     <div className="flex items-center justify-center space-x-2">
-      <button
+      <div
         onClick={handleView}
-        className="bg-blue-900 text-white p-4 rounded-lg inline-block"
-        disabled={loading || !!error}
+        className="bg-white text-black p-4 rounded-xl shadow-md inline-block w-full"
       >
+        <File/>
         <span className="max-w-xs truncate" title={fileName}>{fileName}</span>
-      </button>
+      </div>
       {loading && <span className="text-gray-500 text-sm">Cargando...</span>}
       {error && <span className="text-red-500 text-sm">{error}</span>}
 
