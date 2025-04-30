@@ -17,8 +17,8 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     useState<ProjectContract | null>(null);
   const [selectedCorporate, setSelectedCorporate] =
     useState<CorpContract | null>(null);
+  const [duration, setDuration] = useState<number>(6); // Duración del contrato en meses
   const [showConfirm, setShowConfirm] = useState(false);
-  const [duration, setDuration] = useState<number>(0); // Duración del contrato en meses
 
   const handleProjectSelect = (c: ProjectContract | null) => {
     setSelectedProject(c);
@@ -60,6 +60,10 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     setShowConfirm(false);
   };
 
+  const handleClick = () => {
+    setShowConfirm(true);
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Selección de contrato */}
@@ -88,8 +92,8 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           <option value="60">5 años</option>
         </select>
         <button
-          onClick={() => setShowConfirm(true)}
           disabled={!contract}
+          onClick={handleClick}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
         >
           Enviar contrato
@@ -114,27 +118,27 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           </p>
         )}
       </div>
-
-      {/* Popup de confirmación */}
-      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
-        <p className="mb-4">
-          ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
-        </p>
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={handleSend}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Confirmar
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="px-4 py-2 bg-red-600 text-white rounded"
-          >
-            Cancelar
-          </button>
-        </div>
-      </PopUp>
+      {showConfirm && (
+        <PopUp>
+          <p className="mb-4">
+            ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
+          </p>
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={handleSend}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => setShowConfirm(false)}
+              className="px-4 py-2 bg-gray-300 rounded"
+            >
+              Cancelar
+            </button>
+          </div>
+        </PopUp>
+      )}
     </div>
   );
 }

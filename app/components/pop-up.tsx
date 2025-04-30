@@ -41,18 +41,22 @@ const closePopup = () => setIsOpen(false);
 */
 
 "use client";
-import React from "react";
+import { useState } from "react";
 
 interface PopUpProps {
-  show: boolean;
-  onClose: () => void;
   children?: React.ReactNode;
 }
 
-export default function PopUp({ show, onClose, children }: PopUpProps) {
+export default function PopUp({ children }: PopUpProps) {
+  const [show, setShow] = useState(true);
+
   if (!show) {
     return null;
   }
+
+  const onClose = () => {
+    setShow(false);
+  };
 
   return (
     <div className="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50">
