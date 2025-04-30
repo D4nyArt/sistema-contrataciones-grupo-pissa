@@ -77,30 +77,15 @@ export default function Usuarios() {
 
     const fetchUser = async () => {
       try {
-        let snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("apellidos")
-          .val();
-        setLastname(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("nombre")
-          .val();
-        setName(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("email")
-          .val();
-        setMail(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("telefono")
-          .val();
-        setPhone(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("rol")
-          .val();
-        setRole(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("estadoUsuario")
-          .val();
-        setStatus(snapshot_buffer);
+        const userRef = ref(database, `usuarios/${id}`);
+        const snapshot = await get(userRef);
+        const data = snapshot.val() || {};
+        setName(data.nombre || "");
+        setLastname(data.apellidos || "");
+        setMail(data.email || "");
+        setPhone(data.telefono || "");
+        setRole(data.rol || "");
+        setStatus(data.estadoUsuario || "");
       } catch (e) {
         console.error(e);
       }

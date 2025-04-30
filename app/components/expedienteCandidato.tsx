@@ -24,10 +24,11 @@ interface ExpedienteCandidatoProps {
 // Definición de tipos
 type DocumentState = "approved" | "reviewing" | "rejected" | "not_uploaded";
 
+/*
 interface FieldState {
   value: string;
   state: "aprobado" | "rechazado" | "pendiente_de_revisar" | "no_subido";
-}
+}*/
 
 interface ManualField {
   key: string;
@@ -36,10 +37,11 @@ interface ManualField {
   state: DocumentState; // Usaremos el mismo tipo DocumentState
 }
 
+/*
 interface DocumentFields {
   fields: ManualField[];
   notas?: string; // Adding notas as an optional string field
-}
+}*/
 
 interface Document {
   id: number;
@@ -136,7 +138,7 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [expedienteId, setExpedienteId] = useState<string | null>(null);
-  const [candidateId, setCandidateId] = useState<string | null>(null);
+  // Removed candidateId state as it is not used
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -151,8 +153,6 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
           setLoading(false);
           return;
         }
-
-        setCandidateId(candidateId);
 
         // 2. Obtener los datos del usuario
         const userRef = ref(database, `usuarios/${candidateId}`);
@@ -384,7 +384,7 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
     };
 
     fetchUserData();
-  }, []);
+  }, [userId]);
 
   // Function to save notes
   const saveNotes = async () => {

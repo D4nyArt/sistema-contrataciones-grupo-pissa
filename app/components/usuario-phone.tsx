@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
-import { ref, get, set } from "firebase/database";
+import { ref, get } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+import Link from "next/link";
 import {
   CircleCheck,
   Ellipsis,
@@ -25,7 +26,7 @@ interface User {
   telefono?: string;
 }*/
 
-export default function phoneUsuarios() {
+export default function PhoneUsuarios() {
   // const router = useRouter();
   const pathname = usePathname();
   // const searchparams = useSearchParams();
@@ -76,47 +77,30 @@ export default function phoneUsuarios() {
   };*/
 
   useEffect(() => {
-    //get(ref(database, `usuarios/${id}`))
-
     const fetchUser = async () => {
       try {
-        let snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("apellidos")
-          .val();
-        setLastname(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("nombre")
-          .val();
-        setName(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("email")
-          .val();
-        setMail(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("telefono")
-          .val();
-        setPhone(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("rol")
-          .val();
-        setRole(snapshot_buffer);
-        snapshot_buffer = (await get(ref(database, `usuarios/${id}`)))
-          .child("estadoUsuario")
-          .val();
-        setStatus(snapshot_buffer);
+        const userRef = ref(database, `usuarios/${id}`);
+        const snapshot = await get(userRef);
+        const data = snapshot.val() || {};
+        setName(data.nombre || "");
+        setLastname(data.apellidos || "");
+        setMail(data.email || "");
+        setPhone(data.telefono || "");
+        setRole(data.rol || "");
+        setStatus(data.estadoUsuario || "");
       } catch (e) {
         console.error(e);
       }
     };
     fetchUser();
-  }, []);
+  }, [id]);
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-row justify-between">
-        <a href="/dashboard/personas">
+        <Link href="/dashboard/personas">
           <MoveLeft />
-        </a>
+        </Link>
         <h1 className={`${urbanist.className} text-2xl text-[#212529]`}>
           <strong>Perfil</strong>
         </h1>
