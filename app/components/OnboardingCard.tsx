@@ -25,7 +25,6 @@ export default function OnboardingCard({
 
   // Nuevo estado para aceptación
   const [accepted, setAccepted] = useState<boolean>(false);
-  const [acceptedAt, setAcceptedAt] = useState<number | null>(null);
 
   const filePath = url;
 
@@ -56,8 +55,7 @@ export default function OnboardingCard({
       if (snap.exists()) {
         const data = snap.val() as { accepted: boolean; acceptedAt?: number };
         setAccepted(!!data.accepted);
-        setAcceptedAt(data.acceptedAt ?? null);
-      } else {
+        setAccepted(!!data.acceptedAt);
         // inicializar nodo
         await update(docRef, { accepted: false, acceptedAt: null });
       }
@@ -82,16 +80,14 @@ export default function OnboardingCard({
     const now = Date.now();
     await update(docRef, { accepted: true, acceptedAt: now });
     setAccepted(true);
-    setAcceptedAt(now);
   };
-
   return (
     <div className="flex items-center justify-between space-x-2 p-2 border rounded">
       <div onClick={handleView} className="flex items-center space-x-1 cursor-pointer">
         {accepted
           ? <CheckCircle className="text-green-600" />
           : <File />}
-        <span className="truncate max-w-xs" title={nombre}>{nombre}</span>
+        <span className="truncate max-w-xs" title={nombre} key={key}>{nombre}</span>
       </div>
 
       {loading && <span className="text-gray-500 text-sm">Cargando...</span>}
