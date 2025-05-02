@@ -1,6 +1,6 @@
 "use client";
 
-import { Bolt, KeyRound, User, Users, House, Archive, Handshake, UserPlus} from "lucide-react";
+import {KeyRound, User, Users, House, Archive, Handshake, UserPlus} from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
