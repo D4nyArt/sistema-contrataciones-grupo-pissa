@@ -169,7 +169,7 @@ export default function Usuarios() {
           </button>
         </div>
       </div>
-      <div className="pb-6 pt-2 {/*border-b border-gray-300*/} text-sm">
+      {/*<div className="pb-6 pt-2 border-b border-gray-300 text-sm">
         <table className="table-auto text-[#495057]">
           <tbody>
             <tr>
@@ -193,7 +193,7 @@ export default function Usuarios() {
             </tr>
           </tbody>
         </table>
-      </div>
+      </div>*/}
     </div>
   );
 }
