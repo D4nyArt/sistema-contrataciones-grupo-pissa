@@ -1,27 +1,66 @@
-import OnboardingCard from "@/app/components/OnboardingCard";
+import OnboardingCard from '@/app/components/OnboardingCard'
+import { cookies } from 'next/headers'
+import { ref, get } from 'firebase/database'
+import { database } from '@/firebaseConfig'
 
+async function getRole() {
+  const cookieStore = await cookies()
+  const uid = cookieStore.get('candidateId')?.value || null
+  let role: string | null = null
 
-export default function Bienvenida()
-{
+  if (uid) {
+    const snapshot = await get(ref(database, `usuarios/${uid}/rol`))
+    if (snapshot.exists()) role = snapshot.val() as string
+  }
+
+  return role
+}
+
+type OnbCard = { nombre: string; url: string }
+async function getListOnbCards(rol: string): Promise<Record<string, OnbCard>> {
+  if (rol === 'enCorporativo') {
+    const snapshot = await get(ref(database, `contratos/corporativo/onbcorp`))
+    if (snapshot.exists()) return snapshot.val() as Record<string, OnbCard>
+  }
+  if (rol === 'enProyecto') {
+    const snapshot = await get(ref(database, `contratos/proyectos/onbproy`))
+    if (snapshot.exists()) return snapshot.val() as Record<string, OnbCard>
+  }
+  return {}
+}
+
+export default async function OnboardingPage() {
+  const role = await getRole()
+
+  // Si no tiene contrato aún, mostrar mensaje informativo
+  if (role !== 'enCorporativo' && role !== 'enProyecto') {
+    return (
+      <main className="p-8">
+        <h1 className="text-2xl font-bold mb-4">Onboarding</h1>
+        <p>
+          Tu rol es <strong>{role ?? 'candidato'}</strong>.  
+          Debido a que aún no tienes un contrato asignado, 
+          la zona de Onboarding no está disponible.
+        </p>
+      </main>
+    )
+  }
+
+  const onbCards = await getListOnbCards(role)
+
   return (
-    <div>      
+    <main className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Onboarding</h1>
+      <p className="mb-6">Tu rol es: <strong>{role}</strong></p>
       <div className="parent md:grid md:grid-cols-3 md:grid-rows-5 gap-4">
-          <div><OnboardingCard fileName="INE.pdf"/></div>
-          <div><OnboardingCard fileName="CV.pdf" /></div>
-          <div><OnboardingCard fileName="ACTANACIMIENTO.pdf" /></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
-          <div className="bg-gray-400 rounded-xl"></div>
+        {Object.entries(onbCards).map(([key, card]) => (
+          <OnboardingCard
+            key={key}
+            nombre={card.nombre}
+            url={card.url}
+          />
+        ))}
       </div>
-    </div>
-  );
+    </main>
+  )
 }

@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect on /auth/redirector
   if (pathname === "/auth/redirector") {
-    if (role === "candidato") {
+    if (role === "candidato" || role === "enCorporativo" || role === "enProyecto") {
       console.log("➡️ Redirecting candidato to expediente");
       return NextResponse.redirect(new URL("/candidato/expediente", request.url));
     }
@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 🔄 Order matters: check /candidato FIRST
-  if (pathname.startsWith("/candidato") && role !== "candidato") {
+  if (pathname.startsWith("/candidato") && role !== "candidato" && role !== "enCorporativo" && role !== "enProyecto") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
