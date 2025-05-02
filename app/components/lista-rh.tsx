@@ -197,7 +197,9 @@ export default function ListRecursos() {
                       {user.nombre || "N/A"} {user.apellidos || "N/A"}
                     </td>
                     <td className="px-4 py-4 bg-white">
-                      {user.rol || "N/A"}
+                      <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
+                        {user.rol || "N/A"}
+                      </div>
                     </td>
                     <td className="px-4 py-4 bg-white">
                       {user.email || "N/A"}

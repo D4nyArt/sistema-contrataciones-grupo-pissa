@@ -200,7 +200,7 @@ export default function ListEmpleados() {
                       {user.nombre || "N/A"} {user.apellidos || "N/A"}
                     </td>
                     <td className="px-4 py-4 bg-white">
-                      <div className="bg-blue-100 text-blue-800 rounded-lg w-auto pl-2">
+                      <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
                         {user.rol || "N/A"}
                       </div>
                     </td>
