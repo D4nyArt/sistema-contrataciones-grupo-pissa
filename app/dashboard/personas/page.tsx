@@ -10,12 +10,12 @@ export default function VistaUsuarios() {
 
   return (
     <div className="flex-1 overflow-y-auto pb-4 md:mt-0">
-      <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-4 mb-4`}>
+      <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-4 mb-4 animate-fade-in-up`}>
         <strong>Personas</strong>
       </h1>
 
-      <div className="flex space-x-6 border-b border-gray-300 items-center ml-4">
-      <button
+      <div className="flex space-x-6 border-b border-gray-300 items-center ml-4 animate-fade-in-up">
+        <button
           onClick={() => setActivo("empleados")}
           className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
             activo === "empleados"

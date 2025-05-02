@@ -1,4 +1,4 @@
-import { FileUser, FolderDot, UserPlus, Users } from "lucide-react";
+import { UserPlus, Users, Building, FolderOpenDot } from "lucide-react";
 import CountUsers from "./countusers";
 import CantCandidatos from "./cantidad-candidatos";
 import CantProyectos from "./cantidad-usr-proyectos";
@@ -27,7 +27,7 @@ export default function Bento() {
       </div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8">
         <div className="bg-[#d55672] rounded-full p-4 text-white">
-          <FolderDot />
+          <FolderOpenDot />
         </div>
         <div className="flex flex-col">
           <h2 className="text-[#495057]">Proyecto</h2>
@@ -36,7 +36,7 @@ export default function Bento() {
       </div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8 col-start-4 row-start-1">
         <div className="bg-[#aec5eb] rounded-full p-4 text-white">
-          <FileUser />
+          <Building />
         </div>
         <div className="flex flex-col">
           <h2 className="text-[#495057]">Corporativo</h2>

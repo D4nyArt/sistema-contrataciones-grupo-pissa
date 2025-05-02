@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 4123d81 (Minor changes)
+//import FormularioRec from "./form-olvide";
+
+>>>>>>> 4123d81 (Minor changes)
 export default function FondoBlanco({
   children,
 }: Readonly<{

@@ -20,7 +20,7 @@ const UserCard = ({ user }: { user: User }) => {
   return (
     <div
       onClick={() => router.push(`/dashboard/${user.id}`)}
-      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col"
+      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex-none pr-2">
@@ -160,7 +160,7 @@ export default function ListEmpleados() {
 
       {activo === "tabla" && (
         <div>
-          <table className="table-auto w-full border-separate border-spacing-y-2">
+          <table className="table-auto w-full border-separate border-spacing-y-2 animate-fade-in-up">
             <thead>
               <tr className="shadow-xs rounded-xl">
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
@@ -200,7 +200,7 @@ export default function ListEmpleados() {
                       {user.nombre || "N/A"} {user.apellidos || "N/A"}
                     </td>
                     <td className="px-4 py-4 bg-white">
-                      <div className="bg-blue-100 text-blue-800 rounded-lg w-auto pl-2">
+                      <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
                         {user.rol || "N/A"}
                       </div>
                     </td>

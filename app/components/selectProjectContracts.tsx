@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ref, get } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import { urbanist } from "./fonts";
 
 export interface Contract {
   id: string;
@@ -51,16 +52,18 @@ export default function SelectProjectContracts({
 
   return (
     <div>
-      <label htmlFor="selectProject">Contrato de proyecto:</label>
+      <div className={`${urbanist.className} text-[#212529] text-xl font-semibold`}>
+        <label htmlFor="selectProject">Contrato</label>
+      </div>
       <select
         id="selectProject"
         value={selectedId}
         onChange={handleChange}
         disabled={disabled}
-        className="w-full p-1 border rounded"
+        className="w-full p-1 border rounded-lg mt-6 border-gray-300"
       >
         {/*Esto despliega el nombre de todos los contratos en el select*/}
-        <option value="">-- Elige --</option>
+        <option value="">Elige el contrato</option>
         {contracts.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
