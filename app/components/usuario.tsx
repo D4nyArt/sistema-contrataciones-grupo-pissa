@@ -95,7 +95,7 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-center border-b border-gray-300 pb-6">
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
         <ProfilePicture
           nombre={`${name}`}
           width={"w-15"}
@@ -115,7 +115,7 @@ export default function Usuarios() {
                   <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
                     <CircleCheck className="size-4 text-green-800" />
                     <p className="pl-1 text-green-800 capitalize text-xs">
-                      Normal
+                      Activo
                     </p>
                   </div>
                 )}
@@ -169,7 +169,7 @@ export default function Usuarios() {
           </button>
         </div>
       </div>
-      <div className="pb-6 pt-6 border-b border-gray-300 text-sm">
+      <div className="pb-6 pt-2 {/*border-b border-gray-300*/} text-sm">
         <table className="table-auto text-[#495057]">
           <tbody>
             <tr>

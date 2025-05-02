@@ -1,5 +1,6 @@
 "use client";
 
+import { FileUser } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ShowCurrentContract({ uid }: { uid: string }) {
@@ -19,14 +20,21 @@ export default function ShowCurrentContract({ uid }: { uid: string }) {
   }, [uid]);
 
   return (
-    <div className="mb-4 p-4">
+    <div className="mt-4 mb-4 p-4 bg-white rounded-xl flex flex-row items-center space-x-4 shadow-sm md:w-1/3">
+      <div className="">
+        <FileUser className="size-12 text-[#2975a0]"/>
+      </div>
       {activeContract ? (
-        <span className="font-semibold">
-          {userRole === "candidato"
-            ? "Contrato en revisión: "
-            : "Contrato Activo: "}
-          {activeContract}
-        </span>
+        <div className="flex-col flex">
+          <p className="text-[#212529]">
+            {activeContract}
+          </p>
+          <p className="text-sm">
+            {userRole === "candidato"
+              ? <p className="text-[#495057]">Contrato en revisión</p>
+              : <p className="text-[#08b177]">Contrato Activo</p>}
+          </p>
+        </div>
       ) : (
         <span className="text-gray-500">
           Este usuario no tiene contratos asignados

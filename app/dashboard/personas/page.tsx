@@ -15,7 +15,7 @@ export default function VistaUsuarios() {
       </h1>
 
       <div className="flex space-x-6 border-b border-gray-300 items-center ml-4">
-      <button
+        <button
           onClick={() => setActivo("empleados")}
           className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
             activo === "empleados"

@@ -5,10 +5,13 @@ import SelectProjectContracts, {
 import SelectCorporateContracts, {
   Contract as CorpContract,
 } from "./selectCorporateContracts";
-import ManagerViewer from "./ManagerViewer";
+//import ManagerViewer from "./ManagerViewer";
+import DirectViewer from "./directFileView";
 import PopUp from "./pop-up";
 import { ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import { urbanist } from "./fonts";
+import { Building, FolderOpenDot, File } from "lucide-react";
 
 // type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -64,26 +67,62 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     setShowConfirm(true);
   };
 
+  const [selected, setSelected] = useState("pro");
+
+  const options = [
+    { id: "pro", label: "Proyecto", icon: FolderOpenDot },
+    { id: "cor", label: "Corporativo", icon: Building }
+  ];
+
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Selección de contrato */}
-      <div className="flex flex-col gap-4 md:w-1/3 border border-gray-200 p-4 rounded">
-        <h2 className="font-bold">Elegir contrato</h2>
-        <SelectProjectContracts
-          uid={uid}
-          onSelect={handleProjectSelect}
-          disabled={!!selectedCorporate}
-        />
-        <SelectCorporateContracts
-          uid={uid}
-          onSelect={handleCorporateSelect}
-          disabled={!!selectedProject}
-        />
+      <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md">
+        <div className="border-b pb-6 border-gray-300">
+          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de contrato</h2>
+        </div>
+        <div className="flex space-x-2 mr-auto pt-2">
+          {options.map((option) => {
+            const LinkIcon = option.icon;
+            return (
+              <button key={option.id}
+                onClick={() => {
+                  setSelected(option.id);
+                  setSelectedProject(null);
+                  setSelectedCorporate(null);
+                }}
+                className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
+                ${selected === option.id
+                    ? "border-[#2975a0] text-[#2975a0]"
+                    : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"}`}
+              >
+                <LinkIcon/>
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {selected === "pro" && (
+          <SelectProjectContracts
+            uid={uid}
+            onSelect={handleProjectSelect}
+            disabled={!!selectedCorporate}
+          />
+        )}
+        {selected === "cor" && (
+          <SelectCorporateContracts
+            uid={uid}
+            onSelect={handleCorporateSelect}
+            disabled={!!selectedProject}
+          />
+        )}
         {/*Seleccionar duración del contrato*/}
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Duración del contrato</h2>
         <select
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
-          className="border p-1 rounded"
+          className="border p-1 rounded-lg mt-2 border-gray-300"
         >
           <option value="6">6 meses</option>
           <option value="12">1 año</option>
@@ -94,17 +133,17 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         <button
           disabled={!contract}
           onClick={handleClick}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+          className="cursor-pointer mt-10 px-4 py-2 bg-[#2d4583] text-white rounded-lg hover:bg-[#08b177] disabled:opacity-50"
         >
           Enviar contrato
         </button>
       </div>
 
-      {/* Vista previa y botón de enviar */}
-      <div className="flex-1 border border-gray-200 p-4 rounded">
+      {/* Vista previa*/}
+      <div className="flex-1">
         {contract ? (
           <>
-            <ManagerViewer
+            <DirectViewer
               expedienteId={`expediente${uid}`}
               fileName={contract.name + ".pdf"}
               folder={folder}
@@ -113,11 +152,13 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
             />
           </>
         ) : (
-          <p className="text-gray-500">
-            Selecciona un contrato para vista previa.
-          </p>
+          <div className="text-gray-500 text-center h-full flex-col space-y-2 border border-gray-300 p-4 rounded-xl justify-center flex items-center">
+            <File className="size-12"/>
+            <p>Selecciona un contrato para vista previa.</p>
+          </div>
         )}
       </div>
+      {/* y botón de enviar  */}
       {showConfirm && (
         <PopUp>
           <p className="mb-4">

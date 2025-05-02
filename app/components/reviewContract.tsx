@@ -63,9 +63,9 @@ export default function ReviewContract({ uid }: { uid: string }) {
   const current = info.state ? stateMap[info.state] : null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-white mt-4 rounded-xl shadow-md p-4">
       {current && (
-        <div className={`flex items-center ${current.color}`}>
+        <div className={`flex items-center ${current.color} `}>
           <current.Icon size={20} className="mr-2" />
           <span>{current.text}</span>
         </div>
@@ -87,7 +87,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
       )}
 
       {/* Botones para aprobar o rechazar */}
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 justify-center items-center">
         <button
           onClick={() => handleContractReview(true)}
           className="p-2 bg-green-500 text-white rounded"
