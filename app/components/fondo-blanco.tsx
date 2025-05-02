@@ -1,3 +1,5 @@
+//import FormularioRec from "./form-olvide";
+
 export default function FondoBlanco({
   children,
 }: Readonly<{

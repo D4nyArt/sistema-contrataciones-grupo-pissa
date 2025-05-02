@@ -8,7 +8,6 @@ const linksRH = [
   { name: 'Inicio', href: '/dashboard', icon: House },
   { name: 'Personas', href: '/dashboard/personas', icon: Users },
   { name: 'Candidatos', href: '/dashboard/candidatos', icon: UserPlus},
-  { name: 'Configuración', href: '/dashboard/configuracion', icon: Bolt },
   { name: 'Credenciales', href: '/dashboard/credenciales', icon: KeyRound },
   { name: 'Perfil', href: '/dashboard/perfil', icon: User }
 ];
@@ -17,7 +16,6 @@ const linksCandidato = [
   { name: 'Inicio', href: '/candidato', icon: House },
   { name: 'Expediente', href: '/candidato/expediente', icon: Archive },
   { name: 'Onboarding', href: '/candidato/onboarding', icon: Handshake},
-  { name: 'Configuración', href: '/candidato/configuracion', icon: Bolt },
   { name: 'Perfil', href: '/candidato/perfil', icon: User }
 ];
 

@@ -3,6 +3,8 @@ import { ref, get } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import { urbanist } from "@/app/components/fonts";
 import Bento from "@/app/components/bento";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 function obtenerSaludo(): string {
   const hora = new Date().getHours();
@@ -31,13 +33,24 @@ export default async function Inicio() {
 
   return (
     <div>
-      <h2 className={`${urbanist.className} text-3xl pl-8 text-[#495057]`}>
-        Hola {usuario}.
-      </h2>
-      <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-8`}>
-        <strong>{obtenerSaludo()}</strong>
-      </h1>
-      <div className="flex h-full w-full p-8 ">
+      <div className="flex flex-row justify-center items-center animate-fade-in-up">
+        <div>
+          <h2 className={`${urbanist.className} text-3xl pl-8 text-[#495057]`}>
+            Hola {usuario}.
+          </h2>
+          <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-8`}>
+            <strong>{obtenerSaludo()}</strong>
+          </h1>
+        </div>
+        <div className="ml-auto pr-8">
+          <Link className="bg-[#2d4583] p-4 text-white rounded-lg inline-flex gap-2 shadow-sm animate-fade-in-up" href={"/dashboard/credenciales"}>
+            <Plus/>
+            Nuevo candidato
+          </Link>
+        </div>
+      </div>
+
+      <div className="flex h-full w-full p-8 animate-fade-in-up">
         <Bento />
       </div>
     </div>
