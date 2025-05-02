@@ -10,7 +10,7 @@ export default function SelectCandidateTab({ userID }: { userID: string }) {
     "expediente"
   );
   return (
-    <div>
+    <div className="space-x-6 items-center">
       <button
         onClick={() => setActive("expediente")}
         className={`pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
