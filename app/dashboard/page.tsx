@@ -4,6 +4,7 @@ import { database } from "../../firebaseConfig";
 import { urbanist } from "@/app/components/fonts";
 import Bento from "@/app/components/bento";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 function obtenerSaludo(): string {
   const hora = new Date().getHours();
@@ -42,10 +43,10 @@ export default async function Inicio() {
           </h1>
         </div>
         <div className="ml-auto pr-8">
-          <button className="bg-[#2d4583] p-4 text-white rounded-lg inline-flex gap-2 shadow-sm animate-fade-in-up">
-            <Plus />
+          <Link className="bg-[#2d4583] p-4 text-white rounded-lg inline-flex gap-2 shadow-sm animate-fade-in-up" href={"/dashboard/credenciales"}>
+            <Plus/>
             Nuevo candidato
-          </button>
+          </Link>
         </div>
       </div>
 
