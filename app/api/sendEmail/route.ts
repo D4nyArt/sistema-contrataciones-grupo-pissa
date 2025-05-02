@@ -10,8 +10,8 @@ async function sendEmailNotification(addressee: string, subject: string, text: s
     // Para dominios de la UE, especifica el endpoint: url: "https://api.eu.mailgun.net"
   });
 
-  const data = await mg.messages.create("sandbox7a10387ae554432ca8215e5f706efa72.mailgun.org", {
-    from: "Mailgun Sandbox <postmaster@sandbox7a10387ae554432ca8215e5f706efa72.mailgun.org>",
+  const data = await mg.messages.create("grupo-pissa.space", {
+    from: "Notificaciones pissa <notificaciones@grupo-pissa.space>",
     to: [addressee],       // Se usa el parámetro recibido
     subject: subject,      // Se usa el parámetro recibido
     text: text,            // Se usa el parámetro recibido
@@ -19,7 +19,6 @@ async function sendEmailNotification(addressee: string, subject: string, text: s
 
   return data;
 }
-
 
 export async function POST(request: Request) {
     try {
