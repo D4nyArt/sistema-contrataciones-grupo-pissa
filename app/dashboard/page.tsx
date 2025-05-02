@@ -32,7 +32,7 @@ export default async function Inicio() {
 
   return (
     <div>
-      <div className="flex felx-row justify-center items-center">
+      <div className="flex flex-row justify-center items-center animate-fade-in-up">
         <div>
           <h2 className={`${urbanist.className} text-3xl pl-8 text-[#495057]`}>
             Hola {usuario}.
@@ -42,13 +42,14 @@ export default async function Inicio() {
           </h1>
         </div>
         <div className="ml-auto pr-8">
-          <button className="bg-[#2d4583] p-4 text-white rounded-lg inline-flex gap-2 shadow-sm">
-            <Plus/>
-            Agregar candidato
+          <button className="bg-[#2d4583] p-4 text-white rounded-lg inline-flex gap-2 shadow-sm animate-fade-in-up">
+            <Plus />
+            Nuevo candidato
           </button>
         </div>
       </div>
-      <div className="flex h-full w-full p-8 ">
+
+      <div className="flex h-full w-full p-8 animate-fade-in-up">
         <Bento />
       </div>
     </div>
