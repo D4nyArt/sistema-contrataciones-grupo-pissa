@@ -5,6 +5,7 @@ import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
 import { update, ref } from "firebase/database";
 import ManagerViewer from "./ManagerViewer";
 import { database } from "@/firebaseConfig";
+import PopUp from "./pop-up";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -36,6 +37,9 @@ export default function ReviewContract({ uid }: { uid: string }) {
     contract: { id: string; name: string } | null;
   }>({ state: null, contract: null });
 
+  const [notes, setNotes] = useState<string>("");
+  const [showConfirm, setShowConfirm] = useState(false);
+
   useEffect(() => {
     async function fetchInfo() {
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
@@ -50,6 +54,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
     const newState: ContractState = approve ? "aprobado" : "rechazado";
     await update(ref(database, `expedientes/expediente${uid}/contratos`), {
       estado: newState,
+      notas: notes,
     });
     /*
     if (approve) {
@@ -59,9 +64,14 @@ export default function ReviewContract({ uid }: { uid: string }) {
       await update(ref(database, `usuarios/${uid}`), { rol: newRole });
     }*/
     setInfo((cur) => ({ ...cur, state: newState }));
+    setNotes("");
   };
 
   const current = info.state ? stateMap[info.state] : null;
+
+  const handleClick = () => {
+    setShowConfirm(true);
+  };
 
   return (
     <div className="space-y-4 bg-white mt-4 rounded-xl shadow-md p-4">
@@ -87,6 +97,20 @@ export default function ReviewContract({ uid }: { uid: string }) {
         </p>
       )}
 
+      {/* Notas input */}
+      <form className="flex flex-col items-start gap-2">
+        <label htmlFor="admin-notes" className="font-medium">
+          Notas:
+        </label>
+        <input
+          id="admin-notes"
+          type="text"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </form>
+
       {/* Botones para aprobar o rechazar */}
       <div className="flex space-x-2 justify-center items-center">
         <button
@@ -104,6 +128,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
           Rechazar
         </button>
       </div>
+      {/* Confirmación de envío */}
     </div>
   );
 }
