@@ -45,7 +45,16 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     async function fetchInfo() {
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
       const data = await res.json();
-      setContract(data.contract ? { ...data.contract } : null);
+      setContract(
+        data.contract
+          ? {
+              ...data.contract,
+              state: data.state,
+              notes: data.notes,
+              duration: data.duration,
+            }
+          : null
+      );
     }
     fetchInfo();
   }, [uid]);
@@ -77,6 +86,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   if (!contract) {
     return <p className="text-gray-500">Estado del contrato no disponible</p>;
   }
+
   const current = contract.state ? stateMap[contract.state] : null;
 
   return (
@@ -91,6 +101,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       {/* Aquí es donde se ven las notas si tiene notas */}
       {contract.notes && (
         <div className="flex items-center text-gray-500 mt-2">
+          <p>Notas: </p>
           <span>{contract.notes}</span>
         </div>
       )}
