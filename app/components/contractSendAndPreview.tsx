@@ -168,27 +168,25 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         )}
       </div>
       {/* y botón de enviar  */}
-      {showConfirm && (
-        <PopUp>
-          <p className="mb-4">
-            ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
-          </p>
-          <div className="flex justify-end space-x-2">
-            <button
-              onClick={handleSend}
-              className="px-4 py-2 bg-green-600 text-white rounded"
-            >
-              Confirmar
-            </button>
-            <button
-              onClick={() => setShowConfirm(false)}
-              className="px-4 py-2 bg-gray-300 rounded"
-            >
-              Cancelar
-            </button>
-          </div>
-        </PopUp>
-      )}
+      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
+        <p className="mb-4">
+          ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={handleSend}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Confirmar
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancelar
+          </button>
+        </div>
+      </PopUp>
     </div>
   );
 }

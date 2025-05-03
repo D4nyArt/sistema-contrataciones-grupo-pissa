@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
-import { update, ref } from "firebase/database";
+import { update, ref, set } from "firebase/database";
 import ManagerViewer from "./ManagerViewer";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
@@ -39,6 +39,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
   const [notes, setNotes] = useState<string>("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [tempState, setTempState] = useState<ContractState | null>(null);
 
   useEffect(() => {
     async function fetchInfo() {
@@ -69,7 +70,9 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
   const current = info.state ? stateMap[info.state] : null;
 
-  const handleClick = () => {
+  const handleClick = (approve: boolean) => {
+    const newState: ContractState = approve ? "aprobado" : "rechazado";
+    setTempState(newState);
     setShowConfirm(true);
   };
 
@@ -114,21 +117,48 @@ export default function ReviewContract({ uid }: { uid: string }) {
       {/* Botones para aprobar o rechazar */}
       <div className="flex space-x-2 justify-center items-center">
         <button
-          onClick={() => handleContractReview(true)}
+          onClick={() => handleClick(true)}
           className="p-2 bg-green-500 text-white rounded"
         >
           <ThumbsUp size={16} className="inline-block mr-1" />
           Aprobar
         </button>
         <button
-          onClick={() => handleContractReview(false)}
+          onClick={() => handleClick(false)}
           className="p-2 bg-red-500 text-white rounded"
         >
           <ThumbsDown size={16} className="inline-block mr-1" />
           Rechazar
         </button>
       </div>
+
       {/* Confirmación de envío */}
+      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
+        <p>
+          ¿Seguro que quieres{" "}
+          {tempState === "aprobado" ? "aprobar" : "rechazar"} este contrato?
+        </p>
+        {notes !== "" && <p className="mt-2 text-gray-500">Notas: {notes}</p>}
+        <div className="flex justify-end space-x-2 mt-4">
+          <button
+            onClick={() => {
+              handleContractReview(tempState === "aprobado");
+              setShowConfirm(false);
+            }}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Confirmar
+          </button>
+          <button
+            onClick={() => {
+              setShowConfirm(false);
+            }}
+            className="px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancelar
+          </button>
+        </div>
+      </PopUp>
     </div>
   );
 }
