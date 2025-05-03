@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
-import { update, ref, set } from "firebase/database";
+import { update, ref } from "firebase/database";
 import ManagerViewer from "./ManagerViewer";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
@@ -118,14 +118,14 @@ export default function ReviewContract({ uid }: { uid: string }) {
       <div className="flex space-x-2 justify-center items-center">
         <button
           onClick={() => handleClick(true)}
-          className="p-2 bg-green-500 text-white rounded"
+          className="p-2 bg-green-500 text-white rounded cursor-pointer"
         >
           <ThumbsUp size={16} className="inline-block mr-1" />
           Aprobar
         </button>
         <button
           onClick={() => handleClick(false)}
-          className="p-2 bg-red-500 text-white rounded"
+          className="p-2 bg-red-500 text-white rounded cursor-pointer"
         >
           <ThumbsDown size={16} className="inline-block mr-1" />
           Rechazar
@@ -145,7 +145,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
               handleContractReview(tempState === "aprobado");
               setShowConfirm(false);
             }}
-            className="px-4 py-2 bg-green-600 text-white rounded"
+            className="px-4 py-2 bg-green-600 text-white rounded cursor-pointer"
           >
             Confirmar
           </button>
@@ -153,7 +153,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
             onClick={() => {
               setShowConfirm(false);
             }}
-            className="px-4 py-2 bg-gray-300 rounded"
+            className="px-4 py-2 bg-gray-300 rounded cursor-pointer"
           >
             Cancelar
           </button>

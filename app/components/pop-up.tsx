@@ -64,7 +64,7 @@ export default function PopUp({ show, onClose, children }: PopUpProps) {
         {children}
         {onClose && (
           <button
-            className="mt-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            className="mt-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
             onClick={onClose}
           >
             Cerrar
