@@ -51,11 +51,10 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   };
 
   return (
-    <div>
+    <div className="mb-12 bg-white p-4 rounded-xl shadow-md">
       <div>
-        <h2 className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}>Subir nuevo contrato</h2>
         {/*Aquí es donde se sube un archivo*/}
-        <div className="flex flex-col border justify-center items-center p-40 rounded-xl mb-4 border-gray-300">
+        <div className="flex flex-col border justify-center items-center p-40 rounded-xl mb-4 border-gray-300 bg-[#f5f7fb] border-dashed">
           <Uploader
             expedienteId={`expediente${uid}`}
             onFileUploaded={handleFileUpload}
@@ -63,11 +62,11 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
             contrato={true}
           />
           <p className="text-gray-500">
-            Puedes subir un nuevo contrato si es necesario.
+            Subir contrato firmado si es necesario.
           </p>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center w-full h-full p-4 bg-white rounded-lg shadow-md">
+      <div className="flex flex-col items-start justify-center w-full h-full p-4 rounded-lg">
         {/*Aquí es donde se ve el archivo*/}
         <h2 className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}>Contrato asignado</h2>
         {contract ? (

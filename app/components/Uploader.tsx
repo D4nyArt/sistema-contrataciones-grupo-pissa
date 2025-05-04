@@ -101,7 +101,7 @@ const Uploader: React.FC<UploaderProps> = ({
           isUploading ? "opacity-50 pointer-events-none" : ""
         }`}
       >
-        <div className="bg-blue-900 text-white p-8 rounded-lg inline-block mb-2">
+        <div className="bg-[#2d4583] hover:bg-[#08b177]  text-white p-8 rounded-lg inline-block mb-2">
           <Upload size={32} />
         </div>
         <input
