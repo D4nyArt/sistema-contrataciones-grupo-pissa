@@ -11,7 +11,7 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
-  status?: string;
+  estadoUsuario?: string;
 }
 
 const UserCard = ({ user }: { user: User }) => {
@@ -85,7 +85,7 @@ export default function ListEmpleados() {
       user.apellidos?.toLowerCase().includes(buscar) ||
       user.email?.toLowerCase().includes(buscar) ||
       user.telefono?.includes(buscar) ||
-      user.status?.includes(buscar) ||
+      user.estadoUsuario?.includes(buscar) ||
       nombreCompleto.includes(buscar))
     );
   });
@@ -172,8 +172,11 @@ export default function ListEmpleados() {
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Correo
                 </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Teléfono
+                </th>
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
+                  Estado
                 </th>
               </tr>
             </thead>
@@ -207,8 +210,11 @@ export default function ListEmpleados() {
                     <td className="px-4 py-4 bg-white">
                       {user.email || "N/A"}
                     </td>
-                    <td className="px-4 py-4 bg-white rounded-r-xl">
+                    <td className="px-4 py-4 bg-white">
                       {user.telefono || "N/A"}
+                    </td>
+                    <td className="px-4 py-4 bg-white rounded-r-xl">
+                      {user.estadoUsuario}
                     </td>
                   </tr>
                 ))
