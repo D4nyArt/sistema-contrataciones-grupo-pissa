@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Formulario from "@/app/components/form-login";
 import { urbanist } from '@/app/components/fonts';
+import { LoginFAQ } from '@/app/components/faq';
 
 export default function Home() {
   return(
@@ -29,6 +30,7 @@ export default function Home() {
             src="/logo-blanco.png"
           />
         </div>
+        <LoginFAQ />
       </div>
     </div>
   )

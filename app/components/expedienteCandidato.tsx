@@ -1284,7 +1284,7 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
                 {canEdit && (
                   <button
                     onClick={saveNotes}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    className="mt-2 px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 transition-colors"
                   >
                     Guardar Notas
                   </button>
@@ -1295,14 +1295,14 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
                 <div className="flex space-x-2">
                   <button
                     onClick={handleApproveAll}
-                    className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                    className="mt-6 px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
                     title="Aprueba el documento y todos sus campos"
                   >
                     Aprobar Todo
                   </button>
                   <button
                     onClick={handleRejectAll}
-                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+                    className="mt-6 px-3 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
                     title="Rechaza el documento y todos sus campos"
                   >
                     Rechazar Todo

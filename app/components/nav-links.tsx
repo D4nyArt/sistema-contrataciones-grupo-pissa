@@ -4,6 +4,7 @@ import { Bolt, KeyRound, User, Users, House, Archive, Handshake, UserPlus} from 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+
 const linksRH = [
   { name: 'Inicio', href: '/dashboard', icon: House },
   { name: 'Personas', href: '/dashboard/personas', icon: Users },

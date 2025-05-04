@@ -165,7 +165,7 @@ return (
 <div>
   <button
     type="submit"
-    className="w-full bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition"
+    className="cursor-pointer w-full bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition"
   >
     Iniciar Sesión
   </button>

@@ -18,8 +18,9 @@ export default function ForLogOut(){
     return(
         <button
             onClick={onLogout}
-            className="fixed bottom-6 left-6 p-3 items-center justify-center flex flex-col text-white hover:bg-[#2974a04b] rounded-xl"
-            >
+            className="cursor-pointer fixed bottom-6 left-48 p-3 items-center justify-center flex flex-col text-white hover:bg-[#2974a04b] rounded-xl"
+            title="Cerrar sesión"
+        >
             <LogOut className="w-6" />
         </button>
     )
