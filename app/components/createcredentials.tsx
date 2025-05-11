@@ -33,8 +33,6 @@ export default function CreateCredentials() {
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
-  const [cand_disabled, setcand_disabled] = useState(false);
-  const [rh_disabled, setrh_disabled] = useState(false);
 
   const handlePress = async () => {
     // Generamos una contraseña (opcional: podrías permitir que el usuario defina la suya)
@@ -122,30 +120,26 @@ export default function CreateCredentials() {
           {/*<div className="text-black mt-4">Tipo de Usuario</div>*/}
           <div className="flex-row flex items-center pb-10 pt-4 justify-between">
             <div className="flex-row flex">
-              <p className="text-black pr-2">Candidato</p>
               <input
-                type="checkbox"
+                type="radio"
                 value="candidato"
                 onChange={(event) => {
                   setRole(event.target.value);
-                  setcand_disabled(false);
-                  setrh_disabled(!rh_disabled);
                 }}
-                disabled={cand_disabled}
+                checked={role === "candidato"}
               />
+              <p className="text-black pl-2">Candidato</p>
             </div>
             <div className="flex-row flex">
-              <p className="text-black pl-8 pr-2">RH</p>
               <input
-                type="checkbox"
+                type="radio"
                 value="rh"
                 onChange={(event) => {
                   setRole(event.target.value);
-                  setcand_disabled(!cand_disabled);
-                  setrh_disabled(false);
                 }}
-                disabled={rh_disabled}
+                checked={role === "rh"}
               />
+              <p className="text-black pl-2">RH</p>
             </div>
           </div>
 
