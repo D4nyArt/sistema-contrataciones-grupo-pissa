@@ -6,6 +6,7 @@ import { update, ref } from "firebase/database";
 import ManagerViewer from "./ManagerViewer";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
+import { urbanist } from "./fonts";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -102,7 +103,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
       {/* Notas input */}
       <form className="flex flex-col items-start gap-2">
-        <label htmlFor="admin-notes" className="font-medium">
+        <label htmlFor="admin-notes" className={`${urbanist.className} font-semibold`}>
           Notas:
         </label>
         <input
@@ -110,7 +111,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
           type="text"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded-xl border-gray-200"
         />
       </form>
 
