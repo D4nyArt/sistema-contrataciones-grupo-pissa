@@ -2,7 +2,7 @@
 
 import ListInformation from "@/app/components/usuario-phone";
 import Usuarios from "@/app/components/usuario";
-import ExpedienteCandidato from "@/app/components/expedienteCandidato";
+import ExpedienteRH from "@/app/components/expedienteRH";
 import React, { useState } from "react";
 import ContractsPage from "@/app/components/contractsPage";
 
@@ -47,7 +47,7 @@ export default function UserInfo({ id }: { id: string }) {
 
         {active === "contratos" && <ContractsPage uid={id} />}
         {active === "expediente" && (
-          <ExpedienteCandidato userId={id} role="admin" />
+          <ExpedienteRH userId={id} />
         )}
       </div>
     </div>

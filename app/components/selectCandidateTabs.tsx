@@ -3,8 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-import ExpedienteCandidato from "@/app/components/expedienteCandidato";
+
 import CandidateContractsPage from "@/app/components/candidateContractsPage";
+import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 
 export default function SelectCandidateTab({ userID }: { userID: string }) {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function SelectCandidateTab({ userID }: { userID: string }) {
 
       {active === "contratos" && <CandidateContractsPage uid={userID ?? ""} />}
       {active === "expediente" && (
-        <ExpedienteCandidato userId={userID} role="candidate" />
+        <ExpedienteCandidato userId={userID} />
       )}
     </div>
   );
