@@ -98,7 +98,7 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
                 ${
                   selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"
+                    : "border-gray-300 text-gray-400 hover:border-[#08b177] hover:text-[#08b177]"
                 }`}
               >
                 <LinkIcon />

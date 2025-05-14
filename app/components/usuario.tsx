@@ -12,6 +12,7 @@ import {
   LockOpen,
   Mail,
   Phone,
+  Undo,
   UserMinus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
@@ -114,38 +115,46 @@ export default function Usuarios() {
                 {status === "normal" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
                     <CircleCheck className="size-4 text-green-800" />
-                    <p className="pl-1 text-green-800 capitalize text-xs">
-                      Activo
+                    <p className="pl-1 text-green-800 normal-case text-xs">
+                      Normal
                     </p>
                   </div>
                 )}
                 {status === "bloqueado" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
                     <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
+                    <p className="pl-1 text-red-800 normal-case text-xs">
                       Bloqueado
                     </p>
                   </div>
                 )}
                 {status === "dado de baja" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
-                    <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
-                      Dado de Baja
+                    <UserMinus className="size-4 text-red-800" />
+                    <p className="pl-1 text-red-800 normal-case text-xs">
+                      Dado De Baja
                     </p>
                   </div>
                 )}
                 {status === "enProceso" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
                     <Clock className="size-4 text-gray-800" />
-                    <p className="pl-1 text-gray-800 capitalize text-xs">
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
                       En proceso
+                    </p>
+                  </div>
+                )}
+                {status === "previo" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                    <Undo className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
+                      Previo
                     </p>
                   </div>
                 )}
               </div>
             </div>
-            <p className="text-[#2975a0]">{role}</p>
+            <p className="text-[#2975a0] capitalize">{role}</p>
           </div>
         </span>
         <div className="md:ml-auto">
@@ -169,7 +178,7 @@ export default function Usuarios() {
           </button>
         </div>
       </div>
-      <div className="pb-6 pt-2 border-b border-gray-300 text-sm">
+      <div className="pb-6 pt-2 text-sm">
         <table className="table-auto text-[#495057]">
           <tbody>
             <tr>
