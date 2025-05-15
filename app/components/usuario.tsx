@@ -1,9 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+import RealizarSeguimiento from "./relizarseguimiento";
+import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
   CircleUser,
@@ -28,6 +31,7 @@ interface User {
 }*/
 
 export default function Usuarios() {
+  const [rhUID, setRhUID] = useState<string | null>(null);
   // const router = useRouter();
   const pathname = usePathname();
   // const searchparams = useSearchParams();
@@ -38,6 +42,14 @@ export default function Usuarios() {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const id = pathname.split("/")[2];
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setRhUID(user?.uid ?? null);
+    });
+    return () => unsub();
+  }, []);
 
   const handleRemoval = async () => {
     await set(
@@ -158,6 +170,14 @@ export default function Usuarios() {
           </div>
         </span>
         <div className="md:ml-auto">
+          <RealizarSeguimiento
+            rhUID={rhUID!}
+            candidateUID={id}
+          ></RealizarSeguimiento>
+          <CancelarSeguimiento
+            rhUID={rhUID!}
+            candidateUID={id}
+          ></CancelarSeguimiento>
           <button
             className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
             onClick={handleUnblock}
