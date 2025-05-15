@@ -107,16 +107,15 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           if (userData.rol === "rh") {
             await update(
               ref(database, `notificaciones/notificaciones${userId}`),
-              { [message]: timestamp }
+              { [timestamp]: message }
             );
           }
         }
       }
     } else {
-      // TODO cambiar lógica de dónde se guardan las notificaciones
       await update(
         ref(database, `notificaciones/notificaciones${reviewer.rID}`),
-        { [message]: timestamp }
+        { [timestamp]: message }
       );
     }
   };
