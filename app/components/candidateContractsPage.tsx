@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ManagerViewer from "./ManagerViewer";
 import Uploader from "./Uploader";
-import { update, ref } from "firebase/database";
+import { update, ref, get } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
@@ -41,6 +41,13 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     notes: string;
   } | null>(null);
 
+  const [reviewer, setReviewer] = useState<
+    | {
+        rID: string;
+      }
+    | "sin_revisor"
+  >("sin_revisor");
+
   useEffect(() => {
     async function fetchInfo() {
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
@@ -56,7 +63,13 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           : null
       );
     }
+    async function fetchReviewer() {
+      const res = await fetch(`/api/getReviewer?uid=${uid}`);
+      const data = await res.json();
+      setReviewer(data.revisorUID ? { rID: data.revisorUID } : "sin_revisor");
+    }
     fetchInfo();
+    fetchReviewer();
   }, [uid]);
 
   const handleFileUpload = async (fileName: string) => {
@@ -64,10 +77,9 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       return <p className="text-gray-500">No hay contratos disponibles.</p>;
     }
 
+    // Expiracion
     const now = new Date();
     const signedDate = now.toISOString();
-
-    // 2) Calcular fecha de vencimiento sumando 'duration' meses
     const expiration = new Date(now);
     expiration.setMonth(expiration.getMonth() + contract.duration);
     const expirationDate = expiration.toISOString();
@@ -81,6 +93,32 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       fecha_firmado: signedDate,
       fecha_vencimiento: expirationDate,
     });
+
+    // Notificaciones
+    const message = `El candidato ${uid} subió el contrato "${fileName}"`;
+    const timestamp = Date.now();
+
+    if (reviewer === "sin_revisor") {
+      // enviar a todos los RH
+      const usersSnap = await get(ref(database, "usuarios"));
+      if (usersSnap.exists()) {
+        const allUsers = usersSnap.val() as Record<string, { rol?: string }>;
+        for (const [userId, userData] of Object.entries(allUsers)) {
+          if (userData.rol === "rh") {
+            await update(
+              ref(database, `notificaciones/notificaciones${userId}`),
+              { [message]: timestamp }
+            );
+          }
+        }
+      }
+    } else {
+      // TODO cambiar lógica de dónde se guardan las notificaciones
+      await update(
+        ref(database, `notificaciones/notificaciones${reviewer.rID}`),
+        { [message]: timestamp }
+      );
+    }
   };
 
   if (!contract) {
