@@ -32,7 +32,7 @@ export default function NavLinks({ roleView }: { roleView: string }) {
           <Link
             key={link.name}
             href={link.href}
-            className={`flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
+            className={`animate-fade-in-up flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
               ${
                 isActive
                   ? "bg-[#2975a0] text-white md:rounded-xl rounded-full shadow-md"
