@@ -52,15 +52,31 @@ export default function CreateCredentials() {
 
       // Preparamos los datos para guardar en la Realtime Database.
       // NOTA: No se almacena la contraseña en la base de datos, ya que Firebase Auth se encarga de ello.
-      const data = {
-        apellidos: lastname,
-        email: mail,
-        estadoUsuario: "previo", // Andy (10.04 5:10 p.m.) Nuevos Estados de Usuario
-        nombre: name,
-        rol: role,
-        telefono: phone,
-        contrato_activo: "NaC",
-      };
+      let data = {};
+
+      if (role === "rh") {
+        data = {
+          apellidos: lastname,
+          email: mail,
+          estadoUsuario: "previo",
+          nombre: name,
+          rol: role,
+          telefono: phone,
+          contrato_activo: "NaC",
+          revisando: {},
+        };
+      } else {
+        data = {
+          apellidos: lastname,
+          email: mail,
+          estadoUsuario: "previo",
+          nombre: name,
+          rol: role,
+          telefono: phone,
+          contrato_activo: "NaC",
+          revisor: "sin_revisor",
+        };
+      }
 
       // Guardamos los datos del usuario usando el UID como key
       await set(ref(database, "usuarios/" + uid), data);
