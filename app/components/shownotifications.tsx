@@ -1,9 +1,9 @@
 "use client";
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 
-import { app } from "@/firebaseConfig";
+import { auth } from "@/firebaseConfig";
 
 type Notification = { id: string; message: string; read: boolean };
 
@@ -13,7 +13,6 @@ export default function ShowNotifications() {
 
   // get current user
   useEffect(() => {
-    const auth = getAuth(app);
     const unsub = onAuthStateChanged(auth, (user) => {
       setRhUID(user?.uid ?? null);
     });
@@ -22,19 +21,17 @@ export default function ShowNotifications() {
 
   // fetch notifications when rhUID is set
   useEffect(() => {
-    if (!rhUID) {
-      setNotifications([]);
-      return;
-    }
-    fetch(`/api/getNotifications?uid=${rhUID}`)
-      .then((res) => res.json())
-      .then((data: Notification[]) => {
-        setNotifications(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load notifications:", err);
+    async function fetchNotifications() {
+      if (!rhUID) {
         setNotifications([]);
-      });
+        return;
+      }
+
+      const res = await fetch(`/api/getNotifications?uid=${rhUID}`);
+      const data = await res.json();
+      setNotifications(data);
+    }
+    fetchNotifications();
   }, [rhUID]);
 
   return (
@@ -42,14 +39,19 @@ export default function ShowNotifications() {
       {notifications.length === 0 && (
         <p className="text-gray-500">No tienes notificaciones</p>
       )}
-      {notifications.map(({ id, message }) => (
-        <div
-          key={id}
-          className="border rounded p-2 bg-white shadow-sm hover:bg-gray-50"
-        >
-          {message}
-        </div>
-      ))}
+      {notifications.map(
+        ({ id, message, read }) => (
+          console.log(id, message, read),
+          (
+            <div
+              key={id}
+              className="border rounded p-2 bg-white shadow-sm hover:bg-gray-50"
+            >
+              {message}
+            </div>
+          )
+        )
+      )}
     </div>
   );
 }
