@@ -3,6 +3,8 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 
+import { app } from "@/firebaseConfig";
+
 type Notification = { id: string; message: string; read: boolean };
 
 export default function ShowNotifications() {
@@ -11,7 +13,7 @@ export default function ShowNotifications() {
 
   // get current user
   useEffect(() => {
-    const auth = getAuth();
+    const auth = getAuth(app);
     const unsub = onAuthStateChanged(auth, (user) => {
       setRhUID(user?.uid ?? null);
     });
