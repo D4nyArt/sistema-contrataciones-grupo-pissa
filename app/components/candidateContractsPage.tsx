@@ -107,7 +107,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           if (userData.rol === "rh") {
             await update(
               ref(database, `notificaciones/notificaciones${userId}`),
-              { [timestamp]: message }
+              { [timestamp]: { mensaje: message, leido: false } }
             );
           }
         }
@@ -115,7 +115,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     } else {
       await update(
         ref(database, `notificaciones/notificaciones${reviewer.rID}`),
-        { [timestamp]: message }
+        { [timestamp]: { mensaje: message, leido: false } }
       );
     }
   };

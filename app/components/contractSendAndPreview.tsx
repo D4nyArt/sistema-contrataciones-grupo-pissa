@@ -55,6 +55,16 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       });
 
       console.log("Contrato enviado:", contract.name);
+
+      // Notificaciones
+      const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
+      const timestamp = Date.now();
+      await update(ref(database, `notificaciones/notificaciones${uid}`), {
+        [timestamp]: {
+          mensaje: message,
+          leido: false,
+        },
+      });
     } catch (err) {
       console.error("Error enviando contrato:", err);
     }

@@ -6,17 +6,21 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const uid = searchParams.get("uid");
-    if (!uid)
+    if (!uid) {
       return NextResponse.json({ error: "Missing uid" }, { status: 400 });
+    }
 
     const snap = await get(ref(database, `notificaciones/notificaciones${uid}`));
-    if (!snap.exists()) return NextResponse.json([], { status: 200 });
+    if (!snap.exists()) {
+      return NextResponse.json([], { status: 200 });
+    }
 
-    // Treat each child as a string message
-    const data = snap.val() as Record<string, string>;
-    const notifications = Object.entries(data).map(([id, message]) => ({
+    // snap.val() is Record<timestamp, { mensaje: string; leido: boolean }>
+    const data = snap.val() as Record<string, { mensaje: string; leido: boolean }>;
+    const notifications = Object.entries(data).map(([id, { mensaje, leido }]) => ({
       id,
-      message,
+      message: mensaje,
+      read: leido,
     }));
 
     return NextResponse.json(notifications, { status: 200 });
