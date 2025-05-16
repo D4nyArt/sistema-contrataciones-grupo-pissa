@@ -19,12 +19,24 @@ export async function GET(request: NextRequest) {
     }
 
     const data = snap.val() as Record<string, number>;
-    const followed = Object.entries(data).map(([candidateUID, timestamp]) => ({
-      candidateUID,
-      since: new Date(timestamp).toISOString(),
-    }));
 
-    return NextResponse.json(followed, { status: 200 });
+    const entries = await Promise.all(
+      Object.entries(data).map(async ([candidateUID, timestamp]) => {
+        const candidateSnap = await get(ref(database, `usuarios/${candidateUID}`));
+        const candidateData = candidateSnap.val();
+
+        return {
+          candidateUID,
+          since: new Date(timestamp).toISOString(),
+          nombre: candidateData?.nombre ?? "",
+          apellidos: candidateData?.apellidos ?? "",
+          estadoUsuario: candidateData?.estadoUsuario ?? "",
+          email: candidateData?.email ?? "",
+        };
+      })
+    );
+
+    return NextResponse.json(entries, { status: 200 });
   } catch (error) {
     console.error("Error fetching followed list:", error);
     return NextResponse.json(

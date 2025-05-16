@@ -4,6 +4,9 @@ import CantCandidatos from "./cantidad-candidatos";
 import CantProyectos from "./cantidad-usr-proyectos";
 import CantCorporativo from "./cantidad-usr-corporativo";
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import RevisandoList from "./candidatoSeguidos";
+
 export default function Bento() {
   return (
     <div className="md:grid md:grid-cols-4 md:grid-rows-5 gap-4 w-full h-full flex flex-col">
@@ -43,7 +46,7 @@ export default function Bento() {
           <CantCorporativo />
         </div>
       </div>
-      <div className="bg-gray-300 rounded-xl col-span-3 row-span-4 col-start-1 row-start-2"></div>
+      <div className="bg-white rounded-xl p-6 shadow-md col-span-3 row-span-4 col-start-1 row-start-2"><RevisandoList /></div>
       <div className="bg-gray-300 rounded-xl row-span-4 col-start-4 row-start-2"></div>
     </div>
   );

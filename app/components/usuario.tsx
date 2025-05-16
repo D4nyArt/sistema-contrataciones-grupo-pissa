@@ -125,7 +125,7 @@ export default function Usuarios() {
               </strong>
               <div className="flex flex-row pl-2 items-center">
                 {status === "normal" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded-lg">
                     <CircleCheck className="size-4 text-green-800" />
                     <p className="pl-1 text-green-800 normal-case text-xs">
                       Normal
@@ -133,7 +133,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "bloqueado" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <Lock className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 normal-case text-xs">
                       Bloqueado
@@ -141,7 +141,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "dado de baja" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <UserMinus className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 normal-case text-xs">
                       Dado De Baja
@@ -149,7 +149,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "enProceso" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Clock className="size-4 text-gray-800" />
                     <p className="pl-1 text-gray-800 normal-case text-xs">
                       En proceso
@@ -157,7 +157,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "previo" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Undo className="size-4 text-gray-800" />
                     <p className="pl-1 text-gray-800 normal-case text-xs">
                       Previo

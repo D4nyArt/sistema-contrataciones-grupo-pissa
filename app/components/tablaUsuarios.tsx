@@ -1,5 +1,6 @@
 "use client";
 
+import EtiquetaEstado from "./etiquetaEstado";
 import ProfilePicture from "./profile-picture";
 
 interface User {
@@ -9,7 +10,7 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
-  estadoUsuario?: string;
+  estadoUsuario: string;
 }
 
 export default function UserTable({ users }: { users: User[] }) {
@@ -50,7 +51,7 @@ export default function UserTable({ users }: { users: User[] }) {
               </td>
               <td className="px-4 py-4 bg-white">{user.email || "N/A"}</td>
               <td className="px-4 py-4 bg-white">{user.telefono || "N/A"}</td>
-              <td className="px-4 py-4 bg-white rounded-r-xl capitalize">{user.estadoUsuario}</td>
+              <td className="px-4 py-4 bg-white rounded-r-xl capitalize"><EtiquetaEstado status={user.estadoUsuario}/></td>
             </tr>
           ))
         )}
