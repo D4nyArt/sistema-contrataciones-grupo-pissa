@@ -1,0 +1,226 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import ProfilePicture from "./profile-picture";
+import { Mail, Phone, LayoutGrid, Table2 } from "lucide-react";
+import { urbanist } from "./fonts";
+
+interface Contract {
+  id?: string;
+  name?: string;
+  url?: string;
+
+}
+
+const ContractCard = ({ contract }: { contract: Contract }) => {
+  const router = useRouter();
+
+  return (
+    <div
+      onClick={() => router.push(`/dashboard/contratos/${contract.id}`)}
+      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
+    >
+      <div className="flex flex-col md:flex-row md:justify-between">
+        <div className="flex-none pr-2">
+          <ProfilePicture
+            nombre={`${contract.name || ""}`}
+            width={"w-8"}
+            height={"h-8"}
+            textSize={"text-xl"}
+          />
+        </div>
+        <div
+          className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}
+        >
+          {contract.name || "N/A"}
+        </div>
+        <div className="text-sm text-[#2975a0] flex-initial">
+          {contract.id || "N/A"}
+        </div>
+      </div>
+      <div className="text-sm text-[#495057] flex flex-row">
+        <Mail className="pr-2" /> {contract.id || "N/A"}
+      </div>
+      <div className="text-sm text-[#495057] flex flex-row">
+        <Phone className="pr-2" />
+        {"user.telefono"}
+      </div>
+    </div>
+  );
+};
+
+export default function ListContracts() {
+  const router = useRouter();
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [sortOption, setSortOption] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activo, setActivo] = useState<"grid" | "tabla">("grid");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/getContracts");
+        const data = await res.json();
+        setContracts(data);
+      } catch (err) {
+        console.error("Error al cargar contratos", err);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  //const filtrarUsuarios = contracts.filter((user) => {
+  //  const buscar = searchTerm.toLowerCase();
+  //  const esCandidato = user.rol?.toLowerCase() === "candidato";
+  //  const nombreCompleto = `${user.nombre || ""} ${
+  //    user.apellidos || ""
+  //  }`.toLocaleLowerCase();
+  //
+  //  return (
+  //    esCandidato &&
+  //    (user.id?.toLowerCase().includes(buscar) ||
+  //      user.nombre?.toLowerCase().includes(buscar) ||
+  //      user.apellidos?.toLowerCase().includes(buscar) ||
+  //      user.email?.toLowerCase().includes(buscar) ||
+  //      user.telefono?.includes(buscar) ||
+  //      nombreCompleto.includes(buscar))
+  //  );
+  //});
+
+  //const sortedUsers = sortOption
+  //  ? [...filtrarUsuarios].sort((a, b) => {
+  //      let prop: keyof Contract = "nombre";
+  //      if (sortOption.includes("apellido")) prop = "apellidos";
+  //
+  //      const textA = (a[prop] || "").toLowerCase();
+  //      const textB = (b[prop] || "").toLowerCase();
+  //
+  //      return sortOption.includes("ZA")
+  //        ? textB.localeCompare(textA)
+  //        : textA.localeCompare(textB);
+  //    })
+  //  : filtrarUsuarios;
+
+  return (
+    <main className="flex-1 p-4">
+      <div className="mb-4 flex gap-6 text-black animate-fade-in-up">
+        {/*<label>Ordenar por:</label>*/}
+        <input
+          type="text"
+          placeholder="Buscar"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-400 rounded-lg w-full bg-white"
+        />
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177]"
+        >
+          <option value="">Ordenar por</option>
+          <option value="nombreAZ">Nombre A → Z</option>
+          <option value="nombreZA">Nombre Z → A</option>
+          <option value="apellidoAZ">Apellido A → Z</option>
+          <option value="apellidoZA">Apellido Z → A</option>
+        </select>
+        <button
+          value={sortOption}
+          onClick={() => router.push("/dashboard/contratos/nuevo_contrato")}
+          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177]"
+        >
+        Nuevo Contrato
+        </button>
+        <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden text-[#495057]">
+          <button
+            onClick={() => setActivo("grid")}
+            className={`cursor-pointer rounded-lg  p-1 pl-2 pr-2 transition-colors border ${
+              activo === "grid"
+                ? "border-[#2d4583] text-[#2d4583]"
+                : "border-transparent hover:text-[#08b177]"
+            }`}
+          >
+            <LayoutGrid />
+          </button>
+          <button
+            onClick={() => setActivo("tabla")}
+            className={`cursor-pointer rounded-lg p-1 pl-2 pr-2 transition-colors border ${
+              activo === "tabla"
+                ? "border-[#2d4583] text-[#2d4583]"
+                : "border-transparent hover:text-[#08b177]"
+            }`}
+          >
+            <Table2 />
+          </button>
+        </div>
+      </div>
+
+      {activo === "grid" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-center">
+          {contracts.map((contract) => (
+            <ContractCard key={contract.name} contract={contract} />
+          ))}
+        </div>
+      )}
+
+      {activo === "tabla" && (
+        <div>
+          <table className="table-auto w-full border-separate border-spacing-y-2 animate-fade-in-up">
+            <thead>
+              <tr className="shadow-xs rounded-xl">
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
+                  Nombre
+                </th>
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+                  Rol
+                </th>
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+                  Correo
+                </th>
+                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
+                  Teléfono
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {contracts.length === 0 ? (
+                <tr>
+                  <td
+                    className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
+                    colSpan={6}
+                  >
+                    No se encontraron usuarios.
+                  </td>
+                </tr>
+              ) : (
+                contracts.map((contract) => (
+                  <tr key={contract.name}>
+                    <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
+                      <ProfilePicture
+                        nombre={`${contract.name || ""}`}
+                        width={"w-8"}
+                        height={"h-8"}
+                        textSize={"text-xl"}
+                      />
+                      {contract.name || "N/A"} {"N/A"}
+                    </td>
+                    <td className="px-4 py-4 bg-white">
+                      <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
+                        {"N/A"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 bg-white">
+                      {"N/A"}
+                    </td>
+                    <td className="px-4 py-4 bg-white rounded-r-xl">
+                      {"N/A"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </main>
+  );
+}

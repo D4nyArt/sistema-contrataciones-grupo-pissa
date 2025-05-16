@@ -51,13 +51,13 @@ export default function ReviewContract({ uid }: { uid: string }) {
     await update(ref(database, `expedientes/expediente${uid}/contratos`), {
       estado: newState,
     });
-    /*
+    
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")
         ? "enProyecto"
         : "enCorporativo";
       await update(ref(database, `usuarios/${uid}`), { rol: newRole });
-    }*/
+    }
     setInfo((cur) => ({ ...cur, state: newState }));
   };
 
