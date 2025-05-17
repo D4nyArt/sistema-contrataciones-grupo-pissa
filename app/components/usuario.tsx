@@ -19,6 +19,8 @@ import {
   UserMinus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
+import BotonRegresar from "./botonRegresar";
+import SeguimientoToggle from "./seguimiento";
 
 /*
 interface User {
@@ -108,7 +110,8 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
+      <div className="mb-8"><BotonRegresar/></div>
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">     
         <ProfilePicture
           nombre={`${name}`}
           width={"w-15"}
@@ -125,7 +128,7 @@ export default function Usuarios() {
               </strong>
               <div className="flex flex-row pl-2 items-center">
                 {status === "normal" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded-lg">
                     <CircleCheck className="size-4 text-green-800" />
                     <p className="pl-1 text-green-800 normal-case text-xs">
                       Normal
@@ -133,7 +136,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "bloqueado" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <Lock className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 normal-case text-xs">
                       Bloqueado
@@ -141,7 +144,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "dado de baja" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <UserMinus className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 normal-case text-xs">
                       Dado De Baja
@@ -149,7 +152,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "enProceso" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Clock className="size-4 text-gray-800" />
                     <p className="pl-1 text-gray-800 normal-case text-xs">
                       En proceso
@@ -157,7 +160,7 @@ export default function Usuarios() {
                   </div>
                 )}
                 {status === "previo" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Undo className="size-4 text-gray-800" />
                     <p className="pl-1 text-gray-800 normal-case text-xs">
                       Previo
@@ -169,59 +172,35 @@ export default function Usuarios() {
             <p className="text-[#2975a0] capitalize">{role}</p>
           </div>
         </span>
-        <div className="md:ml-auto">
-          <RealizarSeguimiento
-            rhUID={rhUID!}
-            candidateUID={id}
-          ></RealizarSeguimiento>
-          <CancelarSeguimiento
-            rhUID={rhUID!}
-            candidateUID={id}
-          ></CancelarSeguimiento>
+        <div className="md:ml-auto flex">
+          <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
+          {status !== "dado de baja" && (
+            <button
+              className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
+                status === "bloqueado"
+                  ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
+                  : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
+              }`}
+              onClick={status === "bloqueado" ? handleUnblock : handleBlock}
+            >
+              {status === "bloqueado" ? (
+                <>
+                  <LockOpen className="pr-2" /> Desbloquear
+                </>
+              ) : (
+                <>
+                  <Lock className="pr-2" /> Bloquear
+                </>
+              )}
+            </button>
+          )}
           <button
-            className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={handleUnblock}
-          >
-            <LockOpen className="pr-2" /> Desbloquear
-          </button>
-          <button
-            className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={handleBlock}
-          >
-            <Lock className="pr-2" /> Bloquear
-          </button>
-          <button
-            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex"
+            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
             onClick={handleRemoval}
           >
             <UserMinus className="pr-2" /> Dar de baja
           </button>
         </div>
-      </div>
-      <div className="pb-6 pt-2 text-sm">
-        <table className="table-auto text-[#495057]">
-          <tbody>
-            <tr>
-              <td className="inline-flex pr-8">
-                <CircleUser className="pr-2" />
-                ID del Usuario
-              </td>
-              <td>{id}</td>
-            </tr>
-            <tr>
-              <td className="inline-flex">
-                <Mail className="pr-2" /> Correo
-              </td>
-              <td>{mail}</td>
-            </tr>
-            <tr>
-              <td className="inline-flex">
-                <Phone className="pr-2" /> Teléfono
-              </td>
-              <td>{phone}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   );
