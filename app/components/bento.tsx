@@ -3,8 +3,6 @@ import CountUsers from "./countusers";
 import CantCandidatos from "./cantidad-candidatos";
 import CantProyectos from "./cantidad-usr-proyectos";
 import CantCorporativo from "./cantidad-usr-corporativo";
-
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import RevisandoList from "./candidatoSeguidos";
 
 export default function Bento() {

@@ -54,14 +54,14 @@ export default function RevisandoList() {
 
       if (loading) return <SeguidosSkeleton/>;
       if (error) return <p>Error: {error}</p>;
-      if (revisando.length === 0) return <div className="flex flex-col h-full"><h2 className={`${urbanist.className} font-bold text-2xl mb-4`}>
+      if (revisando.length === 0) return <div className="flex flex-col h-full"><h2 className={`${urbanist.className} text-[#212529] font-bold text-2xl mb-4`}>
         Candidatos en revisión
       </h2><p className="flex justify-center items-center w-full h-full">No hay candidatos en revisión.</p>
       </div>;
 
   return (
     <>
-      <h2 className={`${urbanist.className} font-bold text-2xl mb-4`}>
+      <h2 className={`${urbanist.className} text-[#212529] font-bold text-2xl mb-4 animate-fade-in-up`}>
         Candidatos en revisión
       </h2>
       <TablaRevisando datos={revisando} />
