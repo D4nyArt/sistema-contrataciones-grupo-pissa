@@ -6,7 +6,6 @@ export async function DELETE(req: Request) {
     
     const url = req.url;
     const query = new URLSearchParams(url.split('?')[1]);
-    console.log("peneenorme: ", query.get("name"));  
     console.log('Data:', url);
     
     const cookieName = query.get("name");
