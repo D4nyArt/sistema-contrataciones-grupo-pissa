@@ -1,9 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+import RealizarSeguimiento from "./relizarseguimiento";
+import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
   CircleUser,
@@ -12,6 +15,7 @@ import {
   LockOpen,
   Mail,
   Phone,
+  Undo,
   UserMinus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
@@ -27,6 +31,7 @@ interface User {
 }*/
 
 export default function Usuarios() {
+  const [rhUID, setRhUID] = useState<string | null>(null);
   // const router = useRouter();
   const pathname = usePathname();
   // const searchparams = useSearchParams();
@@ -37,6 +42,14 @@ export default function Usuarios() {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const id = pathname.split("/")[2];
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setRhUID(user?.uid ?? null);
+    });
+    return () => unsub();
+  }, []);
 
   const handleRemoval = async () => {
     await set(
@@ -114,41 +127,57 @@ export default function Usuarios() {
                 {status === "normal" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
                     <CircleCheck className="size-4 text-green-800" />
-                    <p className="pl-1 text-green-800 capitalize text-xs">
-                      Activo
+                    <p className="pl-1 text-green-800 normal-case text-xs">
+                      Normal
                     </p>
                   </div>
                 )}
                 {status === "bloqueado" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
                     <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
+                    <p className="pl-1 text-red-800 normal-case text-xs">
                       Bloqueado
                     </p>
                   </div>
                 )}
                 {status === "dado de baja" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
-                    <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
-                      Dado de Baja
+                    <UserMinus className="size-4 text-red-800" />
+                    <p className="pl-1 text-red-800 normal-case text-xs">
+                      Dado De Baja
                     </p>
                   </div>
                 )}
                 {status === "enProceso" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
                     <Clock className="size-4 text-gray-800" />
-                    <p className="pl-1 text-gray-800 capitalize text-xs">
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
                       En proceso
+                    </p>
+                  </div>
+                )}
+                {status === "previo" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                    <Undo className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
+                      Previo
                     </p>
                   </div>
                 )}
               </div>
             </div>
-            <p className="text-[#2975a0]">{role}</p>
+            <p className="text-[#2975a0] capitalize">{role}</p>
           </div>
         </span>
         <div className="md:ml-auto">
+          <RealizarSeguimiento
+            rhUID={rhUID!}
+            candidateUID={id}
+          ></RealizarSeguimiento>
+          <CancelarSeguimiento
+            rhUID={rhUID!}
+            candidateUID={id}
+          ></CancelarSeguimiento>
           <button
             className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
             onClick={handleUnblock}
@@ -169,7 +198,7 @@ export default function Usuarios() {
           </button>
         </div>
       </div>
-      <div className="pb-6 pt-2 border-b border-gray-300 text-sm">
+      <div className="pb-6 pt-2 text-sm">
         <table className="table-auto text-[#495057]">
           <tbody>
             <tr>

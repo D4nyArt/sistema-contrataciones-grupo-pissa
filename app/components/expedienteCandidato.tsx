@@ -228,6 +228,7 @@ const ExpedienteCandidato: React.FC<ExpedienteCandidatoProps> = ({
               estado: "no_firmado",
               fecha_firmado: null,
               fecha_vencimiento: null,
+              notas: null,
               id: null,
             },
           });

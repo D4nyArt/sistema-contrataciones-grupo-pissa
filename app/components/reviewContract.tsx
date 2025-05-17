@@ -5,6 +5,8 @@ import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
 import { update, ref } from "firebase/database";
 import ManagerViewer from "./ManagerViewer";
 import { database } from "@/firebaseConfig";
+import PopUp from "./pop-up";
+import { urbanist } from "./fonts";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -36,6 +38,10 @@ export default function ReviewContract({ uid }: { uid: string }) {
     contract: { id: string; name: string } | null;
   }>({ state: null, contract: null });
 
+  const [notes, setNotes] = useState<string>("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [tempState, setTempState] = useState<ContractState | null>(null);
+
   useEffect(() => {
     async function fetchInfo() {
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
@@ -50,6 +56,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
     const newState: ContractState = approve ? "aprobado" : "rechazado";
     await update(ref(database, `expedientes/expediente${uid}/contratos`), {
       estado: newState,
+      notas: notes,
     });
     /*
     if (approve) {
@@ -59,9 +66,16 @@ export default function ReviewContract({ uid }: { uid: string }) {
       await update(ref(database, `usuarios/${uid}`), { rol: newRole });
     }*/
     setInfo((cur) => ({ ...cur, state: newState }));
+    setNotes("");
   };
 
   const current = info.state ? stateMap[info.state] : null;
+
+  const handleClick = (approve: boolean) => {
+    const newState: ContractState = approve ? "aprobado" : "rechazado";
+    setTempState(newState);
+    setShowConfirm(true);
+  };
 
   return (
     <div className="space-y-4 bg-white mt-4 rounded-xl shadow-md p-4">
@@ -87,23 +101,65 @@ export default function ReviewContract({ uid }: { uid: string }) {
         </p>
       )}
 
+      {/* Notas input */}
+      <form className="flex flex-col items-start gap-2">
+        <label htmlFor="admin-notes" className={`${urbanist.className} font-semibold`}>
+          Notas:
+        </label>
+        <input
+          id="admin-notes"
+          type="text"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full border p-2 rounded-xl border-gray-200"
+        />
+      </form>
+
       {/* Botones para aprobar o rechazar */}
       <div className="flex space-x-2 justify-center items-center">
         <button
-          onClick={() => handleContractReview(true)}
-          className="p-2 bg-green-500 text-white rounded"
+          onClick={() => handleClick(true)}
+          className="p-2 bg-green-500 text-white rounded cursor-pointer"
         >
           <ThumbsUp size={16} className="inline-block mr-1" />
           Aprobar
         </button>
         <button
-          onClick={() => handleContractReview(false)}
-          className="p-2 bg-red-500 text-white rounded"
+          onClick={() => handleClick(false)}
+          className="p-2 bg-red-500 text-white rounded cursor-pointer"
         >
           <ThumbsDown size={16} className="inline-block mr-1" />
           Rechazar
         </button>
       </div>
+
+      {/* Confirmación de envío */}
+      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
+        <p>
+          ¿Seguro que quieres{" "}
+          {tempState === "aprobado" ? "aprobar" : "rechazar"} este contrato?
+        </p>
+        {notes !== "" && <p className="mt-2 text-gray-500">Notas: {notes}</p>}
+        <div className="flex justify-end space-x-2 mt-4">
+          <button
+            onClick={() => {
+              handleContractReview(tempState === "aprobado");
+              setShowConfirm(false);
+            }}
+            className="px-4 py-2 bg-green-600 text-white rounded cursor-pointer"
+          >
+            Confirmar
+          </button>
+          <button
+            onClick={() => {
+              setShowConfirm(false);
+            }}
+            className="px-4 py-2 bg-gray-300 rounded cursor-pointer"
+          >
+            Cancelar
+          </button>
+        </div>
+      </PopUp>
     </div>
   );
 }

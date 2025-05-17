@@ -1,6 +1,6 @@
 "use client";
 
-import { Bolt, KeyRound, User, Users, House, Archive, Handshake, UserPlus} from "lucide-react";
+import {KeyRound, User, Users, House, Archive, Handshake, UserPlus, Bell} from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,6 +10,7 @@ const linksRH = [
   { name: 'Personas', href: '/dashboard/personas', icon: Users },
   { name: 'Candidatos', href: '/dashboard/candidatos', icon: UserPlus},
   { name: 'Credenciales', href: '/dashboard/credenciales', icon: KeyRound },
+  { name: 'Notificaciones', href: '/dashboard/notificaciones', icon: Bell },
   { name: 'Perfil', href: '/dashboard/perfil', icon: User }
 ];
 
@@ -17,6 +18,7 @@ const linksCandidato = [
   { name: 'Inicio', href: '/candidato', icon: House },
   { name: 'Expediente', href: '/candidato/expediente', icon: Archive },
   { name: 'Onboarding', href: '/candidato/onboarding', icon: Handshake},
+  { name: 'Notificaciones', href: '/candidato/notificaciones', icon: Bell },
   { name: 'Perfil', href: '/candidato/perfil', icon: User }
 ];
 
@@ -33,7 +35,7 @@ export default function NavLinks({ roleView }: { roleView: string }) {
           <Link
             key={link.name}
             href={link.href}
-            className={`flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
+            className={`animate-fade-in-up flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
               ${
                 isActive
                   ? "bg-[#2975a0] text-white md:rounded-xl rounded-full shadow-md"
