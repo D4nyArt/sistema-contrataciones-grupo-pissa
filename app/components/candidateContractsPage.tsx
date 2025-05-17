@@ -127,7 +127,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   const current = contract.state ? stateMap[contract.state] : null;
 
   return (
-    <div>
+    <div className="mb-12 bg-white p-4 rounded-xl shadow-md">
       {/* Aquí es donde se ve el estado del contrato */}
       {current && (
         <div className={`flex items-center ${current.color} `}>
@@ -149,17 +149,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         >
           Contrato asignado
         </h2>
-        {contract ? (
-          <ManagerViewer
-            expedienteId={uid}
-            fileName={contract.name}
-            folder={contract.folder}
-            userRole="candidato"
-            contrato={true}
-          />
-        ) : (
-          <p className="text-gray-500">No hay contratos disponibles.</p>
-        )}
+
       </div>
       <div></div>
       <div>
@@ -169,7 +159,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           Subir nuevo contrato
         </h2>
         {/*Aquí es donde se sube un archivo*/}
-        <div className="flex flex-col border justify-center items-center p-40 rounded-xl mb-4 border-gray-300">
+        {/*<div className="flex flex-col border justify-center items-center p-40 rounded-xl mb-4 border-gray-300 bg-[#f5f7fb] border-dashed">
           <Uploader
             expedienteId={`expediente${uid}`}
             onFileUploaded={handleFileUpload}
@@ -177,9 +167,14 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
             contrato={true}
           />
           <p className="text-gray-500">
-            Puedes subir un nuevo contrato si es necesario.
+            Subir contrato firmado si es necesario.
           </p>
-        </div>
+        </div>}*/}
+      </div>
+      <div className="flex flex-col items-center justify-center w-full h-full p-4 bg-white rounded-lg shadow-md">
+        {/*Aquí es donde se ve el archivo*/}
+        <h2 className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}>Contrato asignado</h2>
+
       </div>
     </div>
   );

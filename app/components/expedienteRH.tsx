@@ -24,7 +24,7 @@ const DOCUMENTOS = [
   {id: "CertificadoMedico", nombre: "Certificado Médico"},
 ];
 
-export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) {
+export default function ExpedienteRH({userId}: ExpedienteCandidatoProps) {
   const [documentoId, setDocumentoId] = useState(DOCUMENTOS[0].id);
   useEffect(() => {
     async function initExp() {
@@ -56,7 +56,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
       <DocumentoExpediente
         expedienteId={userId}
         documentoId={documentoId}
-        rol="candidato"
+        rol="rh"
       />
     </div>
   );
