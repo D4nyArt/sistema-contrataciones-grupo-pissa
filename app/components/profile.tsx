@@ -80,7 +80,7 @@ export default function Profile() {
           disabled={true}
           className="mt-8 w-full bg-gray-300 text-white font-semibold py-2 px-4 rounded-xl transition duration-200"
         >
-          Cerrar sesión
+          Editar perfil
         </button>
       </div>
     </div>
