@@ -5,12 +5,35 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { getDatabase, ref, get } from "firebase/database";
+import { useEffect } from "react";
 
 // Componentes propios
 import { Alerta } from "./alertaPantalla";
 import { CampoContrasena } from "./campoContrasena";
 
 export default function Formulario() {
+
+  try {
+
+   useEffect(() => {
+      async function deleteCookie() {
+        await fetch("/api/deleteCookie?name=candidateId", {
+          method: "DELETE",
+        }).then((resp) => {
+          console.log(resp);
+        });
+      }
+      deleteCookie();
+    }, []);
+
+  }
+
+  catch {
+
+    console.log("No se detecto un usario loggeado.");
+
+  }
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   /*Andy (04.04 9:28) Para las alertas durante el login*/
@@ -142,7 +165,7 @@ return (
 <div>
   <button
     type="submit"
-    className="w-full bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition"
+    className="cursor-pointer w-full bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition"
   >
     Iniciar Sesión
   </button>

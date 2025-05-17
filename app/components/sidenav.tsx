@@ -1,5 +1,7 @@
 import Image from "next/image";
 import NavLinks from "./nav-links";
+import FAQ from "@/app/components/faq";
+import ForLogOut from "@/app/components/logOut";
 
 interface SideNavProps {
   roleView: string;
@@ -19,6 +21,8 @@ export default function SideNav({ roleView }: SideNavProps) {
             />
           </div>
           <NavLinks roleView={roleView} />
+          <FAQ />
+          <ForLogOut />
         </div>
       </div>
     </div>
