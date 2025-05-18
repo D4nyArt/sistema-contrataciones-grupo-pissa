@@ -61,8 +61,8 @@ export default function GenerateContract() {
         contrato_activo: "NaC",
         intentos: {
           total: 0,
-          ultimo: "-"
-        }
+          ultimo: "-",
+        },
       };
 
       // Guardamos los datos del usuario usando el UID como key
@@ -94,11 +94,6 @@ export default function GenerateContract() {
             value={contract_name}
             onChange={(event) => setContract_Name(event.target.value)}
           />
-
-          
-
-         
-
           <div className="text-black mt-4">Tipo del Contrato</div>
           <div className="flex-row flex items-center pb-10 pt-4 justify-between">
             <div className="flex-row flex">
@@ -127,9 +122,8 @@ export default function GenerateContract() {
                 disabled={rh_disabled}
               />
             </div>
-
           </div>
-        <div className="text-black mt-4">Archivo del Contrato</div>
+          <div className="text-black mt-4">Archivo del Contrato</div>
 
           <button
             className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"

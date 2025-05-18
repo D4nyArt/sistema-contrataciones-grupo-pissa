@@ -5,32 +5,17 @@ import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
-import RealizarSeguimiento from "./relizarseguimiento";
-import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
-  CircleUser,
   Clock,
   Lock,
   LockOpen,
-  Mail,
-  Phone,
   Undo,
   UserMinus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
 import BotonRegresar from "./botonRegresar";
 import SeguimientoToggle from "./seguimiento";
-
-/*
-interface User {
-  id: string;
-  nombre?: string;
-  apellidos?: string;
-  rol?: string;
-  email?: string;
-  telefono?: string;
-}*/
 
 export default function Usuarios() {
   const [rhUID, setRhUID] = useState<string | null>(null);
@@ -110,8 +95,10 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="mb-8"><BotonRegresar/></div>
-      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">     
+      <div className="mb-8">
+        <BotonRegresar />
+      </div>
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
         <ProfilePicture
           nombre={`${name}`}
           width={"w-15"}
@@ -173,9 +160,7 @@ export default function Usuarios() {
           </div>
         </span>
         <div className="md:ml-auto flex">
-          {role === "candidato" && (
-            <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
-          )}
+          <SeguimientoToggle rhUID={rhUID!} candidateUID={id} />
           {status !== "dado de baja" && (
             <button
               className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${

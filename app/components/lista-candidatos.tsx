@@ -5,15 +5,7 @@ import UserCard from "../components/tarjetaUsuarios";
 import UserMenu from "../components/menuUsuarios";
 import UserTable from "../components/tablaUsuarios";
 
-interface User {
-  id: string;
-  nombre?: string;
-  apellidos?: string;
-  rol?: string;
-  email?: string;
-  telefono?: string;
-  estadoUsuario?: string;
-}
+import type { User } from "@/app/types/user";
 
 export default function ListUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -37,7 +29,9 @@ export default function ListUsers() {
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
     const esCandidato = user.rol?.toLowerCase() === "candidato";
-    const nombreCompleto = `${user.nombre || ""} ${user.apellidos || ""}`.toLowerCase();
+    const nombreCompleto = `${user.nombre || ""} ${
+      user.apellidos || ""
+    }`.toLowerCase();
 
     return (
       esCandidato &&
@@ -52,7 +46,9 @@ export default function ListUsers() {
 
   const sortedUsers = sortOption
     ? [...filtrarUsuarios].sort((a, b) => {
-        let prop: keyof User = sortOption.includes("apellido") ? "apellidos" : "nombre";
+        const prop: keyof User = sortOption.includes("apellido")
+          ? "apellidos"
+          : "nombre";
         const textA = (a[prop] || "").toLowerCase();
         const textB = (b[prop] || "").toLowerCase();
 

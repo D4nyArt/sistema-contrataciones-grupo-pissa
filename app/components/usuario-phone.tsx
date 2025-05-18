@@ -16,16 +16,6 @@ import {
 } from "lucide-react";
 import { urbanist } from "./fonts";
 
-/*
-interface User {
-  id: string;
-  nombre?: string;
-  apellidos?: string;
-  rol?: string;
-  email?: string;
-  telefono?: string;
-}*/
-
 export default function PhoneUsuarios() {
   // const router = useRouter();
   const pathname = usePathname();

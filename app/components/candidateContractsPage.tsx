@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import ManagerViewer from "./ManagerViewer";
-import Uploader from "./Uploader";
-import { update, ref, get } from "firebase/database";
-import { database } from "@/firebaseConfig";
+import { update, ref as dbRef, get } from "firebase/database";
+import { storage, database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
-import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
+import { Clock, ThumbsUp, ThumbsDown, X, Upload } from "lucide-react";
+import { ref as storageRef, uploadBytes } from "firebase/storage";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -31,6 +31,9 @@ const stateMap: Record<
 };
 
 export default function CandidateContractsPage({ uid }: { uid: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const [contract, setContract] = useState<{
     id: string;
     name: string;
@@ -41,6 +44,8 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     notes: string;
   } | null>(null);
 
+  const [dbPath, setDbPath] = useState<string>("");
+
   const [reviewer, setReviewer] = useState<
     | {
         rID: string;
@@ -49,32 +54,72 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   >("sin_revisor");
 
   useEffect(() => {
-    async function fetchInfo() {
+    async function load() {
+      // fetch contract info
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
       const data = await res.json();
-      setContract(
-        data.contract
-          ? {
-              ...data.contract,
-              state: data.state,
-              notes: data.notes,
-              duration: data.duration,
-            }
-          : null
+
+      if (data.contract) {
+        const { id, name, url, folder } = data.contract;
+        setContract({
+          id,
+          name,
+          url,
+          folder,
+          state: data.state,
+          notes: data.notes,
+          duration: data.duration,
+        });
+      } else {
+        setContract(null);
+      }
+
+      // fetch reviewer
+      const rev = await fetch(`/api/getReviewer?uid=${uid}`).then((r) =>
+        r.json()
       );
+      setReviewer(rev.revisorUID ? { rID: rev.revisorUID } : "sin_revisor");
     }
-    async function fetchReviewer() {
-      const res = await fetch(`/api/getReviewer?uid=${uid}`);
-      const data = await res.json();
-      setReviewer(data.revisorUID ? { rID: data.revisorUID } : "sin_revisor");
-    }
-    fetchInfo();
-    fetchReviewer();
+    load();
   }, [uid]);
 
-  const handleFileUpload = async (fileName: string) => {
+  // 2) compute dbPath whenever contract changes
+  useEffect(() => {
     if (!contract) {
+      setDbPath("");
+      return;
+    }
+
+    // 3) set dbPath based on contract id (STATIC: candidate always sees the contract template)
+    setDbPath(
+      contract.id.startsWith("conproy")
+        ? `contratos/proyectos/${contract.id}`
+        : contract.id.startsWith("concorp")
+        ? `contratos/corporativo/${contract.id}`
+        : ""
+    );
+  }, [contract]);
+
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !contract) {
       return <p className="text-gray-500">No hay contratos disponibles.</p>;
+    }
+
+    // Subir archivo
+    const fileName = file.name;
+    setIsUploading(true);
+    try {
+      const fileReference = storageRef(
+        storage,
+        `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`
+      );
+      const snapshot = await uploadBytes(fileReference, file);
+      console.log("Archivo subido correctamente:", snapshot);
+    } catch (error) {
+      console.log("Error al subir el archivo", error);
+    } finally {
+      setIsUploading(false);
     }
 
     // Expiracion
@@ -84,19 +129,20 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     expiration.setMonth(expiration.getMonth() + contract.duration);
     const expirationDate = expiration.toISOString();
 
-    await update(ref(database, `usuarios/${uid}`), {
+    await update(dbRef(database, `usuarios/${uid}`), {
       contrato_activo: fileName,
     });
-    await update(ref(database, `expedientes/expediente${uid}/contratos`), {
+    await update(dbRef(database, `expedientes/expediente${uid}/contratos`), {
       contrato_activo: fileName,
       estado: "revisando",
       fecha_firmado: signedDate,
       fecha_vencimiento: expirationDate,
+      url: `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`,
     });
 
     let nombre = uid; // Valor por defecto en caso de error
     try {
-      const nombreSnap = await get(ref(database, `usuarios/${uid}/nombre`));
+      const nombreSnap = await get(dbRef(database, `usuarios/${uid}/nombre`));
       if (nombreSnap.exists()) {
         nombre = nombreSnap.val();
       }
@@ -110,13 +156,13 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
 
     if (reviewer === "sin_revisor") {
       // enviar a todos los RH
-      const usersSnap = await get(ref(database, "usuarios"));
+      const usersSnap = await get(dbRef(database, "usuarios"));
       if (usersSnap.exists()) {
         const allUsers = usersSnap.val() as Record<string, { rol?: string }>;
         for (const [userId, userData] of Object.entries(allUsers)) {
           if (userData.rol === "rh") {
             await update(
-              ref(database, `notificaciones/notificaciones${userId}`),
+              dbRef(database, `notificaciones/notificaciones${userId}`),
               {
                 [timestamp]: {
                   mensaje: message,
@@ -131,7 +177,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       }
     } else {
       await update(
-        ref(database, `notificaciones/notificaciones${reviewer.rID}`),
+        dbRef(database, `notificaciones/notificaciones${reviewer.rID}`),
         {
           [timestamp]: {
             mensaje: message,
@@ -174,7 +220,9 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           Contrato asignado
         </h2>
       </div>
-      <div></div>
+      <div>
+        <ManagerViewer dbPath={dbPath} />
+      </div>
       <div>
         <h2
           className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}
@@ -182,25 +230,20 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           Subir nuevo contrato
         </h2>
         {/*Aquí es donde se sube un archivo*/}
-        {/*<div className="flex flex-col border justify-center items-center p-40 rounded-xl mb-4 border-gray-300 bg-[#f5f7fb] border-dashed">
-          <Uploader
-            expedienteId={`expediente${uid}`}
-            onFileUploaded={handleFileUpload}
-            folder="pruebaInicial/expedientes"
-            contrato={true}
+        <label className={isUploading ? "opacity-50 pointer-events-none" : ""}>
+          <div className="bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg mb-2">
+            <Upload size={32} />
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileUpload}
+            disabled={isUploading}
           />
-          <p className="text-gray-500">
-            Subir contrato firmado si es necesario.
-          </p>
-        </div>}*/}
-      </div>
-      <div className="flex flex-col items-center justify-center w-full h-full p-4 bg-white rounded-lg shadow-md">
-        {/*Aquí es donde se ve el archivo*/}
-        <h2
-          className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}
-        >
-          Contrato asignado
-        </h2>
+          {isUploading && <p className="text-gray-500">Subiendo archivo...</p>}
+        </label>
       </div>
     </div>
   );

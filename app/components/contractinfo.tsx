@@ -2,21 +2,20 @@
 import ListInformation from "@/app/components/usuario-phone";
 import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 import React, { useState } from "react";
-import ContractsPage from "@/app/components/contractsPage";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
-import { usePathname } from "next/navigation";
+//import { usePathname } from "next/navigation";
 
 export default function ContractInfo({ id }: { id: string }) {
-  const pathname = usePathname();
-  const _id = pathname.split("/")[3];
+  //const pathname = usePathname();
+  //const _id = pathname.split("/")[3];
 
   const [active, setActive] = useState<"onboarding" | "contratos">("contratos");
 
   return (
     <div>
       <div className="hidden md:block">
-        <Contratos id={_id} />
+        <Contratos id={id} />
       </div>
       <div className="block md:hidden">
         <ListInformation />
@@ -47,8 +46,8 @@ export default function ContractInfo({ id }: { id: string }) {
           </button>
         </div>
 
-        {active === "contratos" && <AdminContractsPage uid={_id} />}
-        {active === "onboarding" && <ExpedienteCandidato userId={_id} />}
+        {active === "contratos" && <AdminContractsPage uid={id} />}
+        {active === "onboarding" && <ExpedienteCandidato userId={id} />}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import { useDropzone } from "react-dropzone";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
 import { ref as dbRef, update, get } from "firebase/database";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { storage, database } from "../../firebaseConfig";
 import { Upload } from "lucide-react";
 
@@ -88,7 +88,12 @@ const Uploader: React.FC<UploaderProps> = ({
   });
 
   return (
-    <div {...getRootProps()} className={`border-2 border-dashed p-6 rounded-lg text-center cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : ""}`}>
+    <div
+      {...getRootProps()}
+      className={`border-2 border-dashed p-6 rounded-lg text-center cursor-pointer ${
+        isUploading ? "opacity-50 pointer-events-none" : ""
+      }`}
+    >
       <input {...getInputProps()} disabled={isUploading} />
       <div className="flex flex-col items-center justify-center">
         <div className="bg-[#2d4583] hover:bg-[#08b177] text-white p-4 rounded-full mb-2">
@@ -101,7 +106,9 @@ const Uploader: React.FC<UploaderProps> = ({
             Arrastra un archivo PDF aquí o haz clic para seleccionarlo
           </p>
         )}
-        {isUploading && <p className="text-gray-500 mt-2">Subiendo archivo...</p>}
+        {isUploading && (
+          <p className="text-gray-500 mt-2">Subiendo archivo...</p>
+        )}
       </div>
     </div>
   );

@@ -3,32 +3,37 @@
 import EtiquetaEstado from "./etiquetaEstado";
 import ProfilePicture from "./profile-picture";
 
-interface User {
-  id: string;
-  nombre?: string;
-  apellidos?: string;
-  rol?: string;
-  email?: string;
-  telefono?: string;
-  estadoUsuario: string;
-}
+import type { User } from "@/app/types/user";
 
 export default function UserTable({ users }: { users: User[] }) {
   return (
     <table className="table-auto w-full border-separate border-spacing-y-2 animate-fade-in-up">
       <thead>
         <tr className="shadow-xs rounded-xl">
-          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">Nombre</th>
-          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">Rol</th>
-          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">Correo</th>
-          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">Teléfono</th>
-          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">Estado</th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
+            Nombre
+          </th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+            Rol
+          </th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+            Correo
+          </th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+            Teléfono
+          </th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
+            Estado
+          </th>
         </tr>
       </thead>
       <tbody>
         {users.length === 0 ? (
           <tr>
-            <td colSpan={6} className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl">
+            <td
+              colSpan={6}
+              className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
+            >
               No se encontraron usuarios.
             </td>
           </tr>
@@ -51,7 +56,10 @@ export default function UserTable({ users }: { users: User[] }) {
               </td>
               <td className="px-4 py-4 bg-white">{user.email || "N/A"}</td>
               <td className="px-4 py-4 bg-white">{user.telefono || "N/A"}</td>
-              <td className="px-4 py-4 bg-white rounded-r-xl capitalize"><EtiquetaEstado status={user.estadoUsuario}/></td>
+              <td className="px-4 py-4 bg-white rounded-r-xl capitalize">
+                {/* Cambiar esto si afecta con la lógica, cambiar "" a algún valor default */}
+                <EtiquetaEstado status={user.estadoUsuario ?? ""} />
+              </td>
             </tr>
           ))
         )}
