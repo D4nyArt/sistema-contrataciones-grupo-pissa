@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
 import { update, ref } from "firebase/database";
-import ManagerViewer from "./ManagerViewer";
+import DirectViewer from "./directFileView";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
 import { urbanist } from "./fonts";
@@ -36,7 +36,8 @@ export default function ReviewContract({ uid }: { uid: string }) {
   const [info, setInfo] = useState<{
     state: ContractState | null;
     contract: { id: string; name: string } | null;
-  }>({ state: null, contract: null });
+    active_contract: string | null;
+  }>({ state: null, contract: null, active_contract: null });
 
   const [notes, setNotes] = useState<string>("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -46,7 +47,11 @@ export default function ReviewContract({ uid }: { uid: string }) {
     async function fetchInfo() {
       const res = await fetch(`/api/getContractInformation?uid=${uid}`);
       const data = await res.json();
-      setInfo({ state: data.state, contract: data.contract });
+      setInfo({
+        state: data.state,
+        contract: data.contract,
+        active_contract: data.active_contract,
+      });
     }
     fetchInfo();
   }, [uid]);
@@ -58,7 +63,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
       estado: newState,
       notas: notes,
     });
-    
+
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")
         ? "enProyecto"
@@ -88,12 +93,9 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
       {/* Vista previa del contrato subido por el candidato */}
       {info.contract ? (
-        <ManagerViewer
-          expedienteId={`expediente${uid}`}
-          fileName={info.contract.name}
-          folder="pruebaInicial/expedientes"
-          userRole="rh"
-          contrato={true}
+        <DirectViewer
+          folder={`pruebaInicial/expedientes/expediente${uid}/Contratos`}
+          fileName={info.active_contract ?? "NaC"}
         />
       ) : (
         <p className="text-gray-500">
@@ -103,7 +105,10 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
       {/* Notas input */}
       <form className="flex flex-col items-start gap-2">
-        <label htmlFor="admin-notes" className={`${urbanist.className} font-semibold`}>
+        <label
+          htmlFor="admin-notes"
+          className={`${urbanist.className} font-semibold`}
+        >
           Notas:
         </label>
         <input

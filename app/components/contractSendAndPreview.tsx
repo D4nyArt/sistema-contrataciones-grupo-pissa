@@ -44,6 +44,7 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       // Actualiza contrato_activo en usuarios/{uid}
       await update(ref(database, `usuarios/${uid}`), {
         contrato_activo: contract.name,
+        rol: "candidato",
       });
 
       // Actualiza contrato_activo en expedientes/expediente{uid}/contratos

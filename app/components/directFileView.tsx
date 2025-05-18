@@ -16,7 +16,7 @@ export default function DirectViewer({
   documentoId,
   fileName,
   folder = "pruebaInicial",
-  userRole = "candidato", // Valor por defecto "candidato"
+  userRole = "candidato",
   contrato,
 }: DirectViewerProps) {
   const [pdfUrl, setPdfUrl] = useState<string | undefined>(undefined);
@@ -34,18 +34,18 @@ export default function DirectViewer({
         : `${folder}/${fileName}`;
   }
 
-    useEffect(() => {
-      const fetchPdfUrl = async () => {
-        try {
-          const url = await getDownloadURL(storageRef(storage, filePath));
-          setPdfUrl(url);
-        } catch (err) {
-          console.error("Error al obtener URL de descarga:", err);
-        }
-      };
-  
-      fetchPdfUrl();
-    }, [filePath]);
+  useEffect(() => {
+    const fetchPdfUrl = async () => {
+      try {
+        const url = await getDownloadURL(storageRef(storage, filePath));
+        setPdfUrl(url);
+      } catch (err) {
+        console.error("Error al obtener URL de descarga:", err);
+      }
+    };
+
+    fetchPdfUrl();
+  }, [filePath]);
 
   return (
     <iframe

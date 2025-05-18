@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { get, ref, set, update} from "firebase/database";
+import { get, ref, update} from "firebase/database";
 import { database } from "@/firebaseConfig";
 
 async function recalcEstadoCampos(expId: string, docId: string) {

@@ -1,15 +1,14 @@
 "use client";
-import {ref as storageRef, uploadBytes} from "firebase/storage";
-import {ref as dbRef, update, get} from "firebase/database";
-import React, {useRef, useState} from "react";
-import {storage, database} from "@/firebaseConfig";
-import {Upload} from "lucide-react";
+import { ref as storageRef, uploadBytes } from "firebase/storage";
+import { ref as dbRef, update, get } from "firebase/database";
+import React, { useRef, useState } from "react";
+import { storage, database } from "@/firebaseConfig";
+import { Upload } from "lucide-react";
 
 // Definimos las props que puede recibir Uploader
 interface UploaderProps {
   storageUrl: string;
   dbPath: string;
-  contrato?: boolean; // Indica si es un contrato
   onFileUploaded: () => void;
 }
 
@@ -17,7 +16,6 @@ const Uploader: React.FC<UploaderProps> = ({
   onFileUploaded,
   storageUrl,
   dbPath,
-  contrato = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -32,7 +30,7 @@ const Uploader: React.FC<UploaderProps> = ({
 
     try {
       // 1. Determinar la ruta del archivo
-      const fileReference = storageRef(storage, storageUrl + "/" + file.name);
+      const fileReference = storageRef(storage, `${storageUrl}/${file.name}`);
       const snapshot = await uploadBytes(fileReference, file);
       console.log("Archivo subido correctamente:", snapshot);
       try {
@@ -53,7 +51,7 @@ const Uploader: React.FC<UploaderProps> = ({
           // Crear nuevo documento si no existe
           await update(docRef, {
             url: storageUrl + "/" + file.name,
-            estadoArchivo: "pendiente"
+            estadoArchivo: "pendiente",
           });
         }
         console.log("Base de datos actualizada con la nueva URL");
@@ -73,8 +71,9 @@ const Uploader: React.FC<UploaderProps> = ({
   return (
     <div>
       <label
-        className={`cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : ""
-          }`}
+        className={`cursor-pointer ${
+          isUploading ? "opacity-50 pointer-events-none" : ""
+        }`}
       >
         <div className="bg-[#2d4583] hover:bg-[#08b177]  text-white p-8 rounded-lg inline-block mb-2">
           <Upload size={32} />

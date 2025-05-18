@@ -5,14 +5,7 @@ import ProfilePicture from "./profile-picture";
 import { Mail, Phone } from "lucide-react";
 import { urbanist } from "./fonts";
 
-interface User {
-  id: string;
-  nombre?: string;
-  apellidos?: string;
-  rol?: string;
-  email?: string;
-  telefono?: string;
-}
+import type { User } from "@/app/types/user";
 
 export default function UserCard({ user }: { user: User }) {
   const router = useRouter();
@@ -31,7 +24,9 @@ export default function UserCard({ user }: { user: User }) {
             textSize="text-xl"
           />
         </div>
-        <div className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}>
+        <div
+          className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}
+        >
           {user.nombre || "N/A"} {user.apellidos || ""}
         </div>
         <div className="text-sm text-[#2975a0] flex-initial capitalize">

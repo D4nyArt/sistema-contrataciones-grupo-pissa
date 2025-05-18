@@ -1,14 +1,15 @@
-import ShowCurrentContract from "./showCurrentContract";
-import ReviewContract from "./reviewContract";
 import { urbanist } from "./fonts";
 import ContractInfoView from "./contractinfoview";
 
 export default function AdminContractsPage({ uid }: { uid: string }) {
   return (
     <div className="mb-12">
-      <h2 className={`${urbanist.className} text-2xl text-[#212529] font-semibold`}>Contratos</h2>
-      <div className="flex flex-col md:flex-row gap-6">
-      </div>
+      <h2
+        className={`${urbanist.className} text-2xl text-[#212529] font-semibold`}
+      >
+        Contratos
+      </h2>
+      <div className="flex flex-col md:flex-row gap-6"></div>
       <div>
         <ContractInfoView id={uid} />
       </div>
