@@ -37,7 +37,7 @@ export default function InfoPerfil () {
     }, [id]);
 
     return(
-        <main className="bg-white rounded-xl p-4  shadow-md">
+        <main className="bg-white rounded-xl p-4">
             <div className="grid grid-cols-2 gap-6">
                 <div>
                     <label className="text-[#495057] block mb-1">Nombre</label>

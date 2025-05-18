@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ProfilePicture from "./profile-picture";
 import { Mail, Phone } from "lucide-react";
 import { urbanist } from "./fonts";
@@ -16,10 +16,13 @@ interface User {
 
 export default function UserCard({ user }: { user: User }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fullPath = `${pathname}?${searchParams.toString()}`;
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/${user.id}`)}
+      onClick={() => router.push(`/dashboard/${user.id}?from=${encodeURIComponent(fullPath)}`)}
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-col md:flex-row md:justify-between">

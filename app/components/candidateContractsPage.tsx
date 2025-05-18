@@ -94,8 +94,18 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       fecha_vencimiento: expirationDate,
     });
 
+    let nombre = uid; // Valor por defecto en caso de error
+    try {
+      const nombreSnap = await get(ref(database, `usuarios/${uid}/nombre`));
+      if (nombreSnap.exists()) {
+        nombre = nombreSnap.val();
+      }
+    } catch (error) {
+      console.error("Error al obtener el nombre del candidato:", error);
+    }
+
     // Notificaciones
-    const message = `El candidato ${uid} subió el contrato "${fileName}"`;
+    const message = `El candidato ${nombre} subió el contrato "${fileName}"`;
     const timestamp = Date.now();
 
     if (reviewer === "sin_revisor") {

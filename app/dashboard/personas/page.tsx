@@ -1,12 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ListRecursos from "../../components/lista-rh";
 import { urbanist } from "../../components/fonts";
 import ListEmpleados from "@/app/components/lista-general";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VistaUsuarios() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+
   const [activo, setActivo] = useState<"empleados" | "recursos humanos">("empleados");
+
+  useEffect(() => {
+    if (tabParam === "recursos humanos" || tabParam === "empleados") {
+      setActivo(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: "empleados" | "recursos humanos") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.push(`?${params.toString()}`);
+    setActivo(tab);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto pb-4 md:mt-0">
@@ -16,7 +34,7 @@ export default function VistaUsuarios() {
 
       <div className="flex space-x-6 border-b border-gray-300 items-center ml-4 animate-fade-in-up">
         <button
-          onClick={() => setActivo("empleados")}
+          onClick={() => handleTabChange("empleados")}
           className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
             activo === "empleados"
               ? "border-[#2d4583] text-[#2d4583]"
@@ -27,7 +45,7 @@ export default function VistaUsuarios() {
         </button>
 
         <button
-          onClick={() => setActivo("recursos humanos")}
+          onClick={() => handleTabChange("recursos humanos")}
           className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
             activo === "recursos humanos"
               ? "border-[#2d4583] text-[#2d4583]"
