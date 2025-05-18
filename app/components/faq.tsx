@@ -9,7 +9,7 @@ export default function FAQ() {
   return (
       <button
         onClick={() => router.push('/faq')}
-        className="cursor-pointer fixed bottom-6 left-6 p-3 items-center justify-center flex flex-col text-white hover:bg-[#2974a04b] rounded-xl"
+        className="cursor-pointer"
         title="Preguntas frecuentes"
       >
         <MessageCircleQuestion className="w-6" />
@@ -27,7 +27,7 @@ export function LoginFAQ() {
         className="cursor-pointer bg-white hover:bg-[var(--pissa-green)] text-[var(--pissa-blue)] hover:text-white rounded-full p-4 shadow-lg transition-all"
         title="Preguntas frecuentes"
       >
-        <MessageCircleQuestion className="w-6 h-6" />
+        <MessageCircleQuestion className="w-6" />
       </button>
     </div>
   )
