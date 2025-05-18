@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <div className="h-20 w-full fixed bottom-0 bg-gray-50 md:hidden block p-2">
-        <SideNavPhone roleView={role} />
+        <SideNavPhone roleView={role}/>
       </div>
     </div>
   );

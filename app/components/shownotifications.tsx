@@ -120,7 +120,6 @@ export default function ShowNotifications() {
     if (minutos < 60) return `Hace ${minutos} minuto${minutos !== 1 ? "s" : ""}`;
     if (horas < 24) return `Hace ${horas} hora${horas !== 1 ? "s" : ""}`;
     if (dias < 7) return `Hace ${dias} día${dias !== 1 ? "s" : ""}`;
-
     const fecha = new Date(timestamp);
     return fecha.toLocaleString("es-MX", {
       day: "2-digit",
