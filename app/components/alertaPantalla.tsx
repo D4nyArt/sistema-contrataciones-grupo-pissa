@@ -18,6 +18,7 @@ funCerrar: funcion que se ejecuta al cerrar **OPCIONAL**
 
 import { X } from "lucide-react";
 import { useEffect } from "react";
+import { estilosClasificacion } from "./alertaEstilos";
 
 type clasifAlerta = "aprobado" | "denegado" | "errorSist" | "info";
 
@@ -28,6 +29,7 @@ interface propAlerta {
   tiempo?: number; // Tiempo en pantalla en milisegs
   funCerrar?: () => void; // Alguna función para ejecutar cuando se cierra
 }
+
 
 /*Esto es un tipo de constructor */
 export function Alerta({
@@ -51,15 +53,8 @@ propAlerta) {
   const estiloBase =
     "p-4 rounded-lg shadow-lg flex items-center justify-between gap-2 text-white";
 
-  const estilosClasificacion = {
-    aprobado: "bg-green-500",
-    denegado: "bg-red-500",
-    errorSist: "bg-red-800",
-    info: "bg-blue-500",
-  };
-
   return (
-    <div className={`${estiloBase} ${estilosClasificacion[tipo]}`}>
+    <div className={`${estiloBase} ${estilosClasificacion[tipo].alerta}`}>
       <span>{mensaje}</span>
       <button
         onClick={funCerrar}

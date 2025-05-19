@@ -28,6 +28,7 @@ export function CampoContrasena({
   placeholder = "Contraseña",
   error = false,
   required = true,
+  className = ""
 }: PropContrasena) {
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
@@ -39,11 +40,8 @@ export function CampoContrasena({
         value={value}
         onChange={onChange}
         required={required}
-        className={`w-full p-2 border rounded-lg mt-1 bg-[#fafbfc] ${
-          error
-            ? "border-red-400 text-red-600 placeholder-red-400"
-            : "border-gray-300 text-black"
-        }`}
+        className={`w-full p-2 border rounded-lg mt-1 bg-[#fafbfc] ${className}`}
+
       />
       {value.length > 0 && (
         <button

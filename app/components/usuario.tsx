@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+import {resetAttempts } from "../api/attempts/attempts";
+
 import {
   CircleCheck,
   CircleUser,
@@ -36,6 +38,8 @@ export default function Usuarios() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [time, setTime] = useState("-");
   const id = pathname.split("/")[2];
 
   const handleRemoval = async () => {
@@ -43,12 +47,12 @@ export default function Usuarios() {
       ref(database, `usuarios/${id}/estadoUsuario`),
       "dado de baja"
     ).then(() => {
-      setStatus("dado de baja");
+      setStatus("baja");
     });
   };
 
   const handleBlock = async () => {
-    if (status != "dado de baja") {
+    if (status != "baja") {
       await set(
         ref(database, `usuarios/${id}/estadoUsuario`),
         "bloqueado"
@@ -61,12 +65,25 @@ export default function Usuarios() {
   };
 
   const handleUnblock = async () => {
-    if (status != "dado de baja") {
+    if (status != "baja") {
       await set(ref(database, `usuarios/${id}/estadoUsuario`), "normal").then(
         () => {
           setStatus("normal");
         }
       );
+// To handle failed attempts & reset the counter: 
+      await set(ref(database, `usuarios/${id}/intentos/total`), 0).then(
+        () => {
+          setAttempt(0);
+        }
+      );
+// To reset the date:
+      await set(ref(database, `usuarios/${id}/intentos/ultimo`), 0).then(
+        () => {
+          setTime("-");
+        }
+      );
+//*********************************************/      
     } else {
       alert("No se puede desbloquear un usuario que ya esta dado de baja");
     }
@@ -127,7 +144,7 @@ export default function Usuarios() {
                     </p>
                   </div>
                 )}
-                {status === "dado de baja" && (
+                {status === "baja" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
                     <Lock className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 capitalize text-xs">

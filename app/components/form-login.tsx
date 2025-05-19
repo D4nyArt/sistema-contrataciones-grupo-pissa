@@ -6,16 +6,19 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { getDatabase, ref, get } from "firebase/database";
 
-// Componentes propios
+import { incrementLoginAttempt, resetAttempts } from "../api/attempts/attempts";
+import { estilosClasificacion } from "./alertaEstilos";
 import { Alerta } from "./alertaPantalla";
 import { CampoContrasena } from "./campoContrasena";
 
 export default function Formulario() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  type clasifAlerta = "aprobado" | "denegado" | "errorSist" | "info";
+
   /*Andy (04.04 9:28) Para las alertas durante el login*/
   const [alertaAcceso, setAlertaAcceso] = useState<{
-    type: "denegado";
+    type: clasifAlerta;
     mensaje: string;
   } | null>(null);
   const router = useRouter();
@@ -37,9 +40,11 @@ export default function Formulario() {
   };
   /********************************************************************/
 
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+
       const userCredentials = await signInWithEmailAndPassword(
         auth,
         email,
@@ -65,7 +70,7 @@ export default function Formulario() {
       }
 
       /**********************************
-       * Si el inicio salió bien, enntonces verifica que si el usuario
+       * Si el inicio salió bien, entonces verifica si el usuario
        * es nuevo para que cambie su contraseña
        */
       const db = getDatabase();
@@ -74,7 +79,7 @@ export default function Formulario() {
 
       if (snapshot.exists()) {
         const userData = snapshot.val();
-        console.log("Datos del usuario:", userData);
+        //console.log("Datos del usuario:", userData);
 
  // Lógica de los estados de usuario
  if (userData.estadoUsuario === "previo") {
@@ -84,7 +89,7 @@ export default function Formulario() {
   // Usuario bloqueado: intentos de inicio de sesión fallidos
   setAlertaAcceso({
     type: "denegado",
-    mensaje: "Su cuenta fue bloqueada debido a numerosos intentos consecutivos de inicio de sesión. Reestablezca su contraseña.",
+    mensaje: "Su cuenta fue bloqueada debido a numerosos intentos consecutivos de inicio de sesión. Recupere su contraseña.",
   });
 } else if (userData.estadoUsuario === "baja") {
   // Baja: La cuenta fue inhabilitada permanentemente
@@ -92,8 +97,19 @@ export default function Formulario() {
     type: "denegado",
     mensaje: "Su cuenta está inhabilitada de forma permanente.",
   });
-} else {
+} else if (userData.estadoUsuario === "enProceso") {
+  // enProceso: Cuenta en Proceso de Recuperación
+  setAlertaAcceso({
+    type: "info",
+    mensaje: "Su cuenta está en proceso de recuperación. Le llegará una notificación cuando esté lista.",
+  });
+
+}
+else {
+  // To reset attempts in case login was successfull 
+  await resetAttempts(email);
   router.push("/auth/redirector");
+
 }
 } else {
 console.error("No se encontraron datos del usuario en la base de datos");
@@ -101,9 +117,18 @@ router.push("/auth/redirector"); // Redirigimos al flujo normal por defecto
 }
 } catch (err: unknown) {
 console.error("Error during login:", err);
+ 
+// To handle multiple failed attempts
+const remainingAttempts = await incrementLoginAttempt(email);
+let msg = "El usuario o la contraseña son incorrectos. ";
+
+if (remainingAttempts > 0 && remainingAttempts < 3){
+  msg += ` Queda${remainingAttempts !== 1 ? "n " : " "} ${remainingAttempts} intento${remainingAttempts !== 1 ? "s" : ""} antes de que la cuenta sea bloqueada.`;
+
+}
 setAlertaAcceso({
 type: "denegado",
-mensaje: "El usuario o la contraseña son incorrectos",
+mensaje: msg,
 });
 }
 };
@@ -124,7 +149,7 @@ return (
     type="email"
     className={`w-full p-2 border rounded-lg mt-1 bg-[#fafbfc] ${
       alertaAcceso
-        ? "border-red-400 text-red-600 placeholder-red-400"
+        ? estilosClasificacion[alertaAcceso.type].input 
         : "border-gray-300 text-black"
     }`}
     placeholder="Correo electrónico"
@@ -138,6 +163,7 @@ return (
   value={password}
   onChange={cambioContrasena}
   error={!!alertaAcceso}
+  className= {alertaAcceso ? estilosClasificacion[alertaAcceso.type].input : ""}
 />
 <div>
   <button
@@ -149,7 +175,7 @@ return (
 </div>
 <div className="mb-4 text-center py-4 pt-6">
   <a href="/olvidaste" className="text-[#2975a0] hover:text-[#08b177]">
-    ¿Olvidaste tu contraseña?
+    Recuperar mi contraseña
   </a>
 </div>
 </form>
