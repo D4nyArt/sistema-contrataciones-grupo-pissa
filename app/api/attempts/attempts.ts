@@ -14,10 +14,28 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
     const totalRef = ref(db, `usuarios/${uid}/intentos/total`);
     const lastRef = ref(db, `usuarios/${uid}/intentos/ultimo`);
 
+    // Get the last attempt
+    const lastSnap = await get(lastRef);
+    const lastDateStr = lastSnap.exists() ? lastSnap.val() : null;
+
+    const now = new Date();
+    let reset = false;
+
+    if (lastDateStr) {
+      const lastDate = new Date(lastDateStr);
+      const diffMs = now.getTime() - lastDate.getTime();
+      const hoursPassed = diffMs / (1000 * 60 * 60);
+
+      if (hoursPassed >= 24) {
+        // Reset the counter if it's been more than 24 hours 
+        await set(totalRef, 0);
+        reset = true;
+      }
+    }
+
     await runTransaction(totalRef, (currentTotal) => (currentTotal || 0) + 1);
 
-    const now = new Date().toISOString();
-    await set(lastRef, now);
+    await set(lastRef, now.toISOString());
 
     await checkAndBlockUser(uid);
 
