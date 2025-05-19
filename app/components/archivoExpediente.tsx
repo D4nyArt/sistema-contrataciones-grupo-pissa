@@ -159,7 +159,7 @@ export default function ArchivoExpediente({role, expedienteId, documentoId, onCh
                             <Uploader
                                 storageUrl={`pruebaInicial/expedientes/expediente${expedienteId}/documentos/${documentoId}`}
                                 dbPath={`expedientes/expediente${expedienteId}/documentos/${documentoId}`}
-                                onFileUploaded={handleFileUpload}
+                                onFileUploaded={async() => {handleFileUpload}}
                             />
                             <p className="text-gray-500 mt-2">
                                 Haz clic para subir tu Archivo
