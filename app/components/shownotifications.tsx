@@ -3,7 +3,9 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { auth } from "@/firebaseConfig";
-import { Trash } from "lucide-react";
+import { Dot } from "lucide-react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type Notification = {
   id: string;
@@ -14,10 +16,26 @@ type Notification = {
 export default function ShowNotifications() {
   const [rhUID, setRhUID] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [activeTab, setActiveTab] = useState<"unread" | "read">("unread");
+  const [activeTab, setActiveTab] = useState<"all" | "unread" | "read" | "saved">("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [savedSet, setSavedSet] = useState<Set<string>>(new Set());
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
 
-  // Get current user
+  useEffect(() => {
+    if (tabParam === "all" || tabParam === "unread" || tabParam === "read" || tabParam === "saved") {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: "all" | "unread" | "read" | "saved") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.push(`?${params.toString()}`);
+    setActiveTab(tab);
+  };
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setRhUID(user?.uid ?? null);
@@ -25,7 +43,6 @@ export default function ShowNotifications() {
     return () => unsub();
   }, []);
 
-  // Fetch notifications
   useEffect(() => {
     async function fetchNotifications() {
       if (!rhUID) {
@@ -40,13 +57,10 @@ export default function ShowNotifications() {
     fetchNotifications();
   }, [rhUID]);
 
-  // Update read status
   async function updateReadStatus(id: string, read: boolean) {
     await fetch(`/api/updateNotificationReadStatus`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, read }),
     });
 
@@ -56,17 +70,13 @@ export default function ShowNotifications() {
   }
 
   async function markSelectedAsRead() {
-    const updates = Array.from(selected).map((id) =>
-      updateReadStatus(id, true)
-    );
+    const updates = Array.from(selected).map((id) => updateReadStatus(id, true));
     await Promise.all(updates);
     setSelected(new Set());
   }
 
   async function markSelectedAsUnread() {
-    const updates = Array.from(selected).map((id) =>
-      updateReadStatus(id, false)
-    );
+    const updates = Array.from(selected).map((id) => updateReadStatus(id, false));
     await Promise.all(updates);
     setSelected(new Set());
   }
@@ -79,24 +89,35 @@ export default function ShowNotifications() {
     });
   };
 
-  const filtered = notifications.filter((n) =>
-    activeTab === "unread" ? !n.read : n.read
-  );
+  const handleToggleSave = (id: string) => {
+    setSavedSet((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
+
+  const filtered = notifications.filter((n) => {
+    if (activeTab === "unread") return !n.read;
+    if (activeTab === "read") return n.read;
+    if (activeTab === "saved") return savedSet.has(n.id);
+    return true; // all
+  });
 
   function tiempoNotificacion(timestamp: number): string {
     const ahora = Date.now();
     const diffMs = ahora - timestamp;
-  
+
     const segundos = Math.floor(diffMs / 1000);
     const minutos = Math.floor(segundos / 60);
-    const horas   = Math.floor(minutos / 60);
-    const dias    = Math.floor(horas / 24);
-  
+    const horas = Math.floor(minutos / 60);
+    const dias = Math.floor(horas / 24);
+
     if (minutos < 1) return "Hace unos segundos";
     if (minutos < 60) return `Hace ${minutos} minuto${minutos !== 1 ? "s" : ""}`;
     if (horas < 24) return `Hace ${horas} hora${horas !== 1 ? "s" : ""}`;
     if (dias < 7) return `Hace ${dias} día${dias !== 1 ? "s" : ""}`;
-  
+
     const fecha = new Date(timestamp);
     return fecha.toLocaleString("es-MX", {
       day: "2-digit",
@@ -107,105 +128,110 @@ export default function ShowNotifications() {
       hour12: false,
     });
   }
-  
 
   return (
     <div className="p-4">
       {/* Tabs */}
       <div className="flex space-x-4 mb-4">
-        <button
-          className={`px-4 py-2 rounded-lg cursor-pointer animate-fade-in-up ${
-            activeTab === "unread"
-              ? "bg-[#2d4583] text-white"
-              : "bg-gray-200 hover:bg-[#08b177] hover:text-white"
-          }`}
-          onClick={() => {
-            setActiveTab("unread");
-            setSelected(new Set());
-          }}
-        >
-          No leídas
-        </button>
-        <button
-          className={`px-4 py-2 rounded-lg cursor-pointer animate-fade-in-up ${
-            activeTab === "read"
-              ? "bg-[#2d4583] text-white"
-              : "bg-gray-200 hover:bg-[#08b177] hover:text-white"
-          }`}
-          onClick={() => {
-            setActiveTab("read");
-            setSelected(new Set());
-          }}
-        >
-          Leídas
-        </button>
+        {["all", "unread", "read", "saved"].map((tab) => (
+          <button
+            key={tab}
+            className={`px-4 py-2 rounded-lg cursor-pointer animate-fade-in-up ${
+              activeTab === tab
+                ? "bg-[#2d4583] text-white"
+                : "bg-gray-200 hover:bg-[#08b177] hover:text-white"
+            }`}
+            onClick={() => {
+              handleTabChange(tab as "all" | "unread" | "read" | "saved");
+              setSelected(new Set());
+            }}
+          >
+            {{
+              all: "Todas",
+              unread: "No leídas",
+              read: "Leídas",
+              saved: "Guardadas",
+            }[tab]}
+          </button>
+        ))}
       </div>
 
       <div className="rounded-t-xl bg-gray-200 border-b border-gray-300 p-4 flex animate-fade-in-up">
         <h2 className="text-lg font-semibold text-[#495057]">
-          {filtered.length} Notificaci{filtered.length === 1 ? "ón" : "ones"} {activeTab === "unread" ? "no leída" : "leída"}
-          {filtered.length !== 1 && "s"}
+          {filtered.length} Notificaci
+          {filtered.length === 1 ? "ón" : "ones"}
         </h2>
 
-          {/* Botones según la pestaña activa */}
-          {activeTab === "unread" && (
-            <button
-              disabled={selected.size === 0}
-              onClick={markSelectedAsRead}
-              className={`ml-auto ${
-                selected.size === 0
-                  ? "text-gray-600 bg-gray-300 rounded-lg px-4 cursor-not-allowed"
-                  : "text-white bg-[#2d4583] rounded-lg px-4 hover:bg-[#08b177] cursor-pointer"
-              }`}
-            >
-              Marcar como leída
-            </button>
-          )}
-          {activeTab === "read" && (
-            <button
-              disabled={selected.size === 0}
-              onClick={markSelectedAsUnread}
-              className={`ml-auto ${
-                selected.size === 0
-                  ? "text-gray-600 bg-gray-300 rounded-lg px-4 cursor-not-allowed"
-                  : "text-white bg-[#2d4583] rounded-lg px-4 hover:bg-[#08b177] cursor-pointer"
-              }`}
-            >
-              Marcar como no leída
-            </button>
-          )}
-        </div>
+        {["unread", "read"].includes(activeTab) && (
+          <button
+            disabled={selected.size === 0}
+            onClick={activeTab === "unread" ? markSelectedAsRead : markSelectedAsUnread}
+            className={`ml-auto ${
+              selected.size === 0
+                ? "text-gray-600 bg-gray-300 rounded-lg px-4 cursor-not-allowed"
+                : "text-white bg-[#2d4583] rounded-lg px-4 hover:bg-[#08b177] cursor-pointer"
+            }`}
+          >
+            {activeTab === "unread" ? "Marcar como leída" : "Marcar como no leída"}
+          </button>
+        )}
+      </div>
 
       {/* Notifications */}
       <div className="rounded-b-xl bg-white pb-6 animate-fade-in-up">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center bg-white p-4 h-full rounded-b-xl">
             <p className="text-gray-500">
-              No tienes notificaciones {activeTab === "unread" ? "no leídas" : "leídas"}.
+              No tienes notificaciones{" "}
+              {{
+                unread: "no leídas",
+                read: "leídas",
+                all: "registradas",
+                saved: "guardadas",
+              }[activeTab]}
+              .
             </p>
           </div>
         ) : (
-          filtered.map(({ id, message }) => (
-            <div key={id}>
-              <div className="pr-4 pl-4">
-                <div className="border-b border-gray-300 pb-4 pt-4 flex space-x-10 items-center">
-                  <input
-                    type="checkbox"
-                    checked={selected.has(id)}
-                    onChange={(e) =>
-                      handleCheckboxChange(id, e.target.checked)
-                    }
-                    className="cursor-pointer accent-[#2d4583] size-4"
-                  />
-                  <p>{message}</p>
-                  <p className="text-sm text-gray-500">
-                    {tiempoNotificacion(Number(id))}
-                  </p>
-                  <button className="ml-auto text-red-500 cursor-pointer"><Trash/></button>
-                </div>
-              </div>
-            </div>
-          ))
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-center table-auto">
+              <tbody>
+                {filtered.map(({ id, message, read }) => (
+                  <tr
+                    key={id}
+                    className="border-b border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
+                    <td className="">
+                      <Dot className={read ? "text-gray-400" : "text-[#08b177] size-10"} />
+                    </td>
+                    <td className="">
+                      <div className="flex justify-center items-center">
+                        <button onClick={() => handleToggleSave(id)}>
+                          {savedSet.has(id) ? (
+                            <BookmarkCheck className="text-[#2d4583] cursor-pointer" />
+                          ) : (
+                            <Bookmark className="cursor-pointer"/>
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="">{message}</td>
+                    <td className=" text-sm text-gray-500">
+                      {tiempoNotificacion(Number(id))}
+                    </td>
+                    <td className="">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(id)}
+                        onChange={(e) => handleCheckboxChange(id, e.target.checked)}
+                        className="cursor-pointer accent-[#2d4583] size-4"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
