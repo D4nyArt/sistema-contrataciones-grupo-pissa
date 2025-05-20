@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
-import {resetAttempts } from "../api/attempts/attempts";
+import { handleBlock, handleUnblock } from "./block";
 
 import {
   CircleCheck,
@@ -51,43 +51,6 @@ export default function Usuarios() {
     });
   };
 
-  const handleBlock = async () => {
-    if (status != "baja") {
-      await set(
-        ref(database, `usuarios/${id}/estadoUsuario`),
-        "bloqueado"
-      ).then(() => {
-        setStatus("bloqueado");
-      });
-    } else {
-      alert("No se puede bloquear un usuario que ya esta dado de baja");
-    }
-  };
-
-  const handleUnblock = async () => {
-    if (status != "baja") {
-      await set(ref(database, `usuarios/${id}/estadoUsuario`), "normal").then(
-        () => {
-          setStatus("normal");
-        }
-      );
-// To handle failed attempts & reset the counter: 
-      await set(ref(database, `usuarios/${id}/intentos/total`), 0).then(
-        () => {
-          setAttempt(0);
-        }
-      );
-// To reset the date:
-      await set(ref(database, `usuarios/${id}/intentos/ultimo`), 0).then(
-        () => {
-          setTime("-");
-        }
-      );
-//*********************************************/      
-    } else {
-      alert("No se puede desbloquear un usuario que ya esta dado de baja");
-    }
-  };
 
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))
@@ -168,14 +131,14 @@ export default function Usuarios() {
         <div className="md:ml-auto">
           <button
             className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={handleUnblock}
-          >
+            onClick={() => handleUnblock(id, status, setStatus, setAttempt, setTime)}>
+        
             <LockOpen className="pr-2" /> Desbloquear
           </button>
           <button
             className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={handleBlock}
-          >
+            onClick={() => handleBlock(id, setStatus, status)}>
+
             <Lock className="pr-2" /> Bloquear
           </button>
           <button
