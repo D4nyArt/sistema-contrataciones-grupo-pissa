@@ -11,6 +11,8 @@ type Notification = {
   id: string;
   message: string;
   read: boolean;
+  path: string;
+  pinned: boolean;
 };
 
 export default function ShowNotifications() {
@@ -36,7 +38,8 @@ export default function ShowNotifications() {
     setActiveTab(tab);
   };
 
-  useEffect(() => {
+  // Get current user
+  useEffect(() => {    // snap.val() is Record<timestamp, { mensaje: string; leido: boolean }>
     const unsub = onAuthStateChanged(auth, (user) => {
       setRhUID(user?.uid ?? null);
     });
