@@ -1,4 +1,3 @@
-// app/utils/userActions.ts
 import { ref, set } from "firebase/database";
 import { database } from "../../firebaseConfig";
 
