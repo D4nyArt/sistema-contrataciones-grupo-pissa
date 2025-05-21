@@ -46,6 +46,8 @@ export default function Usuarios() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [time, setTime] = useState("-");
   const id = pathname.split("/")[2];
 
   useEffect(() => {
@@ -158,7 +160,11 @@ export default function Usuarios() {
                     ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
                     : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
                 }`}
-                onClick={status === "bloqueado" ? handleUnblock : handleBlock}
+                onClick={() =>
+                  status === "bloqueado"
+                    ? handleUnblock(id, status, setStatus, setAttempt, setTime)
+                    : handleBlock(id, setStatus, status)
+                }
               >
                 {status === "bloqueado" ? (
                   <>
