@@ -197,7 +197,7 @@ export default function ShowNotifications() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-center table-auto">
+            <table className="w-full text-center table-auto">
               <tbody>
                 {filtered.map(({ id, message, read }) => (
                   <tr
