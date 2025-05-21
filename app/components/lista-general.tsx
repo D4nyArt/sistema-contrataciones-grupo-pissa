@@ -1,8 +1,9 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import ProfilePicture from "./profile-picture";
-import { Mail, Phone, LayoutGrid, Table2 } from "lucide-react";
-import { urbanist } from "./fonts";
+import UserCard from "../components/tarjetaUsuarios";
+import UserMenu from "../components/menuUsuarios";
+import UserTable from "../components/tablaUsuarios";
 
 interface User {
   id: string;
@@ -11,47 +12,10 @@ interface User {
   rol?: string;
   email?: string;
   telefono?: string;
-  status?: string;
+  estadoUsuario?: string;
 }
 
-const UserCard = ({ user }: { user: User }) => {
-  const router = useRouter();
-
-  return (
-    <div
-      onClick={() => router.push(`/dashboard/${user.id}`)}
-      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
-    >
-      <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="flex-none pr-2">
-          <ProfilePicture
-            nombre={`${user.nombre || ""}`}
-            width={"w-8"}
-            height={"h-8"}
-            textSize={"text-xl"}
-          />
-        </div>
-        <div
-          className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}
-        >
-          {user.nombre || "N/A"} {user.apellidos || ""}
-        </div>
-        <div className="text-sm text-[#2975a0] flex-initial">
-          {user.rol || "N/A"}
-        </div>
-      </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Mail className="pr-2" /> {user.email || "N/A"}
-      </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Phone className="pr-2" />
-        {user.telefono || "N/A"}
-      </div>
-    </div>
-  );
-};
-
-export default function ListEmpleados() {
+export default function ListUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [sortOption, setSortOption] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +26,6 @@ export default function ListEmpleados() {
       try {
         const res = await fetch("/api/users");
         const data = await res.json();
-        console.log(data);
         setUsers(data);
       } catch (err) {
         console.error("Error al cargar usuarios", err);
@@ -74,27 +37,22 @@ export default function ListEmpleados() {
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
     const esEmpleado = user.rol === "enProyecto" || user.rol === "enCorporativo";
-    const nombreCompleto = `${user.nombre || ""} ${
-      user.apellidos || ""
-    }`.toLocaleLowerCase();
+    const nombreCompleto = `${user.nombre || ""} ${user.apellidos || ""}`.toLowerCase();
 
     return (
       esEmpleado &&
       (user.id?.toLowerCase().includes(buscar) ||
-      user.nombre?.toLowerCase().includes(buscar) ||
-      user.apellidos?.toLowerCase().includes(buscar) ||
-      user.email?.toLowerCase().includes(buscar) ||
-      user.telefono?.includes(buscar) ||
-      user.status?.includes(buscar) ||
-      nombreCompleto.includes(buscar))
+        user.nombre?.toLowerCase().includes(buscar) ||
+        user.apellidos?.toLowerCase().includes(buscar) ||
+        user.email?.toLowerCase().includes(buscar) ||
+        user.telefono?.includes(buscar) ||
+        nombreCompleto.includes(buscar))
     );
   });
 
   const sortedUsers = sortOption
     ? [...filtrarUsuarios].sort((a, b) => {
-        let prop: keyof User = "nombre";
-        if (sortOption.includes("apellido")) prop = "apellidos";
-
+        let prop: keyof User = sortOption.includes("apellido") ? "apellidos" : "nombre";
         const textA = (a[prop] || "").toLowerCase();
         const textB = (b[prop] || "").toLowerCase();
 
@@ -106,116 +64,23 @@ export default function ListEmpleados() {
 
   return (
     <main className="flex-1 p-4">
-      <div className="mb-4 flex gap-6 text-black">
-        {/*<label>Ordenar por:</label>*/}
-        <input
-          type="text"
-          placeholder="Buscar"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-400 rounded-lg w-full bg-white"
-        />
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177]"
-        >
-          <option value="">Ordenar por</option>
-          <option value="nombreAZ">Nombre A → Z</option>
-          <option value="nombreZA">Nombre Z → A</option>
-          <option value="apellidoAZ">Apellido A → Z</option>
-          <option value="apellidoZA">Apellido Z → A</option>
-        </select>
-        <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden text-[#495057]">
-          <button
-            onClick={() => setActivo("grid")}
-            className={`cursor-pointer rounded-lg  p-1 pl-2 pr-2 transition-colors border ${
-              activo === "grid"
-                ? "border-[#2d4583] text-[#2d4583]"
-                : "border-transparent hover:text-[#08b177]"
-            }`}
-          >
-            <LayoutGrid />
-          </button>
-          <button
-            onClick={() => setActivo("tabla")}
-            className={`cursor-pointer rounded-lg p-1 pl-2 pr-2 transition-colors border ${
-              activo === "tabla"
-                ? "border-[#2d4583] text-[#2d4583]"
-                : "border-transparent hover:text-[#08b177]"
-            }`}
-          >
-            <Table2 />
-          </button>
-        </div>
-      </div>
+      <UserMenu
+        searchTerm={searchTerm}
+        sortOption={sortOption}
+        activo={activo}
+        setSearchTerm={setSearchTerm}
+        setSortOption={setSortOption}
+        setActivo={setActivo}
+      />
 
-      {activo === "grid" && (
+      {activo === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-center">
           {sortedUsers.map((user) => (
             <UserCard key={user.id} user={user} />
           ))}
         </div>
-      )}
-
-      {activo === "tabla" && (
-        <div>
-          <table className="table-auto w-full border-separate border-spacing-y-2 animate-fade-in-up">
-            <thead>
-              <tr className="shadow-xs rounded-xl">
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-l-xl">
-                  Nombre
-                </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-                  Rol
-                </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-                  Correo
-                </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
-                  Teléfono
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedUsers.length === 0 ? (
-                <tr>
-                  <td
-                    className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
-                    colSpan={6}
-                  >
-                    No se encontraron usuarios.
-                  </td>
-                </tr>
-              ) : (
-                sortedUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
-                      <ProfilePicture
-                        nombre={`${user.nombre || ""}`}
-                        height={"h-8"}
-                        width={"w-8"}
-                        textSize={"text-xl"}
-                      />
-                      {user.nombre || "N/A"} {user.apellidos || "N/A"}
-                    </td>
-                    <td className="px-4 py-4 bg-white">
-                      <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
-                        {user.rol || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 bg-white">
-                      {user.email || "N/A"}
-                    </td>
-                    <td className="px-4 py-4 bg-white rounded-r-xl">
-                      {user.telefono || "N/A"}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+      ) : (
+        <UserTable users={sortedUsers} />
       )}
     </main>
   );

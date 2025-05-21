@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { database } from "../../../firebaseConfig";
 import { ref, get } from "firebase/database";
+import { use } from "react";
 
 export async function GET() {
   try {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import ProfilePicture from "@/app/components/profile-picture";
 //import {deleteCookie} from '@/app/components/deleteCookie'
 
@@ -10,7 +10,7 @@ export default function Profile() {
   const [mail, setmail] = useState("");
   const [role, setrole] = useState("");
 
-  const router = useRouter();
+  //const router = useRouter();
   useEffect(() => {
     const getUserData = async () => {
       await fetch("/api/getCurrentUser").then(async (res) => {
@@ -31,6 +31,7 @@ export default function Profile() {
     getUserData();
   }, []);
 
+  {/* 
   const onLogout = async () => {
     await fetch("/api/deleteCookie?name=candidateId", {
       method: "DELETE",
@@ -39,6 +40,7 @@ export default function Profile() {
       router.push("/auth/redirector");
     });
   };
+  */}
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -74,10 +76,11 @@ export default function Profile() {
         </div>
 
         <button
-          onClick={onLogout}
-          className="mt-8 w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition duration-200"
+          //onClick={onLogout}
+          disabled={true}
+          className="mt-8 w-full bg-gray-300 text-white font-semibold py-2 px-4 rounded-xl transition duration-200"
         >
-          Cerrar sesión
+          Editar perfil
         </button>
       </div>
     </div>

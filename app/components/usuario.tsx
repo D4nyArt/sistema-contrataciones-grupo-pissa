@@ -1,11 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+
 import { handleBlock, handleUnblock } from "./block";
 
+import RealizarSeguimiento from "./relizarseguimiento";
+import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
   CircleUser,
@@ -14,9 +18,12 @@ import {
   LockOpen,
   Mail,
   Phone,
+  Undo,
   UserMinus,
 } from "lucide-react";
 import { urbanist } from "./fonts";
+import BotonRegresar from "./botonRegresar";
+import SeguimientoToggle from "./seguimiento";
 
 /*
 interface User {
@@ -29,6 +36,7 @@ interface User {
 }*/
 
 export default function Usuarios() {
+  const [rhUID, setRhUID] = useState<string | null>(null);
   // const router = useRouter();
   const pathname = usePathname();
   // const searchparams = useSearchParams();
@@ -38,20 +46,24 @@ export default function Usuarios() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
-  const [attempt, setAttempt] = useState(0);
-  const [time, setTime] = useState("-");
   const id = pathname.split("/")[2];
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setRhUID(user?.uid ?? null);
+    });
+    return () => unsub();
+  }, []);
 
   const handleRemoval = async () => {
     await set(
       ref(database, `usuarios/${id}/estadoUsuario`),
-      "dado de baja"
+      "baja"
     ).then(() => {
       setStatus("baja");
     });
   };
-
-
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))
 
@@ -75,7 +87,8 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
+      <div className="mb-8"><BotonRegresar/></div>
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">     
         <ProfilePicture
           nombre={`${name}`}
           width={"w-15"}
@@ -92,87 +105,80 @@ export default function Usuarios() {
               </strong>
               <div className="flex flex-row pl-2 items-center">
                 {status === "normal" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-green-100 rounded-lg">
                     <CircleCheck className="size-4 text-green-800" />
-                    <p className="pl-1 text-green-800 capitalize text-xs">
-                      Activo
+                    <p className="pl-1 text-green-800 normal-case text-xs">
+                      Normal
                     </p>
                   </div>
                 )}
                 {status === "bloqueado" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
+                    <p className="pl-1 text-red-800 normal-case text-xs">
                       Bloqueado
                     </p>
                   </div>
                 )}
                 {status === "baja" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded">
-                    <Lock className="size-4 text-red-800" />
-                    <p className="pl-1 text-red-800 capitalize text-xs">
-                      Dado de Baja
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
+                    <UserMinus className="size-4 text-red-800" />
+                    <p className="pl-1 text-red-800 normal-case text-xs">
+                      Dado De Baja
                     </p>
                   </div>
                 )}
                 {status === "enProceso" && (
-                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded">
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Clock className="size-4 text-gray-800" />
-                    <p className="pl-1 text-gray-800 capitalize text-xs">
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
                       En proceso
+                    </p>
+                  </div>
+                )}
+                {status === "previo" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
+                    <Undo className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
+                      Previo
                     </p>
                   </div>
                 )}
               </div>
             </div>
-            <p className="text-[#2975a0]">{role}</p>
+            <p className="text-[#2975a0] capitalize">{role}</p>
           </div>
         </span>
-        <div className="md:ml-auto">
-          <button
-            className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={() => handleUnblock(id, status, setStatus, setAttempt, setTime)}>
-        
-            <LockOpen className="pr-2" /> Desbloquear
-          </button>
-          <button
-            className="border-2 border-gray-400 text-[#212529] py-2 px-4 rounded-lg mr-2 inline-flex"
-            onClick={() => handleBlock(id, setStatus, status)}>
+        <div className="md:ml-auto flex">
+          <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
+            {status !== "dado de baja" && (
+              <button
+                className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
+                  status === "bloqueado"
+                    ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
+                    : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
+                }`}
+                onClick={status === "bloqueado" ? handleUnblock : handleBlock}
+              >
+                {status === "bloqueado" ? (
+                  <>
+                    <LockOpen className="pr-2" /> Desbloquear
+                  </>
+                ) : (
+                  <>
+                    <Lock className="pr-2" /> Bloquear
+                  </>
+                )}
+              </button>
+            )}
 
-            <Lock className="pr-2" /> Bloquear
-          </button>
           <button
-            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex"
+            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
             onClick={handleRemoval}
           >
             <UserMinus className="pr-2" /> Dar de baja
           </button>
         </div>
-      </div>
-      <div className="pb-6 pt-2 border-b border-gray-300 text-sm">
-        <table className="table-auto text-[#495057]">
-          <tbody>
-            <tr>
-              <td className="inline-flex pr-8">
-                <CircleUser className="pr-2" />
-                ID del Usuario
-              </td>
-              <td>{id}</td>
-            </tr>
-            <tr>
-              <td className="inline-flex">
-                <Mail className="pr-2" /> Correo
-              </td>
-              <td>{mail}</td>
-            </tr>
-            <tr>
-              <td className="inline-flex">
-                <Phone className="pr-2" /> Teléfono
-              </td>
-              <td>{phone}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   );

@@ -77,7 +77,7 @@ export default function OnboardingCard({
     const user = auth.currentUser;
     if (!user) throw new Error("Usuario no autenticado");
     const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
-    const now = Date.now();
+    const now = Date.now(); 
     await update(docRef, { accepted: true, acceptedAt: now });
     setAccepted(true);
   };

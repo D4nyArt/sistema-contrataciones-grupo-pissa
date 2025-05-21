@@ -1,7 +1,6 @@
 import "./globals.css";
 import { poppins } from '@/app/components/fonts';
 
-
 export default function RootLayout({
   children,
 }: Readonly<{

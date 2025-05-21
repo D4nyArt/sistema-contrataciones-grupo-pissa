@@ -13,8 +13,6 @@ import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
 import { Building, FolderOpenDot, File } from "lucide-react";
 
-// type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
-
 export default function ContractSendAndPreview({ uid }: { uid: string }) {
   const [selectedProject, setSelectedProject] =
     useState<ProjectContract | null>(null);
@@ -57,6 +55,16 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       });
 
       console.log("Contrato enviado:", contract.name);
+
+      // Notificaciones
+      const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
+      const timestamp = Date.now();
+      await update(ref(database, `notificaciones/notificaciones${uid}`), {
+        [timestamp]: {
+          mensaje: message,
+          leido: false,
+        },
+      });
     } catch (err) {
       console.error("Error enviando contrato:", err);
     }
@@ -71,7 +79,7 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
 
   const options = [
     { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-    { id: "cor", label: "Corporativo", icon: Building }
+    { id: "cor", label: "Corporativo", icon: Building },
   ];
 
   return (
@@ -79,24 +87,31 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       {/* Selección de contrato */}
       <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md">
         <div className="border-b pb-6 border-gray-300">
-          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de contrato</h2>
+          <h2
+            className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
+          >
+            Tipo de contrato
+          </h2>
         </div>
         <div className="flex space-x-2 mr-auto pt-2">
           {options.map((option) => {
             const LinkIcon = option.icon;
             return (
-              <button key={option.id}
+              <button
+                key={option.id}
                 onClick={() => {
                   setSelected(option.id);
                   setSelectedProject(null);
                   setSelectedCorporate(null);
                 }}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
-                ${selected === option.id
+                ${
+                  selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"}`}
+                    : "border-gray-300 text-gray-400 hover:border-[#08b177] hover:text-[#08b177]"
+                }`}
               >
-                <LinkIcon/>
+                <LinkIcon />
                 {option.label}
               </button>
             );
@@ -118,7 +133,11 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           />
         )}
         {/*Seleccionar duración del contrato*/}
-        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Duración del contrato</h2>
+        <h2
+          className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
+        >
+          Duración del contrato
+        </h2>
         <select
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
@@ -153,33 +172,31 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           </>
         ) : (
           <div className="text-gray-500 text-center h-full flex-col space-y-2 border border-gray-300 p-4 rounded-xl justify-center flex items-center">
-            <File className="size-12"/>
+            <File className="size-12" />
             <p>Selecciona un contrato para vista previa.</p>
           </div>
         )}
       </div>
       {/* y botón de enviar  */}
-      {showConfirm && (
-        <PopUp>
-          <p className="mb-4">
-            ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
-          </p>
-          <div className="flex justify-end space-x-2">
-            <button
-              onClick={handleSend}
-              className="px-4 py-2 bg-green-600 text-white rounded"
-            >
-              Confirmar
-            </button>
-            <button
-              onClick={() => setShowConfirm(false)}
-              className="px-4 py-2 bg-gray-300 rounded"
-            >
-              Cancelar
-            </button>
-          </div>
-        </PopUp>
-      )}
+      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
+        <p className="mb-4">
+          ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={handleSend}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Confirmar
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancelar
+          </button>
+        </div>
+      </PopUp>
     </div>
   );
 }

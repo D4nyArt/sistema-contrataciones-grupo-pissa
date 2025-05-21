@@ -1,3 +1,4 @@
+import MenuPhone from "../components/menu-phone";
 import SideNav from "../components/sidenav";
 import SideNavPhone from "../components/sidenav-phone";
 
@@ -14,6 +15,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="h-20 w-full fixed bottom-0 bg-gray-50 md:hidden block p-2">
         <SideNavPhone roleView={role}/>
+      </div>
+      <div className="fixed top-6 right-5 md:hidden">
+        <MenuPhone />
       </div>
     </div>
   );
