@@ -58,7 +58,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
       estado: newState,
       notas: notes,
     });
-    
+
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")
         ? "enProyecto"
@@ -67,6 +67,20 @@ export default function ReviewContract({ uid }: { uid: string }) {
     }
     setInfo((cur) => ({ ...cur, state: newState }));
     setNotes("");
+
+    // Notificaciones
+    const message = `El contrato subido ha sido ${
+      approve ? "aprobado" : "rechazado"
+    }. ${notes ? "Tiene nuevas notas." : ""}`;
+    const timestamp = Date.now();
+    await update(ref(database, `notificaciones/notificaciones${uid}`), {
+      [timestamp]: {
+        mensaje: message,
+        leido: false,
+        ruta: `candidato/expediente?tab=contratos`,
+        fijado: false,
+      },
+    });
   };
 
   const current = info.state ? stateMap[info.state] : null;
@@ -103,7 +117,10 @@ export default function ReviewContract({ uid }: { uid: string }) {
 
       {/* Notas input */}
       <form className="flex flex-col items-start gap-2">
-        <label htmlFor="admin-notes" className={`${urbanist.className} font-semibold`}>
+        <label
+          htmlFor="admin-notes"
+          className={`${urbanist.className} font-semibold`}
+        >
           Notas:
         </label>
         <input

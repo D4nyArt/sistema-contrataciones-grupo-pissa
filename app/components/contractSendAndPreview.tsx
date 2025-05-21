@@ -63,6 +63,8 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         [timestamp]: {
           mensaje: message,
           leido: false,
+          ruta: `candidato/expediente?tab=contratos`,
+          fijado: false,
         },
       });
     } catch (err) {

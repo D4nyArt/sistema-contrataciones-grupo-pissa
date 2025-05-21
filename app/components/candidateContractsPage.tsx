@@ -117,7 +117,14 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           if (userData.rol === "rh") {
             await update(
               ref(database, `notificaciones/notificaciones${userId}`),
-              { [timestamp]: { mensaje: message, leido: false } }
+              {
+                [timestamp]: {
+                  mensaje: message,
+                  leido: false,
+                  ruta: `dashboard/${uid}?tab=contratos`,
+                  fijado: false,
+                },
+              }
             );
           }
         }
@@ -125,7 +132,14 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     } else {
       await update(
         ref(database, `notificaciones/notificaciones${reviewer.rID}`),
-        { [timestamp]: { mensaje: message, leido: false } }
+        {
+          [timestamp]: {
+            mensaje: message,
+            leido: false,
+            ruta: `dashboard/${uid}?tab=contratos`,
+            fijado: false,
+          },
+        }
       );
     }
   };
@@ -159,7 +173,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         >
           Contrato asignado
         </h2>
-
       </div>
       <div></div>
       <div>
@@ -183,8 +196,11 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       </div>
       <div className="flex flex-col items-center justify-center w-full h-full p-4 bg-white rounded-lg shadow-md">
         {/*Aquí es donde se ve el archivo*/}
-        <h2 className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}>Contrato asignado</h2>
-
+        <h2
+          className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}
+        >
+          Contrato asignado
+        </h2>
       </div>
     </div>
   );
