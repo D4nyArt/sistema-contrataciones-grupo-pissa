@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { auth } from "@/firebaseConfig";
 import { Dot } from "lucide-react";
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Notification = {
   id: string;
@@ -19,11 +19,11 @@ export default function ShowNotifications() {
   const [rhUID, setRhUID] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [activeTab, setActiveTab] = useState<"all" | "unread" | "read" | "saved">("all");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [savedSet, setSavedSet] = useState<Set<string>>(new Set());
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
+  const pathname = usePathname();
 
   useEffect(() => {
     if (tabParam === "all" || tabParam === "unread" || tabParam === "read" || tabParam === "saved") {
@@ -61,49 +61,42 @@ export default function ShowNotifications() {
   }, [rhUID]);
 
   async function updateReadStatus(id: string, read: boolean) {
-    await fetch(`/api/updateNotificationReadStatus`, {
+    await fetch(`/api/markNotificationRead`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, read }),
+      body: JSON.stringify({ uid: rhUID, id }),
     });
 
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   }
 
-  async function markSelectedAsRead() {
-    const updates = Array.from(selected).map((id) => updateReadStatus(id, true));
-    await Promise.all(updates);
-    setSelected(new Set());
-  }
-
-  async function markSelectedAsUnread() {
-    const updates = Array.from(selected).map((id) => updateReadStatus(id, false));
-    await Promise.all(updates);
-    setSelected(new Set());
-  }
-
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setSelected((prev) => {
-      const newSet = new Set(prev);
-      checked ? newSet.add(id) : newSet.delete(id);
-      return newSet;
+  const handleToggleSave = async (id: string, currentPinned: boolean) => {
+    const newPinned = !currentPinned;
+  
+    await fetch("/api/markNotificationPinned", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uid: rhUID,
+        id,
+        pinned: newPinned,
+      }),
     });
-  };
-
-  const handleToggleSave = (id: string) => {
-    setSavedSet((prev) => {
-      const newSet = new Set(prev);
-      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
-      return newSet;
-    });
-  };
+  
+    // Actualiza el estado local
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === id ? { ...notif, pinned: newPinned } : notif
+      )
+    );
+  };  
 
   const filtered = notifications.filter((n) => {
     if (activeTab === "unread") return !n.read;
     if (activeTab === "read") return n.read;
-    if (activeTab === "saved") return savedSet.has(n.id);
+    if (activeTab === "saved") return n.pinned;
     return true; // all
   });
 
@@ -145,7 +138,6 @@ export default function ShowNotifications() {
             }`}
             onClick={() => {
               handleTabChange(tab as "all" | "unread" | "read" | "saved");
-              setSelected(new Set());
             }}
           >
             {{
@@ -163,20 +155,6 @@ export default function ShowNotifications() {
           {filtered.length} Notificaci
           {filtered.length === 1 ? "ón" : "ones"}
         </h2>
-
-        {["unread", "read"].includes(activeTab) && (
-          <button
-            disabled={selected.size === 0}
-            onClick={activeTab === "unread" ? markSelectedAsRead : markSelectedAsUnread}
-            className={`ml-auto ${
-              selected.size === 0
-                ? "text-gray-600 bg-gray-300 rounded-lg px-4 cursor-not-allowed"
-                : "text-white bg-[#2d4583] rounded-lg px-4 hover:bg-[#08b177] cursor-pointer"
-            }`}
-          >
-            {activeTab === "unread" ? "Marcar como leída" : "Marcar como no leída"}
-          </button>
-        )}
       </div>
 
       {/* Notifications */}
@@ -196,20 +174,20 @@ export default function ShowNotifications() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-center table-auto">
+            <table className="w-full text-left table-auto">
               <tbody>
-                {filtered.map(({ id, message, read }) => (
+                {filtered.map(({ id, message, read, path, pinned }) => (
                   <tr
                     key={id}
                     className="border-b border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <td className="">
-                      <Dot className={read ? "text-gray-400" : "text-[#08b177] size-10"} />
+                      <Dot className={read ? "text-gray-400 size-10" : "text-[#08b177] size-10"} />
                     </td>
                     <td className="">
                       <div className="flex justify-center items-center">
-                        <button onClick={() => handleToggleSave(id)}>
-                          {savedSet.has(id) ? (
+                        <button onClick={() => handleToggleSave(id, pinned)}>
+                          {pinned ? (
                             <BookmarkCheck className="text-[#2d4583] cursor-pointer" />
                           ) : (
                             <Bookmark className="cursor-pointer"/>
@@ -217,17 +195,18 @@ export default function ShowNotifications() {
                         </button>
                       </div>
                     </td>
-                    <td className="">{message}</td>
+                    <td
+                      onClick={async () => {
+                        await updateReadStatus(id, read) 
+                        router.push(
+                          `/${path}&from=${encodeURIComponent(pathname)}`
+                        );
+                      }
+                    } className="px-8" >
+                      {message}
+                    </td>
                     <td className=" text-sm text-gray-500">
                       {tiempoNotificacion(Number(id))}
-                    </td>
-                    <td className="">
-                      <input
-                        type="checkbox"
-                        checked={selected.has(id)}
-                        onChange={(e) => handleCheckboxChange(id, e.target.checked)}
-                        className="cursor-pointer accent-[#2d4583] size-4"
-                      />
                     </td>
                   </tr>
                 ))}
