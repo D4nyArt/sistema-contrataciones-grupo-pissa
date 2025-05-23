@@ -3,8 +3,7 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { auth } from "@/firebaseConfig";
-import { Dot } from "lucide-react";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Dot, Bookmark, BookmarkCheck } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Notification = {
@@ -18,8 +17,8 @@ type Notification = {
 export default function ShowNotifications() {
   const [rhUID, setRhUID] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"all" | "unread" | "read" | "saved">("all");
-  const [savedSet, setSavedSet] = useState<Set<string>>(new Set());
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -38,8 +37,7 @@ export default function ShowNotifications() {
     setActiveTab(tab);
   };
 
-  // Get current user
-  useEffect(() => {    // snap.val() is Record<timestamp, { mensaje: string; leido: boolean }>
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setRhUID(user?.uid ?? null);
     });
@@ -50,12 +48,15 @@ export default function ShowNotifications() {
     async function fetchNotifications() {
       if (!rhUID) {
         setNotifications([]);
+        setLoading(false);
         return;
       }
 
+      setLoading(true);
       const res = await fetch(`/api/getNotifications?uid=${rhUID}`);
       const data = await res.json();
       setNotifications(data);
+      setLoading(false);
     }
     fetchNotifications();
   }, [rhUID]);
@@ -74,30 +75,25 @@ export default function ShowNotifications() {
 
   const handleToggleSave = async (id: string, currentPinned: boolean) => {
     const newPinned = !currentPinned;
-  
+
     await fetch("/api/markNotificationPinned", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        uid: rhUID,
-        id,
-        pinned: newPinned,
-      }),
+      body: JSON.stringify({ uid: rhUID, id, pinned: newPinned }),
     });
-  
-    // Actualiza el estado local
+
     setNotifications((prev) =>
       prev.map((notif) =>
         notif.id === id ? { ...notif, pinned: newPinned } : notif
       )
     );
-  };  
+  };
 
   const filtered = notifications.filter((n) => {
     if (activeTab === "unread") return !n.read;
     if (activeTab === "read") return n.read;
     if (activeTab === "saved") return n.pinned;
-    return true; // all
+    return true;
   });
 
   function tiempoNotificacion(timestamp: number): string {
@@ -136,9 +132,7 @@ export default function ShowNotifications() {
                 ? "bg-[#2d4583] text-white"
                 : "bg-gray-200 hover:bg-[#08b177] hover:text-white"
             }`}
-            onClick={() => {
-              handleTabChange(tab as "all" | "unread" | "read" | "saved");
-            }}
+            onClick={() => handleTabChange(tab as typeof activeTab)}
           >
             {{
               all: "Todas",
@@ -157,9 +151,19 @@ export default function ShowNotifications() {
         </h2>
       </div>
 
-      {/* Notifications */}
       <div className="rounded-b-xl bg-white pb-6 animate-fade-in-up">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="p-4 space-y-4">
+            {[...Array(3)].map((_, idx) => (
+              <div key={idx} className="flex items-center space-x-4 animate-pulse">
+                <div className="w-8 h-8 bg-gray-300 rounded-full" />
+                <div className="w-6 h-6 bg-gray-300 rounded" />
+                <div className="flex-1 h-4 bg-gray-300 rounded" />
+                <div className="w-24 h-4 bg-gray-300 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex items-center justify-center bg-white p-4 h-full rounded-b-xl">
             <p className="text-gray-500">
               No tienes notificaciones{" "}
@@ -181,31 +185,30 @@ export default function ShowNotifications() {
                     key={id}
                     className="border-b border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
-                    <td className="">
+                    <td>
                       <Dot className={read ? "text-gray-400 size-10" : "text-[#08b177] size-10"} />
                     </td>
-                    <td className="">
+                    <td>
                       <div className="flex justify-center items-center">
                         <button onClick={() => handleToggleSave(id, pinned)}>
                           {pinned ? (
                             <BookmarkCheck className="text-[#2d4583] cursor-pointer" />
                           ) : (
-                            <Bookmark className="cursor-pointer"/>
+                            <Bookmark className="cursor-pointer" />
                           )}
                         </button>
                       </div>
                     </td>
                     <td
                       onClick={async () => {
-                        await updateReadStatus(id, read) 
-                        router.push(
-                          `/${path}&from=${encodeURIComponent(pathname)}`
-                        );
-                      }
-                    } className="px-8" >
+                        await updateReadStatus(id, read);
+                        router.push(`/${path}&from=${encodeURIComponent(pathname)}`);
+                      }}
+                      className="px-8"
+                    >
                       {message}
                     </td>
-                    <td className=" text-sm text-gray-500">
+                    <td className="text-sm text-gray-500">
                       {tiempoNotificacion(Number(id))}
                     </td>
                   </tr>
