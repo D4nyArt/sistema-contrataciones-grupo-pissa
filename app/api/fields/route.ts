@@ -97,6 +97,58 @@ export async function PATCH(request: NextRequest) {
 
     await update(ref(database), updates)
     await recalcEstadoCampos(expedienteId, documentoId);
+
+    // Notificaciones
+    const revSnap = await get(ref(database, `usuarios/${expedienteId}/revisor`))
+    const reviewer = revSnap.exists() ? (revSnap.val() as string) : "sin_revisor";
+
+    let nombre = expedienteId; // Valor por defecto en caso de error
+    try {
+      const nombreSnap = await get(ref(database, `usuarios/${expedienteId}/nombre`));
+      if (nombreSnap.exists()) {
+        nombre = nombreSnap.val();
+      }
+    } catch (error) {
+      console.error("Error al obtener el nombre del candidato:", error);
+    }
+
+    const message = `El candidato ha actualizado campos en el expediente de ${nombre}`;
+    const timestamp = Date.now();
+
+    if (reviewer === "sin_revisor") {
+      // enviar a todos los RH
+      const usersSnap = await get(ref(database, "usuarios"));
+      if (usersSnap.exists()) {
+        const allUsers = usersSnap.val() as Record<string, { rol?: string }>;
+        for (const [userId, userData] of Object.entries(allUsers)) {
+          if (userData.rol === "rh") {
+            await update(
+              ref(database, `notificaciones/notificaciones${userId}`),
+              {
+                [timestamp]: {
+                  mensaje: message,
+                  leido: false,
+                  ruta: `dashboard/${expedienteId}?tab=expedientes`,
+                  fijado: false,
+                },
+              }
+            );
+          }
+        }
+      }
+    } else {
+      await update(
+        ref(database, `notificaciones/notificaciones${reviewer}`),
+        {
+          [timestamp]: {
+            mensaje: message,
+            leido: false,
+            ruta: `dashboard/${expedienteId}?tab=expedientes`,
+            fijado: false,
+          },
+        }
+      );
+    }
     
     return NextResponse.json({ ok: true })
   } catch (err) {

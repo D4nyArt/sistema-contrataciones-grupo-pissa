@@ -81,6 +81,21 @@ export async function PATCH(request: NextRequest) {
 
   if (Object.keys(updates).length) {
     await update(ref(database), updates);
+    
+    // Notificaciones 
+    const message = "Se ha actualizado el estado de archivos en el expediente.";
+    const timeStamp = Date.now();
+
+    console.log(`Notificación para expediente ${expedienteId}: ${message}`);
+
+    await update(ref(database, `notificaciones/notificaciones${expedienteId}`), {
+      [timeStamp]: {
+        mensaje: message,
+        leido: false,
+        ruta: `candidato/expediente?tab=expediente`,
+        fijado: false,
+      },
+    });
   }
 
   // recalcula siempre
