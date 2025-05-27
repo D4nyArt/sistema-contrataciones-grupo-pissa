@@ -6,6 +6,8 @@ import ContractsPage from "@/app/components/contractsPage";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
 import { usePathname } from "next/navigation";
+import OnboardingPage from "./admonbcard";
+import AdminOnboardingPage from "./admonbcard";
 
 export default function ContractInfo({ id }: { id: string }) {
   
@@ -55,7 +57,7 @@ export default function ContractInfo({ id }: { id: string }) {
 
         { active === "contratos" && <AdminContractsPage uid={_id} /> }
         { active === "onboarding" && (
-          <ExpedienteCandidato userId={_id} role="admin" />
+          <AdminOnboardingPage contractid={_id}/>
         ) }
       </div>
     </div>

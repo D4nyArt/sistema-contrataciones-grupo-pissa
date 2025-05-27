@@ -1,6 +1,6 @@
 import { database } from "@/firebaseConfig";
 import { get, ref } from "firebase/database";
-import { Briefcase, Mail, Pencil, Phone, User, VenusAndMars } from "lucide-react";
+import { Briefcase, Mail, Phone, User, VenusAndMars } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { SetStateAction, useEffect, useState } from "react";
 

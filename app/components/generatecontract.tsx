@@ -4,13 +4,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Database, get, ref, set, update } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
 import Uploader from "./Uploader";
-//import crypto from "crypto";
 
 
-/*
-const generatePassword = (length: number = 16) => {
-  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
-};*/
 export default function GenerateContract() {
   const [contract_name, setContract_Name] = useState("");
   const [folder, setFolder] = useState("");
@@ -45,8 +40,6 @@ useEffect(()=>{
 getcontractnumber();
 }, [])
 
-
-
 const clickResolveRef = useRef<(() => void)>(null);
 
   const waitForClick = () => {
@@ -77,7 +70,7 @@ const clickResolveRef = useRef<(() => void)>(null);
   const handlePress = () => {
     clickResolveRef.current?.();
     clickResolveRef.current = null;
-   
+    
 
   };
 
@@ -139,7 +132,7 @@ const clickResolveRef = useRef<(() => void)>(null);
           <button
             className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
             onClick={handlePress}>
-            Crear Credenciales
+            Crear Contrato
           </button>
         </div>
       </div>
