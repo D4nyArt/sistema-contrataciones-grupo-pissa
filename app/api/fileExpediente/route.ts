@@ -51,6 +51,23 @@ export async function PATCH(request: NextRequest) {
   )
   try {
     await update(docRef, { estadoArchivo })
+
+    // Notificaciones (ese si funciona)
+    const timestamp = Date.now()
+    const message = `Tu documento "${documentoId}" ha sido marcado como "${estadoArchivo}"`
+
+    await update(
+      ref(database, `notificaciones/notificaciones${expedienteId}`),
+      {
+        [timestamp]: {
+          mensaje: message,
+          leido: false,
+          ruta: `candidato/expediente?tab=expediente`,
+          fijado: false,
+        },
+      }
+    )
+
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error(err)

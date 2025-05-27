@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { X, ThumbsUp, ThumbsDown } from "lucide-react";
 import ManagerViewer from "@/app/components/ManagerViewer";
 import Uploader from "@/app/components/Uploader";
+import { get, ref, update } from "firebase/database";
+import { database } from "@/firebaseConfig";
 
 interface ArchivoExpedienteProps {
   role: string;
@@ -74,6 +76,7 @@ export default function ArchivoExpediente({
     // Actualizar el estado local
     fetchFile();
     onChangeState();
+    sendNotification();
   };
 
   const handleFileReview = async (approved: boolean) => {
@@ -104,6 +107,74 @@ export default function ArchivoExpediente({
       onChangeState();
     }
   };
+
+  // Notificaciones
+  const sendNotification = async () => {
+    const timestamp = Date.now();
+      const revSnap = await get(
+        ref(database, `usuarios/${expedienteId}/revisor`)
+      );
+      const reviewer = revSnap.exists()
+        ? (revSnap.val() as string)
+        : "sin_revisor";
+
+      let nombre = "";
+      let apellido = "";
+      let fullName = expedienteId;
+
+      try {
+        const userSnap = await get(ref(database, `usuarios/${expedienteId}`));
+        if (userSnap.exists()) {
+          const userData = userSnap.val() as {
+            nombre?: string;
+            apellido?: string;
+          };
+          nombre = userData.nombre ?? "";
+          apellido = userData.apellido ?? "";
+          fullName = `${nombre} ${apellido}`.trim();
+        }
+      } catch (error) {
+        console.error("Error al obtener el nombre del candidato:", error);
+      }
+
+      const message = `El candidato ${fullName} ha subido nuevos archivos en su expediente`;
+
+      if (reviewer === "sin_revisor") {
+        // enviar a todos los RH
+        const usersSnap = await get(ref(database, "usuarios"));
+        if (usersSnap.exists()) {
+          const allUsers = usersSnap.val() as Record<string, { rol?: string }>;
+          for (const [userId, userData] of Object.entries(allUsers)) {
+            if (userData.rol === "rh") {
+              await update(
+                ref(database, `notificaciones/notificaciones${userId}`),
+                {
+                  [timestamp]: {
+                    mensaje: message,
+                    leido: false,
+                    ruta: `dashboard/${expedienteId}?tab=expediente`,
+                    fijado: false,
+                  },
+                }
+              );
+            }
+          }
+        }
+      } else {
+        await update(
+          ref(database, `notificaciones/notificaciones${reviewer}`),
+          {
+            [timestamp]: {
+              mensaje: message,
+              leido: false,
+              ruta: `dashboard/${expedienteId}?tab=expedientes`,
+              fijado: false,
+            },
+          }
+        );
+      
+    }
+  }
 
   if (!fileData) {
     return <div>Cargando documento…</div>;
