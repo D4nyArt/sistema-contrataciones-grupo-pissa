@@ -1,70 +1,67 @@
 "use client";
-import {ref as storageRef, uploadBytes} from "firebase/storage";
-import {ref as dbRef, update, get} from "firebase/database";
-import React, {useRef, useState} from "react";
-import {storage, database} from "@/firebaseConfig";
-import {Upload} from "lucide-react";
+import { ref as storageRef, uploadBytes } from "firebase/storage";
+import { ref as dbRef, get, update, set } from "firebase/database";
+import React, { useRef, useState, useEffect } from "react";
+import { storage, database } from "@/firebaseConfig";
+import { Upload } from "lucide-react";
 
-// Definimos las props que puede recibir Uploader
 interface UploaderProps {
-  storageUrl: string;
-  dbPath: string;
-  contrato?: boolean; // Indica si es un contrato
+  storageUrl: string;  // ej. "expedientes/expediente123/documentos/doc456"
+  dbPath: string;      // misma ruta en RTDB sin "/extension"
+  contrato?: boolean;
   onFileUploaded: () => void;
 }
 
-const Uploader: React.FC<UploaderProps> = ({
+export default function Uploader({
   onFileUploaded,
   storageUrl,
   dbPath,
   contrato = false,
-}) => {
+}: UploaderProps): React.ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [allowedExt, setAllowedExt] = useState<string>("pdf");
+
+  // 1) Leemos la extensión permitida de la BD
+  useEffect(() => {
+    async function fetchAllowedExt() {
+      try {
+        const extSnap = await get(dbRef(database, `${dbPath}/extension`));
+        if (extSnap.exists()) {
+          setAllowedExt((extSnap.val() as string).toLowerCase());
+        }
+      } catch (err) {
+        console.error("Error leyendo extensión:", err);
+      }
+    }
+    fetchAllowedExt();
+  }, [dbPath]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = inputRef.current?.files?.[0];
     if (!file) return;
 
-    console.log("Archivo seleccionado:", file);
+    const nameLower = file.name.toLowerCase();
+    // 2) Validamos extensión
+    if (!nameLower.endsWith(`.${allowedExt}`)) {
+      alert(`Solo se permiten archivos .${allowedExt} en este apartado`);
+      return;
+    }
+
     setIsUploading(true);
-
     try {
-      // 1. Determinar la ruta del archivo
-      const fileReference = storageRef(storage, storageUrl + "/" + file.name);
-      const snapshot = await uploadBytes(fileReference, file);
-      console.log("Archivo subido correctamente:", snapshot);
-      try {
-        // Obtener la URL de descarga una sola vez
-        //const downloadUrl = await getDownloadURL(fileReference);
-
-        // Verificar si existe la ruta en la BD
-        const docRef = dbRef(database, dbPath);
-        const docSnapshot = await get(docRef);
-
-        if (docSnapshot.exists()) {
-          // Actualizar documento existente
-          await update(docRef, {
-            url: storageUrl + "/" + file.name, // Guardar la URL general, no la de descarga
-            estadoArchivo: "pendiente",
-          });
-        } else {
-          // Crear nuevo documento si no existe
-          await update(docRef, {
-            url: storageUrl + "/" + file.name,
-            estadoArchivo: "pendiente"
-          });
-        }
-        console.log("Base de datos actualizada con la nueva URL");
-      } catch (dbError) {
-        console.error("Error al actualizar la base de datos:", dbError);
-      }
-
-      // 3. Llamar al callback siempre
+      const fileRef = storageRef(storage, `${storageUrl}/${file.name}`);
+      await uploadBytes(fileRef, file);
+      const docRef = dbRef(database, dbPath);
+      await get(docRef).then(snap => {
+        const data = { url: `${storageUrl}/${file.name}`, estadoArchivo: "pendiente" };
+        return snap.exists() ? update(dbRef(database, dbPath), data)
+                             : set(dbRef(database, dbPath), data);
+      });
       onFileUploaded();
-    } catch (error) {
-      console.log("Error al subir el archivo", error);
+    } catch (err) {
+      console.error("Error al subir o actualizar BD:", err);
     } finally {
       setIsUploading(false);
     }
@@ -72,25 +69,20 @@ const Uploader: React.FC<UploaderProps> = ({
 
   return (
     <div>
-      <label
-        className={`cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : ""
-          }`}
-      >
-        <div className="bg-[#2d4583] hover:bg-[#08b177]  text-white p-8 rounded-lg inline-block mb-2">
+      <label className={`cursor-pointer ${isUploading ? "opacity-50 pointer-events-none" : ""}`}>
+        <div className="bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg inline-block mb-2">
           <Upload size={32} />
         </div>
         <input
           ref={inputRef}
           type="file"
           className="hidden"
-          accept=".pdf"
+          accept={`.${allowedExt}`}
           onChange={handleUpload}
           disabled={isUploading}
         />
       </label>
-      {isUploading && <p className="text-gray-500 mt-2">Subiendo archivo...</p>}
+      {isUploading && <p className="text-gray-500 mt-2">Subiendo archivo…</p>}
     </div>
   );
-};
-
-export default Uploader;
+}
