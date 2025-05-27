@@ -16,7 +16,7 @@ export default function UserCard({ user }: { user: User }) {
   return (
     <div
       onClick={() => router.push(`/dashboard/${user.id}?from=${encodeURIComponent(fullPath)}`)}
-      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
+      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex-none pr-2">

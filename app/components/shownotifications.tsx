@@ -89,12 +89,15 @@ export default function ShowNotifications() {
     );
   };
 
-  const filtered = notifications.filter((n) => {
+  const filtered = [...notifications]
+  .sort((a, b) => Number(b.id) - Number(a.id))
+  .filter((n) => {
     if (activeTab === "unread") return !n.read;
     if (activeTab === "read") return n.read;
     if (activeTab === "saved") return n.pinned;
     return true;
   });
+
 
   function tiempoNotificacion(timestamp: number): string {
     const ahora = Date.now();
