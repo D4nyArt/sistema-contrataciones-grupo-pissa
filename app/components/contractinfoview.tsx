@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import path from 'path';
 import SelectProjectContracts, {
   Contract as ProjectContract,
 } from "./selectProjectContracts";
@@ -22,6 +23,7 @@ export default function ContractInfoView({ id }: { id: string }) {
   const [selected, setSelected] = useState("");
   const [isproject, setIsproject] = useState(false);
   const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   let type = "";
@@ -56,6 +58,7 @@ export default function ContractInfoView({ id }: { id: string }) {
 
           setDuration(data.duration || "");
           setName(data.name || "");
+          setUrl(data.url || "");
         } catch (e) {
           console.error(e);
         }
@@ -67,11 +70,16 @@ export default function ContractInfoView({ id }: { id: string }) {
 
 
   //const contract = selectedProject || selectedCorporate;
-  let folder = isproject ? "pruebaInicial/contratos/proyectos" : "pruebaInicial/contratos/corporativo";
+  let folder = path.dirname(url);
+  let fileName = path.basename(url);
 
-  // Acción al confirmar el envío
-
-  console.log("selected: ", selected);
+  //console.log("url: ", url);
+  //console.log("folder: ", folder);
+  //console.log("filename: ", fileName);
+//
+  //// Acción al confirmar el envío
+//
+  //console.log("selected: ", selected);
 
   const options = [
     { id: "pro", label: "Proyecto", icon: FolderOpenDot },
@@ -116,7 +124,7 @@ export default function ContractInfoView({ id }: { id: string }) {
           <>
             <DirectViewer
               folder={folder}
-              fileName={name + ".pdf"}
+              fileName={fileName}
             />
           </>
         ) : (
