@@ -2,33 +2,34 @@
 import ListInformation from "@/app/components/usuario-phone";
 import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 import React, { useState } from "react";
+import ContractsPage from "@/app/components/contractsPage";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
-<<<<<<< HEAD
-//import { usePathname } from "next/navigation";
-=======
 import { usePathname } from "next/navigation";
 import OnboardingPage from "./admonbcard";
 import AdminOnboardingPage from "./admonbcard";
->>>>>>> onboarding
 
 export default function ContractInfo({ id }: { id: string }) {
-  //const pathname = usePathname();
-  //const _id = pathname.split("/")[3];
-
-  const [active, setActive] = useState<"onboarding" | "contratos">("contratos");
+  
+  const pathname = usePathname();
+  const _id = pathname.split("/")[3];
+  
+  const [active, setActive] = useState<"onboarding" | "contratos">(
+    "contratos"
+  );
 
   return (
     <div>
       <div className="hidden md:block">
-        <Contratos id={id} />
+        <Contratos id = {_id}/>
       </div>
       <div className="block md:hidden">
-        <ListInformation />
+        <ListInformation/>
       </div>
 
       <div className="">
         <div className="space-x-6 border-b border-gray-300 items-center mb-6">
+          
           <button
             onClick={() => setActive("contratos")}
             className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
@@ -38,8 +39,8 @@ export default function ContractInfo({ id }: { id: string }) {
             }`}
           >
             Información de Contrato
-          </button>
-
+          </button> 
+          
           <button
             onClick={() => setActive("onboarding")}
             className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
@@ -50,17 +51,14 @@ export default function ContractInfo({ id }: { id: string }) {
           >
             Onboarding
           </button>
+
+          
         </div>
 
-<<<<<<< HEAD
-        {active === "contratos" && <AdminContractsPage uid={id} />}
-        {active === "onboarding" && <ExpedienteCandidato userId={id} />}
-=======
         { active === "contratos" && <AdminContractsPage uid={_id} /> }
         { active === "onboarding" && (
           <AdminOnboardingPage contractid={_id}/>
         ) }
->>>>>>> onboarding
       </div>
     </div>
   );

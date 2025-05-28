@@ -5,26 +5,20 @@ import React, { useRef, useState } from "react";
 import { storage, database } from "@/firebaseConfig";
 import { Upload } from "lucide-react";
 
+
 // Definimos las props que puede recibir Uploader
 interface UploaderProps {
   storageUrl: string;
   dbPath: string;
-<<<<<<< HEAD
-  onFileUploaded: () => void;
-=======
   filename?: string;
   onFileUploaded: () => Promise<void>;
->>>>>>> onboarding
 }
 
 const Uploader: React.FC<UploaderProps> = ({
   onFileUploaded,
   storageUrl,
   dbPath,
-<<<<<<< HEAD
-=======
   filename
->>>>>>> onboarding
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -50,10 +44,7 @@ const Uploader: React.FC<UploaderProps> = ({
     try {
       // 1. Determinar la ruta del archivo
       const fileReference = storageRef(storage, `${storageUrl}/${file.name}`);
-<<<<<<< HEAD
-=======
       await onFileUploaded();
->>>>>>> onboarding
       const snapshot = await uploadBytes(fileReference, file);
       console.log("Archivo subido correctamente:", snapshot);
       try {

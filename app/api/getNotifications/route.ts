@@ -15,12 +15,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([], { status: 200 });
     }
 
-    // snap.val() is Record<timestamp, { mensaje: string; leido: boolean }>
-    const data = snap.val() as Record<string, { mensaje: string; leido: boolean }>;
-    const notifications = Object.entries(data).map(([id, { mensaje, leido }]) => ({
+    const data = snap.val() as Record<string, { mensaje: string; leido: boolean, ruta: string, fijado: boolean }>;
+    const notifications = Object.entries(data).map(([id, { mensaje, leido, ruta, fijado }]) => ({
       id,
       message: mensaje,
       read: leido,
+      path: ruta,
+      pinned: fijado
     }));
 
     return NextResponse.json(notifications, { status: 200 });

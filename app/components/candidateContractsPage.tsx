@@ -140,8 +140,18 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       url: `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`,
     });
 
+    let nombre = uid; // Valor por defecto en caso de error
+    try {
+      const nombreSnap = await get(dbRef(database, `usuarios/${uid}/nombre`));
+      if (nombreSnap.exists()) {
+        nombre = nombreSnap.val();
+      }
+    } catch (error) {
+      console.error("Error al obtener el nombre del candidato:", error);
+    }
+
     // Notificaciones
-    const message = `El candidato ${uid} subió el contrato "${fileName}"`;
+    const message = `El candidato ${nombre} subió el contrato "${fileName}"`;
     const timestamp = Date.now();
 
     if (reviewer === "sin_revisor") {
@@ -153,7 +163,14 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           if (userData.rol === "rh") {
             await update(
               dbRef(database, `notificaciones/notificaciones${userId}`),
-              { [timestamp]: { mensaje: message, leido: false } }
+              {
+                [timestamp]: {
+                  mensaje: message,
+                  leido: false,
+                  ruta: `dashboard/${uid}?tab=contratos`,
+                  fijado: false,
+                },
+              }
             );
           }
         }
@@ -161,7 +178,14 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     } else {
       await update(
         dbRef(database, `notificaciones/notificaciones${reviewer.rID}`),
-        { [timestamp]: { mensaje: message, leido: false } }
+        {
+          [timestamp]: {
+            mensaje: message,
+            leido: false,
+            ruta: `dashboard/${uid}?tab=contratos`,
+            fijado: false,
+          },
+        }
       );
     }
   };

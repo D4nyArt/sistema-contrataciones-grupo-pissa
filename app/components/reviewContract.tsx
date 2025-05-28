@@ -72,6 +72,20 @@ export default function ReviewContract({ uid }: { uid: string }) {
     }
     setInfo((cur) => ({ ...cur, state: newState }));
     setNotes("");
+
+    // Notificaciones
+    const message = `El contrato subido ha sido ${
+      approve ? "aprobado" : "rechazado"
+    }. ${notes ? "Tiene nuevas notas." : ""}`;
+    const timestamp = Date.now();
+    await update(ref(database, `notificaciones/notificaciones${uid}`), {
+      [timestamp]: {
+        mensaje: message,
+        leido: false,
+        ruta: `candidato/expediente?tab=contratos`,
+        fijado: false,
+      },
+    });
   };
 
   const current = info.state ? stateMap[info.state] : null;

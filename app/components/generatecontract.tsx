@@ -55,53 +55,12 @@ const clickResolveRef = useRef<(() => void)>(null);
     setGenerated(false);
 
     try {
-<<<<<<< HEAD
-      // Crear el usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        mail,
-        password
-      );
-      const uid = userCredential.user.uid;
-
-      // Preparamos los datos para guardar en la Realtime Database.
-      // NOTA: No se almacena la contraseña en la base de datos, ya que Firebase Auth se encarga de ello.
-      const data = {
-        apellidos: lastname,
-        email: mail,
-        estadoUsuario: "previo", // Andy (10.04 5:10 p.m.) Nuevos Estados de Usuario
-        nombre: name,
-        rol: role,
-        telefono: phone,
-        contrato_activo: "NaC",
-        intentos: {
-          total: 0,
-          ultimo: "-",
-        },
-      };
-
-      // Guardamos los datos del usuario usando el UID como key
-      await set(ref(database, "usuarios/" + uid), data);
-
-      alert(
-        "Se han creado las credenciales exitosamente. UID del usuario: " + uid
-      );
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error al crear el usuario:", error);
-        alert("Error al crear credenciales: " + error.message);
-      } else {
-        console.error("Error al crear el usuario:", error);
-        alert("Error al crear credenciales.");
-      }
-=======
         const nc_ref = ref(database, folder==="proyectos"?`contratos/proyectos/conproy${proy_num+2}`:`contratos/corporativo/concorp${corp_num+2}`);
         await update(nc_ref, {
             "duration": "indefinida",
             "name": contract_name,
             "type": folder,
         })
->>>>>>> onboarding
     }
     catch (e) {
         console.error(e);
@@ -127,6 +86,11 @@ const clickResolveRef = useRef<(() => void)>(null);
             value={contract_name}
             onChange={(event) => setContract_Name(event.target.value)}
           />
+
+          
+
+         
+
           <div className="text-black mt-4">Tipo del Contrato</div>
           <div className="flex-row flex items-center pb-10 pt-4 justify-between">
             <div className="flex-row flex">
@@ -155,11 +119,6 @@ const clickResolveRef = useRef<(() => void)>(null);
                 disabled={corp_disabled}
               />
             </div>
-<<<<<<< HEAD
-          </div>
-          <div className="text-black mt-4">Archivo del Contrato</div>
-
-=======
             
           </div>
         <div className="text-black mt-4">Archivo del Contrato</div>
@@ -170,7 +129,6 @@ const clickResolveRef = useRef<(() => void)>(null);
           </div>
           :
           <></>}
->>>>>>> onboarding
           <button
             className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
             onClick={handlePress}>

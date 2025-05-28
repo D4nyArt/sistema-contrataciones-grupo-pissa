@@ -93,6 +93,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          role,
           expedienteId,
           documentoId,
           campos: camposPayload,
@@ -126,6 +127,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          role,
           expedienteId,
           documentoId,
           fieldKey,

@@ -4,7 +4,7 @@ import React from "react";
 import ProfilePicture from "./profile-picture";
 import EtiquetaEstado from "./etiquetaEstado";
 import { ArrowUpRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface RevisandoEntry {
   candidateUID: string;
@@ -21,6 +21,7 @@ interface TablaRevisandoProps {
 
 export default function TablaRevisando({ datos }: TablaRevisandoProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div className="overflow-x-auto">
@@ -56,7 +57,12 @@ export default function TablaRevisando({ datos }: TablaRevisandoProps) {
                 </td>
                 <td className="px-4 py-4 border-b border-gray-300"><EtiquetaEstado status={entry.estadoUsuario}/></td>
                 <td className="px-4 py-4 border-b border-gray-300">
-                  <button onClick={() => router.push(`/dashboard/${entry.candidateUID}`)} className="cursor-pointer">
+                  <button 
+                    onClick={() => 
+                      router.push(
+                        `/dashboard/${entry.candidateUID}?from=${encodeURIComponent(pathname)}`
+                      )
+                    } className="cursor-pointer">
                     <ArrowUpRight className="size-4.5"/>
                   </button>
                 </td>

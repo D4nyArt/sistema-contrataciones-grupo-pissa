@@ -45,7 +45,7 @@ export default function EtiquetaEstado({ status }: EtiquetaEstadoProps) {
 
   return (
     <div className="flex flex-row items-center">
-      <div className={`flex flex-row items-center px-4  ${config.bg} rounded-lg`}>
+      <div className={`flex flex-row items-center px-4  ${config.bg} rounded-lg w-30 justify-center`}>
         {config.icon}
         <p className={`pl-1 ${config.text} normal-case`}>
           {config.label}
