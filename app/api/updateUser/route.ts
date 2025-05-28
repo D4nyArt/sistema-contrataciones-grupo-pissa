@@ -11,7 +11,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     console.log("Body recibido:", JSON.stringify(body, null, 2));
     
-    const { email, telefono, targetEmail } = body;
+    const { telefono, emailSecundario, targetEmail } = body;
 
     // Validaciones mejoradas
     if (!targetEmail) {
@@ -19,18 +19,19 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { 
           message: "El campo targetEmail es requerido para identificar al usuario.",
-          received: { email, telefono, targetEmail }
+          received: { telefono, emailSecundario, targetEmail }
         },
         { status: 400 }
       );
     }
 
-    if (!email && !telefono) {
+    // Al menos uno de los campos debe estar presente (incluso si emailSecundario es null para eliminarlo)
+    if (telefono === undefined && emailSecundario === undefined) {
       console.error("Error: No se proporcionaron campos para actualizar");
       return NextResponse.json(
         { 
-          message: "Se requiere al menos un campo para actualizar (email o telefono).",
-          received: { email, telefono, targetEmail }
+          message: "Se requiere al menos un campo para actualizar (telefono o emailSecundario).",
+          received: { telefono, emailSecundario, targetEmail }
         },
         { status: 400 }
       );
@@ -38,8 +39,8 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
     console.log("Validaciones pasadas");
     console.log("Target email:", targetEmail);
-    console.log("Nuevo email:", email || "sin cambios");
     console.log("Nuevo teléfono:", telefono || "sin cambios");
+    console.log("Email secundario:", emailSecundario === null ? "eliminar" : emailSecundario || "sin cambios");
 
     // Obtener referencia a la base de datos
     let db;
@@ -87,7 +88,8 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
               email: userData.email,
               // Solo mostrar otros campos para debug si existen
               ...(userData.nombre && { nombre: userData.nombre }),
-              ...(userData.telefono && { telefono: userData.telefono })
+              ...(userData.telefono && { telefono: userData.telefono }),
+              ...(userData.emailSecundario && { emailSecundario: userData.emailSecundario })
             });
             userIndex++;
           });
@@ -118,16 +120,28 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       
       const path = `usuarios/${child.key}`;
       
-      if (email && email !== userData.email) {
-        updates[`${path}/email`] = email;
-        console.log(`Programando actualización de email: ${userData.email} → ${email}`);
-        updatedCount++;
-      }
-      
-      if (telefono && telefono !== userData.telefono) {
+      // Actualizar teléfono si se proporciona y es diferente
+      if (telefono !== undefined && telefono !== userData.telefono) {
         updates[`${path}/telefono`] = telefono;
         console.log(`Programando actualización de teléfono: ${userData.telefono || 'vacío'} → ${telefono}`);
         updatedCount++;
+      }
+      
+      // Manejar email secundario
+      if (emailSecundario !== undefined) {
+        if (emailSecundario === null) {
+          // Eliminar email secundario si existe
+          if (userData.emailSecundario) {
+            updates[`${path}/emailSecundario`] = null;
+            console.log(`Programando eliminación de email secundario: ${userData.emailSecundario}`);
+            updatedCount++;
+          }
+        } else if (emailSecundario !== userData.emailSecundario) {
+          // Actualizar email secundario si es diferente
+          updates[`${path}/emailSecundario`] = emailSecundario;
+          console.log(`Programando actualización de email secundario: ${userData.emailSecundario || 'vacío'} → ${emailSecundario}`);
+          updatedCount++;
+        }
       }
     });
 

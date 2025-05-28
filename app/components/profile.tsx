@@ -9,10 +9,11 @@ export default function Profile() {
   const [mail, setmail] = useState("");
   const [role, setrole] = useState("");
   const [tel, setTel] = useState("");
+  const [emailSecundario, setEmailSecundario] = useState("");
+  const [showSecondaryEmail, setShowSecondaryEmail] = useState(false);
   const [edit, setEdit] = useState(false);
   const [originalEmail, setOriginalEmail] = useState("");
   const [loading, setLoading] = useState(true);
-
 
   type clasifAlerta = "aprobado" | "denegado" | "errorSist" | "info";
   const [alerta, setAlerta] = useState<{
@@ -31,7 +32,13 @@ export default function Profile() {
         setlastname(jason.apellidos);
         setmail(jason.email);
         setrole(jason.rol);
-        setTel(jason.telefono);
+        setTel(jason.telefono || "");
+        
+        // Si ya existe un email secundario, mostrarlo
+        if (jason.emailSecundario) {
+          setEmailSecundario(jason.emailSecundario);
+          setShowSecondaryEmail(true);
+        }
       } catch (error) {
         setAlerta({
           type: "errorSist",
@@ -47,31 +54,57 @@ export default function Profile() {
 
   const changeProfile = async () => {
     if (loading) return;
+    
     if (edit) {
-      const res = await fetch("/api/updateUser", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      try {
+        // Preparar el body de la petición
+        const updateData: {
+          targetEmail: string;
+          telefono?: string;
+          emailSecundario?: string | null;
+        } = {
           targetEmail: originalEmail,
-          email: mail,
-          telefono: tel,
-        }),
-      });
+        };
 
-      if (res.ok) {
-        document.cookie = "candidateId=; path=/; max-age=0";
-        
-        setAlerta({
-          type: "info",
-          mensaje: "Perfil actualizado correctamente",
+        // Solo incluir teléfono si tiene valor o si se está limpiando
+        if (tel !== undefined) {
+          updateData.telefono = tel;
+        }
+
+        // Manejar email secundario
+        if (showSecondaryEmail) {
+          updateData.emailSecundario = emailSecundario || null;
+        } else {
+          // Si se oculta el campo, eliminar el email secundario
+          updateData.emailSecundario = null;
+        }
+
+        const res = await fetch("/api/updateUser", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
         });
-        setEdit(false);
-      } else {
+
+        const responseData = await res.json();
+
+        if (res.ok) {
+          setAlerta({
+            type: "aprobado",
+            mensaje: "Perfil actualizado correctamente",
+          });
+          setEdit(false);
+        } else {
+          setAlerta({
+            type: "errorSist",
+            mensaje: responseData.message || "Error al actualizar los datos",
+          });
+        }
+      } catch (error) {
         setAlerta({
           type: "errorSist",
-          mensaje: "Error al actualizar los datos",
+          mensaje: "Error de conexión al actualizar los datos",
         });
       }
     } else {
@@ -79,8 +112,27 @@ export default function Profile() {
     }
   };
 
+  const toggleSecondaryEmail = () => {
+    if (!edit) return;
+    
+    if (showSecondaryEmail) {
+      // Si se oculta, limpiar el campo
+      setEmailSecundario("");
+      setShowSecondaryEmail(false);
+    } else {
+      setShowSecondaryEmail(true);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center p-4">
+      {alerta && (
+        <Alerta
+          tipo={alerta.type}
+          mensaje={alerta.mensaje}
+        />
+      )}
+      
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Perfil de Usuario
@@ -112,18 +164,51 @@ export default function Profile() {
           </div>
 
           <div>
-            <label className="text-gray-600 text-sm">Correo</label>
-            {edit ? (
-              <input
-                type="email"
-                className="w-full mt-1 p-2 border rounded"
-                value={mail}
-                onChange={(e) => setmail(e.target.value)}
-              />
-            ) : (
-              <p className="text-lg font-medium">{mail}</p>
-            )}
+            <div className="flex items-center justify-between">
+              <label className="text-gray-600 text-sm">Correo Principal</label>
+              {edit && (
+                <button
+                  type="button"
+                  onClick={toggleSecondaryEmail}
+                  className="text-emerald-500 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
+                  title={showSecondaryEmail ? "Quitar email secundario" : "Agregar email secundario"}
+                >
+                  {showSecondaryEmail ? (
+                    <>
+                      <span className="text-lg">−</span>
+                      Email secundario
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg">+</span>
+                      Email secundario
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+            <p className="text-lg font-medium">{mail}</p>
           </div>
+
+          {/* Email Secundario */}
+          {showSecondaryEmail && (
+            <div>
+              <label className="text-gray-600 text-sm">Email Secundario</label>
+              {edit ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="email"
+                    className="flex-1 mt-1 p-2 border rounded"
+                    value={emailSecundario}
+                    onChange={(e) => setEmailSecundario(e.target.value)}
+                    placeholder="email.secundario@ejemplo.com"
+                  />
+                </div>
+              ) : (
+                <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="text-gray-600 text-sm">Teléfono</label>
@@ -133,9 +218,10 @@ export default function Profile() {
                 className="w-full mt-1 p-2 border rounded"
                 value={tel}
                 onChange={(e) => setTel(e.target.value)}
+                placeholder="Número de teléfono"
               />
             ) : (
-              <p className="text-lg font-medium">{tel}</p>
+              <p className="text-lg font-medium">{tel || "No configurado"}</p>
             )}
           </div>
         </div>
