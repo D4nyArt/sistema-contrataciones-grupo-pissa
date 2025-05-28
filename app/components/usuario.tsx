@@ -5,6 +5,11 @@ import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
+
+import { handleBlock, handleUnblock } from "./block";
+
+import RealizarSeguimiento from "./relizarseguimiento";
+import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
   Clock,
@@ -28,6 +33,8 @@ export default function Usuarios() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [time, setTime] = useState("-");
   const id = pathname.split("/")[2];
 
   useEffect(() => {
@@ -41,37 +48,11 @@ export default function Usuarios() {
   const handleRemoval = async () => {
     await set(
       ref(database, `usuarios/${id}/estadoUsuario`),
-      "dado de baja"
+      "baja"
     ).then(() => {
-      setStatus("dado de baja");
+      setStatus("baja");
     });
   };
-
-  const handleBlock = async () => {
-    if (status != "dado de baja") {
-      await set(
-        ref(database, `usuarios/${id}/estadoUsuario`),
-        "bloqueado"
-      ).then(() => {
-        setStatus("bloqueado");
-      });
-    } else {
-      alert("No se puede bloquear un usuario que ya esta dado de baja");
-    }
-  };
-
-  const handleUnblock = async () => {
-    if (status != "dado de baja") {
-      await set(ref(database, `usuarios/${id}/estadoUsuario`), "normal").then(
-        () => {
-          setStatus("normal");
-        }
-      );
-    } else {
-      alert("No se puede desbloquear un usuario que ya esta dado de baja");
-    }
-  };
-
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))
 
@@ -130,7 +111,7 @@ export default function Usuarios() {
                     </p>
                   </div>
                 )}
-                {status === "dado de baja" && (
+                {status === "baja" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-red-100 rounded-lg">
                     <UserMinus className="size-4 text-red-800" />
                     <p className="pl-1 text-red-800 normal-case text-xs">
@@ -160,27 +141,32 @@ export default function Usuarios() {
           </div>
         </span>
         <div className="md:ml-auto flex">
-          <SeguimientoToggle rhUID={rhUID!} candidateUID={id} />
-          {status !== "dado de baja" && (
-            <button
-              className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
-                status === "bloqueado"
-                  ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
-                  : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
-              }`}
-              onClick={status === "bloqueado" ? handleUnblock : handleBlock}
-            >
-              {status === "bloqueado" ? (
-                <>
-                  <LockOpen className="pr-2" /> Desbloquear
-                </>
-              ) : (
-                <>
-                  <Lock className="pr-2" /> Bloquear
-                </>
-              )}
-            </button>
-          )}
+          <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
+            {status !== "dado de baja" && (
+              <button
+                className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
+                  status === "bloqueado"
+                    ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
+                    : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
+                }`}
+                onClick={() =>
+                  status === "bloqueado"
+                    ? handleUnblock(id, status, setStatus, setAttempt, setTime)
+                    : handleBlock(id, setStatus, status)
+                }
+              >
+                {status === "bloqueado" ? (
+                  <>
+                    <LockOpen className="pr-2" /> Desbloquear
+                  </>
+                ) : (
+                  <>
+                    <Lock className="pr-2" /> Bloquear
+                  </>
+                )}
+              </button>
+            )}
+
           <button
             className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
             onClick={handleRemoval}

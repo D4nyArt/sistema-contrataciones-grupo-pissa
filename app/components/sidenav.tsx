@@ -21,8 +21,12 @@ export default function SideNav({ roleView }: SideNavProps) {
             />
           </div>
           <NavLinks roleView={roleView} />
-          <FAQ />
-          <ForLogOut />
+          <div className="bottom-6 left-6 fixed p-3 items-center justify-center flex flex-col text-white hover:bg-[#2974a04b] rounded-xl">
+            <FAQ />
+          </div>
+          <div className="bottom-6 left-48 fixed p-3 items-center justify-center flex flex-col text-white hover:bg-[#2974a04b] rounded-xl">
+            <ForLogOut />
+          </div>
         </div>
       </div>
     </div>
