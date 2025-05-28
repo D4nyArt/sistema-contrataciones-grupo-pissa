@@ -5,32 +5,51 @@ import { database } from '@/firebaseConfig'
 
 async function getRole() {
   const cookieStore = await cookies()
-  const uid = cookieStore.get('candidateId')?.value || null
-  let role: string | null = null
+  const uid = cookieStore.get('candidateId')?.value || null;
+  let role: string | null = null;
 
   if (uid) {
-    const snapshot = await get(ref(database, `usuarios/${uid}/rol`))
-    if (snapshot.exists()) role = snapshot.val() as string
+    const snapshot = await get(ref(database, `usuarios/${uid}/rol`));
+    if (snapshot.exists()) role = snapshot.val() as string;
   }
 
-  return role
+  return role;
 }
 
+async function getContractid() {
+  let contract_id: string = "";
+  const cookieStore = await cookies()
+  const uid = cookieStore.get('candidateId')?.value || null
+
+  const contract_ref = ref(database, `expedientes/expediente${uid}/contratos/id`);
+  
+  if (uid) {
+  const contract_snap = await get(contract_ref); 
+  if (contract_snap.exists()) contract_id = contract_snap.val() as string;
+  }
+
+  return contract_id;
+}
+
+
 type OnbCard = { nombre: string; url: string }
-async function getListOnbCards(rol: string): Promise<Record<string, OnbCard>> {
+async function getListOnbCards(rol: string, contract_id: string): Promise<Record<string, OnbCard>> {
+
+
   if (rol === 'enCorporativo') {
-    const snapshot = await get(ref(database, `contratos/corporativo/onbcorp`))
+    const snapshot = await get(ref(database, `contratos/corporativo/${contract_id}/onb${contract_id}`))
     if (snapshot.exists()) return snapshot.val() as Record<string, OnbCard>
   }
   if (rol === 'enProyecto') {
-    const snapshot = await get(ref(database, `contratos/proyectos/onbproy`))
+    const snapshot = await get(ref(database, `contratos/proyectos/${contract_id}/onb${contract_id}`))
     if (snapshot.exists()) return snapshot.val() as Record<string, OnbCard>
   }
   return {}
 }
 
 export default async function OnboardingPage() {
-  const role = await getRole()
+  const role = await getRole();
+  const contract_id = await getContractid();
 
   // Si no tiene contrato aún, mostrar mensaje informativo
   if (role !== 'enCorporativo' && role !== 'enProyecto') {
@@ -46,7 +65,7 @@ export default async function OnboardingPage() {
     )
   }
 
-  const onbCards = await getListOnbCards(role)
+  const onbCards = await getListOnbCards(role, contract_id);
 
   return (
     <main className="p-8">

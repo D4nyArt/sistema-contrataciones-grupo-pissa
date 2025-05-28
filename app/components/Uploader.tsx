@@ -9,21 +9,40 @@ import { Upload } from "lucide-react";
 interface UploaderProps {
   storageUrl: string;
   dbPath: string;
+<<<<<<< HEAD
   onFileUploaded: () => void;
+=======
+  filename?: string;
+  onFileUploaded: () => Promise<void>;
+>>>>>>> onboarding
 }
 
 const Uploader: React.FC<UploaderProps> = ({
   onFileUploaded,
   storageUrl,
   dbPath,
+<<<<<<< HEAD
+=======
+  filename
+>>>>>>> onboarding
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const file = inputRef.current?.files?.[0];
+    let file = inputRef.current?.files?.[0];
     if (!file) return;
+
+    if (filename) {
+      const ext = file.name.split(".").pop();
+      const newfilename = `${filename}.${ext}`;
+
+      file = new File([file], newfilename, {
+        type: file.type,
+        lastModified: file.lastModified
+      })
+    }
 
     console.log("Archivo seleccionado:", file);
     setIsUploading(true);
@@ -31,6 +50,10 @@ const Uploader: React.FC<UploaderProps> = ({
     try {
       // 1. Determinar la ruta del archivo
       const fileReference = storageRef(storage, `${storageUrl}/${file.name}`);
+<<<<<<< HEAD
+=======
+      await onFileUploaded();
+>>>>>>> onboarding
       const snapshot = await uploadBytes(fileReference, file);
       console.log("Archivo subido correctamente:", snapshot);
       try {
@@ -60,7 +83,7 @@ const Uploader: React.FC<UploaderProps> = ({
       }
 
       // 3. Llamar al callback siempre
-      onFileUploaded();
+      //onFileUploaded();
     } catch (error) {
       console.log("Error al subir el archivo", error);
     } finally {

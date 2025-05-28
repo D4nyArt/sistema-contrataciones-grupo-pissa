@@ -4,7 +4,7 @@ import { database } from '@/firebaseConfig'
 
 export async function GET(request: NextRequest) {
   try {
-    const params      = request.nextUrl.searchParams
+    const params = request.nextUrl.searchParams
     const expedienteId = params.get('expedienteId')
     const documentoId  = params.get('documentoId')
     if (!expedienteId || !documentoId) {

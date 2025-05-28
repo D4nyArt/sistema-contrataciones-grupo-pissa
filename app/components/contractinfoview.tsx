@@ -1,4 +1,15 @@
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
+=======
+import path from 'path';
+import SelectProjectContracts, {
+  Contract as ProjectContract,
+} from "./selectProjectContracts";
+import SelectCorporateContracts, {
+  Contract as CorpContract,
+} from "./selectCorporateContracts";
+//import ManagerViewer from "./ManagerViewer";
+>>>>>>> onboarding
 import DirectViewer from "./directFileView";
 import { get, ref } from "firebase/database";
 import { database } from "@/firebaseConfig";
@@ -12,6 +23,7 @@ export default function ContractInfoView({ id }: { id: string }) {
   const [selected, setSelected] = useState("");
   const [isproject, setIsproject] = useState(false);
   const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   let type = "";
@@ -31,12 +43,43 @@ export default function ContractInfoView({ id }: { id: string }) {
         if (!Object.keys(data).length) {
           const userRef = ref(database, `contratos/corporativo/${id}`);
           const snapshot = await get(userRef);
+<<<<<<< HEAD
           data = snapshot.val() || {};
           type = "pro";
           setIsproject(false);
         } else {
           type = "cor";
           setIsproject(true);
+=======
+          let data = snapshot.val() || {};
+          console.log(id);
+          console.log(data);
+          console.log(type);
+          
+          //if the contract is not in "proyectos" search in "corporativo"
+          if (!Object.keys(data).length) {
+            const userRef = ref(database, `contratos/corporativo/${id}`);
+            const snapshot = await get(userRef);
+            data = snapshot.val() || {};
+           
+            type = "cor";
+            setIsproject(false);
+          }
+
+          else {
+             type = "pro"
+            setIsproject(true);
+          }
+  
+          console.log(data);
+          console.log(type);
+
+          setDuration(data.duration || "");
+          setName(data.name || "");
+          setUrl(data.url || "");
+        } catch (e) {
+          console.error(e);
+>>>>>>> onboarding
         }
 
         console.log(data);
@@ -54,13 +97,22 @@ export default function ContractInfoView({ id }: { id: string }) {
   }, [type]);
 
   //const contract = selectedProject || selectedCorporate;
+<<<<<<< HEAD
   const folder = isproject
     ? "pruebaInicial/contratos/proyectos"
     : "pruebaInicial/contratos/corporativo";
+=======
+  let folder = path.dirname(url);
+  let fileName = path.basename(url);
+>>>>>>> onboarding
 
-  // Acción al confirmar el envío
-
-  console.log("selected: ", selected);
+  //console.log("url: ", url);
+  //console.log("folder: ", folder);
+  //console.log("filename: ", fileName);
+//
+  //// Acción al confirmar el envío
+//
+  //console.log("selected: ", selected);
 
   const options = [
     { id: "pro", label: "Proyecto", icon: FolderOpenDot },
@@ -82,19 +134,27 @@ export default function ContractInfoView({ id }: { id: string }) {
           {options.map((option) => {
             const LinkIcon = option.icon;
             return (
+<<<<<<< HEAD
               <button
                 key={option.id}
                 onClick={() => {}}
+=======
+              <div key={option.id}
+>>>>>>> onboarding
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
                 ${
                   selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
+<<<<<<< HEAD
                     : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"
                 }`}
+=======
+                    : "border-gray-300 text-gray-500"}`}
+>>>>>>> onboarding
               >
                 <LinkIcon />
                 {option.label}
-              </button>
+              </div>
             );
           })}
         </div>
@@ -116,7 +176,14 @@ export default function ContractInfoView({ id }: { id: string }) {
       <div className="h-[400px] w-[500px]">
         {loading ? (
           <>
+<<<<<<< HEAD
             <DirectViewer folder={folder} fileName={name + ".pdf"} />
+=======
+            <DirectViewer
+              folder={folder}
+              fileName={fileName}
+            />
+>>>>>>> onboarding
           </>
         ) : (
           <div className="text-gray-500 text-center h-full flex-col space-y-2 border border-gray-300 p-4 rounded-xl justify-center flex items-center">

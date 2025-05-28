@@ -4,7 +4,13 @@ import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 import React, { useState } from "react";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
+<<<<<<< HEAD
 //import { usePathname } from "next/navigation";
+=======
+import { usePathname } from "next/navigation";
+import OnboardingPage from "./admonbcard";
+import AdminOnboardingPage from "./admonbcard";
+>>>>>>> onboarding
 
 export default function ContractInfo({ id }: { id: string }) {
   //const pathname = usePathname();
@@ -46,8 +52,15 @@ export default function ContractInfo({ id }: { id: string }) {
           </button>
         </div>
 
+<<<<<<< HEAD
         {active === "contratos" && <AdminContractsPage uid={id} />}
         {active === "onboarding" && <ExpedienteCandidato userId={id} />}
+=======
+        { active === "contratos" && <AdminContractsPage uid={_id} /> }
+        { active === "onboarding" && (
+          <AdminOnboardingPage contractid={_id}/>
+        ) }
+>>>>>>> onboarding
       </div>
     </div>
   );

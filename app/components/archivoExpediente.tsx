@@ -137,6 +137,7 @@ export default function ArchivoExpediente({
                     : "Aprobar"}
                 </button>
 
+<<<<<<< HEAD
                 <button
                   onClick={() => handleFileReview(false)}
                   className={`flex items-center px-3 py-2 rounded transition-colors ${
@@ -153,6 +154,49 @@ export default function ArchivoExpediente({
               </div>
             </div>
           )}
+=======
+                                <button
+                                    onClick={() => handleFileReview(false)}
+                                    className={`flex items-center px-3 py-2 rounded transition-colors ${fileData?.estadoArchivo ===
+                                        FILE_STATES.REJECTED
+                                        ? "bg-red-200 text-red-800"
+                                        : "bg-red-600 text-white hover:bg-red-700"
+                                        }`}
+                                >
+                                    <ThumbsDown size={16} className="mr-2" />
+                                    {fileData?.estadoArchivo ===
+                                        FILE_STATES.REJECTED
+                                        ? "Rechazado"
+                                        : "Rechazar"}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    {canEdit ? (
+                        <>
+                            <X size={32} className="mx-auto text-gray-400 mb-2" />
+                            <p className="text-gray-500">
+                                El candidato aún no ha subido este documento
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <Uploader
+                                storageUrl={`pruebaInicial/expedientes/expediente${expedienteId}/documentos/${documentoId}`}
+                                dbPath={`expedientes/expediente${expedienteId}/documentos/${documentoId}`}
+                                onFileUploaded={async() => {handleFileUpload}}
+                            />
+                            <p className="text-gray-500 mt-2">
+                                Haz clic para subir tu Archivo
+                            </p>
+                        </>
+                    )}
+                </div>
+            )}
+>>>>>>> onboarding
         </div>
       ) : (
         <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">

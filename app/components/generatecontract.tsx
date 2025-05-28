@@ -1,46 +1,61 @@
-/* DOCUMENTACIÓN - Generación de credenciales
-
-Estados de los usuarios:
-
-* previo: cuando el candidato recién tiene credenciales y no ha generado su contraseña por primera vez
-* normal: usuario activo
-* bloqueado: cuando el usuario bloqueó su cuenta por 3 inicios de sesión incorrectos
-* enProceso: cuando se hizo la solicitud de recuperación de la cuenta
-* inhabilitado: cuando RH revoca los privilegios de acceso de la cuenta.
-* baja: Cuando el usuario fue bloqueado de manera permanente
-
-*/
-
 "use client";
-
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { Database, get, ref, set, update } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
-//import crypto from "crypto";
+import Uploader from "./Uploader";
 
-const generatePassword = () => {
-  return "123456";
-};
 
-/*
-const generatePassword = (length: number = 16) => {
-  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
-};*/
 export default function GenerateContract() {
   const [contract_name, setContract_Name] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
-  const [cand_disabled, setcand_disabled] = useState(false);
-  const [rh_disabled, setrh_disabled] = useState(false);
+  const [folder, setFolder] = useState("");
+  const [proy_disabled, setProy_disabled] = useState(false);
+  const [corp_disabled, setCorp_disabled] = useState(false);
+  const [generated, setGenerated] = useState(false);
+  const [proy_num, setProy_num] = useState(0);
+  const [corp_num, setCorp_num] = useState(0);
+   
+useEffect(()=>{
 
-  const handlePress = async () => {
-    // Generamos una contraseña (opcional: podrías permitir que el usuario defina la suya)
-    const password = generatePassword();
+  const getcontractnumber = async () => {
+
+  const project_ref = ref(database, "contratos/proyectos");
+  const corp_ref = ref(database, "contratos/corporativo");
+
+
+  try {
+    const p_snap = await get(project_ref);
+    const c_snap = await get(corp_ref);
+
+    setProy_num(p_snap.size);
+    setCorp_num(c_snap.size);
+
+  }
+  catch (e) {
+    console.error(e);
+  }
+
+}
+
+getcontractnumber();
+}, [])
+
+const clickResolveRef = useRef<(() => void)>(null);
+
+  const waitForClick = () => {
+    return new Promise<void>((resolve) => {
+      clickResolveRef.current = resolve;
+    });
+  };
+
+  const handleUpload = async () => {
+    console.log("Upload done—waiting for button press…");
+    setGenerated(true);
+    await waitForClick();
+    setGenerated(false);
 
     try {
+<<<<<<< HEAD
       // Crear el usuario en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -79,7 +94,25 @@ export default function GenerateContract() {
         console.error("Error al crear el usuario:", error);
         alert("Error al crear credenciales.");
       }
+=======
+        const nc_ref = ref(database, folder==="proyectos"?`contratos/proyectos/conproy${proy_num+2}`:`contratos/corporativo/concorp${corp_num+2}`);
+        await update(nc_ref, {
+            "duration": "indefinida",
+            "name": contract_name,
+            "type": folder,
+        })
+>>>>>>> onboarding
     }
+    catch (e) {
+        console.error(e);
+    }
+  };
+
+  const handlePress = () => {
+    clickResolveRef.current?.();
+    clickResolveRef.current = null;
+    
+
   };
 
   return (
@@ -100,36 +133,48 @@ export default function GenerateContract() {
               <p className="text-black pr-2">Proyectos</p>
               <input
                 type="checkbox"
-                value="candidato"
+                value="proyectos"
                 onChange={(event) => {
-                  setRole(event.target.value);
-                  setcand_disabled(false);
-                  setrh_disabled(!rh_disabled);
+                  setFolder(event.target.value);
+                  setProy_disabled(false);
+                  setCorp_disabled(!corp_disabled);
                 }}
-                disabled={cand_disabled}
+                disabled={proy_disabled}
               />
             </div>
             <div className="flex-row flex">
               <p className="text-black pl-8 pr-2">Corporativo </p>
               <input
                 type="checkbox"
-                value="rh"
+                value="corporativo"
                 onChange={(event) => {
-                  setRole(event.target.value);
-                  setcand_disabled(!cand_disabled);
-                  setrh_disabled(false);
+                  setFolder(event.target.value);
+                  setProy_disabled(!proy_disabled);
+                  setCorp_disabled(false);
                 }}
-                disabled={rh_disabled}
+                disabled={corp_disabled}
               />
             </div>
+<<<<<<< HEAD
           </div>
           <div className="text-black mt-4">Archivo del Contrato</div>
 
+=======
+            
+          </div>
+        <div className="text-black mt-4">Archivo del Contrato</div>
+        <Uploader filename={contract_name} storageUrl={`pruebaInicial/contratos/${folder}`} onFileUploaded={handleUpload} dbPath={folder==="proyectos"?`contratos/proyectos/conproy${proy_num+2}`:`contratos/corporativo/concorp${corp_num+2}`}/>
+          {generated ?
+          <div>
+            El archivo se subió correctamente Presiona crear credenciales para crear el contrato
+          </div>
+          :
+          <></>}
+>>>>>>> onboarding
           <button
             className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
-            onClick={handlePress}
-          >
-            Crear Credenciales
+            onClick={handlePress}>
+            Crear Contrato
           </button>
         </div>
       </div>
