@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:3000", "https://grupo-pissa.space"],
+    "method": ["GET", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type"]
+  }
+]

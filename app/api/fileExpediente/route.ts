@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // extraer solo nombre, url y estadoArchivo
-    const { nombre, url, estadoArchivo } = snap.val() as { nombre?: string; url?: string; estadoArchivo?: string }
+    const { nombre, url, estadoArchivo} = snap.val() as { nombre?: string; url?: string; estadoArchivo?: string}
     return NextResponse.json({ nombre, url, estadoArchivo })
   } catch (err) {
     console.error(err)

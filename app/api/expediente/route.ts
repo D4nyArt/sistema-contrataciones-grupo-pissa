@@ -2,6 +2,25 @@ import {NextRequest, NextResponse} from 'next/server';
 import {ref, get, set} from 'firebase/database';
 import {database} from '@/firebaseConfig';
 
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const expedienteId = searchParams.get('expedienteId')
+  if (!expedienteId) {
+    return NextResponse.json({ error: 'Se requiere expedienteId' }, { status: 400 })
+  }
+
+  const path = `expedientes/expediente${expedienteId}`
+  const nodeRef = ref(database, path)
+  const snap = await get(nodeRef)
+
+  if (!snap.exists()) {
+    return NextResponse.json({ error: 'Expediente no encontrado' }, { status: 404 })
+  }
+
+  return NextResponse.json(snap.val())
+}
+
 export async function POST(request: NextRequest) {
     const {expedienteId} = await request.json();
     if (!expedienteId) {
@@ -26,7 +45,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'INE',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 },
                 CURP: {
                     campos: {},
@@ -34,7 +54,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'CURP',
-                    url: ''
+                    url: '',
+                    extension: 'pdf' 
                 },
                 ActaNacimiento: {
                     campos: {},
@@ -42,7 +63,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Acta de Nacimiento',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 },
                 ConstanciaSituacionFiscal: {
                     campos: {},
@@ -50,7 +72,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Constancia de Situación Fiscal',
-                    url: ''
+                    url: '',
+                    extension: 'pdf' 
                 },
                 ComprobanteDomicilio: {
                     campos: {},
@@ -58,63 +81,72 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Comprobante de Domicilio',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, NumeroImss: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Número de IMSS',
-                    url: ''
+                    url: '',
+                    extension: 'pdf' 
                 }, ComprobanteEstudios: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Comprobante de Estudios',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, ConstanciaLaboral1: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Constancia Laboral 1',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, ConstanciaLaboral2: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Constancia Laboral 2',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, CartaRecomendacion1: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Carta de Recomendación Personal 1',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, CartaRecomendacion2: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Carta de Recomendación Personal 2',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, RetencionInfonavit: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Hoja de Retención Infonavit',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }, DepositoNomina: {
                     campos: {},
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Estado de Cuenta para Depósito de Nómina',
-                    url: ''
+                    url: '',
+                    extension: 'pdf' 
                 },
                 CV: {
                     campos: {},
@@ -122,7 +154,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Currículum',
-                    url: ''
+                    url: '',
+                    extension: 'pdf' 
                 },
                 CertificadoMedico: {
                     campos: {},
@@ -130,7 +163,8 @@ export async function POST(request: NextRequest) {
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
                     nombre: 'Certificado Médico',
-                    url: ''
+                    url: '',
+                    extension: 'jpg' 
                 }
             }
         };

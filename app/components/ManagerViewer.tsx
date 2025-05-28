@@ -5,9 +5,13 @@ import {
   deleteObject,
   getDownloadURL,
 } from "firebase/storage";
-import { ref as dbRef, update, get } from "firebase/database";
-import { storage, database } from "@/firebaseConfig";
-import PdfModal from "@/app/components/PdfModal";
+import {
+  ref as dbRef,
+  update,
+  get
+} from "firebase/database";
+import {storage, database} from "@/firebaseConfig";
+import PdfModal from "@/app/components/FileModal";
 
 interface ManagerViewerProps {
   dbPath: string;
@@ -45,10 +49,8 @@ export default function ManagerViewer({
           return;
         }
         // 2) Obtener la URL de descarga desde Storage
-        const downloadUrl = await getDownloadURL(
-          storageRef(storage, pathInStorage)
-        );
-        setPdfUrl(downloadUrl);
+        //const downloadUrl = await getDownloadURL(storageRef(storage, pathInStorage));
+        setPdfUrl(pathInStorage);
       } catch (err) {
         console.error("Error al obtener URL de descarga:", err);
         setError("No se pudo cargar el PDF");
