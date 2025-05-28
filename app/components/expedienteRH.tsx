@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import DocumentoExpediente from "./documentoExpediente";
+import DownloadBatchFilesButton from "./downloadBatchFilesButton";
 
 interface ExpedienteCandidatoProps {
   userId: string;
@@ -38,6 +39,7 @@ export default function ExpedienteRH({userId}: ExpedienteCandidatoProps) {
   }, [userId]);
   return (
     <div>
+      <div>
       <label htmlFor="doc-select">Seleccione documento:</label>
       <select
         id="doc-select"
@@ -50,8 +52,9 @@ export default function ExpedienteRH({userId}: ExpedienteCandidatoProps) {
           </option>
         ))}
       </select>
+      </div>
 
-      <hr />
+      <DownloadBatchFilesButton expedienteId={userId} />
 
       <DocumentoExpediente
         expedienteId={userId}

@@ -61,6 +61,7 @@ export default function DocumentoExpediente({expedienteId, documentoId, rol}: Do
                 method: "PATCH",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
+                    role : rol,
                     expedienteId,
                     documentoId,
                     estadoArchivo: DOC_STATES.APROBADO,

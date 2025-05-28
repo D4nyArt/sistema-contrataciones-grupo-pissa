@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import path from 'path';
 import SelectProjectContracts, {
   Contract as ProjectContract,
 } from "./selectProjectContracts";
@@ -22,6 +23,7 @@ export default function ContractInfoView({ id }: { id: string }) {
   const [selected, setSelected] = useState("");
   const [isproject, setIsproject] = useState(false);
   const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   let type = "";
@@ -42,12 +44,13 @@ export default function ContractInfoView({ id }: { id: string }) {
             const userRef = ref(database, `contratos/corporativo/${id}`);
             const snapshot = await get(userRef);
             data = snapshot.val() || {};
-            type = "pro"
+           
+            type = "cor";
             setIsproject(false);
           }
 
           else {
-            type = "cor";
+             type = "pro"
             setIsproject(true);
           }
   
@@ -56,6 +59,7 @@ export default function ContractInfoView({ id }: { id: string }) {
 
           setDuration(data.duration || "");
           setName(data.name || "");
+          setUrl(data.url || "");
         } catch (e) {
           console.error(e);
         }
@@ -67,11 +71,16 @@ export default function ContractInfoView({ id }: { id: string }) {
 
 
   //const contract = selectedProject || selectedCorporate;
-  let folder = isproject ? "pruebaInicial/contratos/proyectos" : "pruebaInicial/contratos/corporativo";
+  let folder = path.dirname(url);
+  let fileName = path.basename(url);
 
-  // Acción al confirmar el envío
-
-  console.log("selected: ", selected);
+  //console.log("url: ", url);
+  //console.log("folder: ", folder);
+  //console.log("filename: ", fileName);
+//
+  //// Acción al confirmar el envío
+//
+  //console.log("selected: ", selected);
 
   const options = [
     { id: "pro", label: "Proyecto", icon: FolderOpenDot },
@@ -89,17 +98,15 @@ export default function ContractInfoView({ id }: { id: string }) {
           {options.map((option) => {
             const LinkIcon = option.icon;
             return (
-              <button key={option.id}
-                onClick={() => {
-                }}
+              <div key={option.id}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
                 ${selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"}`}
+                    : "border-gray-300 text-gray-500"}`}
               >
                 <LinkIcon/>
                 {option.label}
-              </button>
+              </div>
             );
           })}
         </div>
@@ -116,7 +123,7 @@ export default function ContractInfoView({ id }: { id: string }) {
           <>
             <DirectViewer
               folder={folder}
-              fileName={name + ".pdf"}
+              fileName={fileName}
             />
           </>
         ) : (

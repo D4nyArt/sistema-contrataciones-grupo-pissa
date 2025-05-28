@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import DocumentoExpediente from "./documentoExpediente";
+import DownloadBatchFilesButton from "./downloadBatchFilesButton";
 
 interface ExpedienteCandidatoProps {
   userId: string;
@@ -52,6 +53,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
       </select>
 
       <hr />
+      <DownloadBatchFilesButton expedienteId={userId} />
 
       <DocumentoExpediente
         expedienteId={userId}

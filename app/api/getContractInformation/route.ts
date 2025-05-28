@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     if (!recSnap.exists()) {
       return NextResponse.json({ role, contract: null, state: null, duration: null, notes: null }, { status: 404 });
     }
-    const { id: contractId, estado: state, duracion: duration, notas: notes} = recSnap.val();
+    const { id: contractId, contrato_activo: active_contract, estado: state, duracion: duration, notas: notes} = recSnap.val();
 
     // Determinar la carpeta y la ruta de datos según el ID del contrato
     let folder = "";
@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
       role,
       state,
       duration,
+      active_contract,
       notes,
       contract: {
         id: contractId,

@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-
 import CandidateContractsPage from "@/app/components/candidateContractsPage";
 import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 
@@ -12,7 +11,9 @@ export default function SelectCandidateTab({ userID }: { userID: string }) {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
 
-  const [active, setActive] = useState<"expediente" | "contratos">("expediente");
+  const [active, setActive] = useState<"expediente" | "contratos">(
+    "expediente"
+  );
 
   useEffect(() => {
     if (tabParam === "contratos" || tabParam === "expediente") {
@@ -51,10 +52,8 @@ export default function SelectCandidateTab({ userID }: { userID: string }) {
         </button>
       </div>
 
-      {active === "contratos" && <CandidateContractsPage uid={userID ?? ""} />}
-      {active === "expediente" && (
-        <ExpedienteCandidato userId={userID} />
-      )}
+      {active === "contratos" && <CandidateContractsPage uid={userID} />}
+      {active === "expediente" && <ExpedienteCandidato userId={userID} />}
     </div>
   );
 }

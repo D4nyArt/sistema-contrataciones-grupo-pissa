@@ -4,7 +4,7 @@ import { database } from '@/firebaseConfig'
 
 export async function GET(request: NextRequest) {
   try {
-    const params      = request.nextUrl.searchParams
+    const params = request.nextUrl.searchParams
     const expedienteId = params.get('expedienteId')
     const documentoId  = params.get('documentoId')
     if (!expedienteId || !documentoId) {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // extraer solo nombre, url y estadoArchivo
-    const { nombre, url, estadoArchivo } = snap.val() as { nombre?: string; url?: string; estadoArchivo?: string }
+    const { nombre, url, estadoArchivo} = snap.val() as { nombre?: string; url?: string; estadoArchivo?: string}
     return NextResponse.json({ nombre, url, estadoArchivo })
   } catch (err) {
     console.error(err)
@@ -51,6 +51,23 @@ export async function PATCH(request: NextRequest) {
   )
   try {
     await update(docRef, { estadoArchivo })
+
+    // Notificaciones (ese si funciona)
+    const timestamp = Date.now()
+    const message = `Tu documento "${documentoId}" ha sido marcado como "${estadoArchivo}"`
+
+    await update(
+      ref(database, `notificaciones/notificaciones${expedienteId}`),
+      {
+        [timestamp]: {
+          mensaje: message,
+          leido: false,
+          ruta: `candidato/expediente?tab=expediente`,
+          fijado: false,
+        },
+      }
+    )
+
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error(err)

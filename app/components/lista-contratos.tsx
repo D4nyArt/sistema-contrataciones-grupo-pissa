@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ProfilePicture from "./profile-picture";
-import { Mail, Phone, LayoutGrid, Table2 } from "lucide-react";
+import { Circle, EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
 import { urbanist } from "./fonts";
 
 interface Contract {
@@ -18,32 +18,21 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
   return (
     <div
       onClick={() => router.push(`/dashboard/contratos/${contract.id}`)}
-      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 md:h-30 h-45 flex flex-col animate-fade-in-up"
+      className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
-      <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="flex-none pr-2">
-          <ProfilePicture
-            nombre={`${contract.name || ""}`}
-            width={"w-8"}
-            height={"h-8"}
-            textSize={"text-xl"}
-          />
-        </div>
+      <div className="flex flex-row">
+        <EllipsisVertical className="ml-auto text-[#495057]"/>
+      </div>
+      <div className="flex flex-col justify-between items-center">
+        <FileText className="text-[#2d4583] size-20"/>
         <div
-          className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}
+          className={`${urbanist.className} text-lg font-semibold text-black flex-auto mt-4 text-center`}
         >
           {contract.name || "N/A"}
         </div>
-        <div className="text-sm text-[#2975a0] flex-initial">
-          {contract.id || "N/A"}
+        <div className="mb-4">
+          <p className="text-[#495057]">Proyecto</p>
         </div>
-      </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Mail className="pr-2" /> {contract.id || "N/A"}
-      </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Phone className="pr-2" />
-        {"user.telefono"}
       </div>
     </div>
   );
@@ -126,9 +115,10 @@ export default function ListContracts() {
         <button
           value={sortOption}
           onClick={() => router.push("/dashboard/contratos/nuevo_contrato")}
-          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177]"
+          className="cursor-pointer border p-1 gap-2 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177] w-70 inline-flex justify-center items-center"
         >
-        Nuevo Contrato
+          <Plus/>
+          Nuevo Contrato
         </button>
         <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden text-[#495057]">
           <button
@@ -155,7 +145,7 @@ export default function ListContracts() {
       </div>
 
       {activo === "grid" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-5 gap-4 content-center">
           {contracts.map((contract) => (
             <ContractCard key={contract.name} contract={contract} />
           ))}
@@ -171,13 +161,13 @@ export default function ListContracts() {
                   Nombre
                 </th>
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-                  Rol
+                  Tipo
                 </th>
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-                  Correo
+                  Fecha de creación
                 </th>
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
-                  Teléfono
+                  Tamaño
                 </th>
               </tr>
             </thead>
@@ -195,24 +185,19 @@ export default function ListContracts() {
                 contracts.map((contract) => (
                   <tr key={contract.name}>
                     <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
-                      <ProfilePicture
-                        nombre={`${contract.name || ""}`}
-                        width={"w-8"}
-                        height={"h-8"}
-                        textSize={"text-xl"}
-                      />
-                      {contract.name || "N/A"} {"N/A"}
+                      <FileText className="text-[#2d4583]"/>
+                      {contract.name || "N/A"}
                     </td>
                     <td className="px-4 py-4 bg-white">
                       <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
-                        {"N/A"}
+                        Proyecto
                       </div>
                     </td>
                     <td className="px-4 py-4 bg-white">
-                      {"N/A"}
+                      10/05/2025 10:00 pm
                     </td>
                     <td className="px-4 py-4 bg-white rounded-r-xl">
-                      {"N/A"}
+                      10 MB
                     </td>
                   </tr>
                 ))

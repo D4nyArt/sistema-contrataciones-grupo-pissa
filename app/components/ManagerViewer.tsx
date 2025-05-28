@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {Eye, Trash} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Eye, Trash } from "lucide-react";
 import {
   ref as storageRef,
   deleteObject,
@@ -11,28 +11,27 @@ import {
   get
 } from "firebase/database";
 import {storage, database} from "@/firebaseConfig";
-import PdfModal from "@/app/components/PdfModal";
+import PdfModal from "@/app/components/FileModal";
 
 interface ManagerViewerProps {
-  dbPath: string;           
+  dbPath: string;
   onFileDeleted?: () => void;
   userRole?: string;
-  contrato?: boolean;
 }
 
 export default function ManagerViewer({
   dbPath,
   onFileDeleted,
   userRole = "candidato",
-  contrato,
 }: ManagerViewerProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [filePath, setFilePath] = useState<string>("");  // <-- guarda la ruta en Storage
+  const [filePath, setFilePath] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!dbPath) return;
     const fetchPdfUrl = async () => {
       try {
         setLoading(true);
@@ -50,8 +49,8 @@ export default function ManagerViewer({
           return;
         }
         // 2) Obtener la URL de descarga desde Storage
-        const downloadUrl = await getDownloadURL(storageRef(storage, pathInStorage));
-        setPdfUrl(downloadUrl);
+        //const downloadUrl = await getDownloadURL(storageRef(storage, pathInStorage));
+        setPdfUrl(pathInStorage);
       } catch (err) {
         console.error("Error al obtener URL de descarga:", err);
         setError("No se pudo cargar el PDF");
@@ -80,7 +79,7 @@ export default function ManagerViewer({
       const docRef = dbRef(database, dbPath);
       await update(docRef, {
         url: "",
-        estadoArchivo: "no_subido"
+        estadoArchivo: "no_subido",
       });
 
       onFileDeleted?.();
@@ -89,7 +88,6 @@ export default function ManagerViewer({
       alert("Ocurrió un error al eliminar el archivo");
     }
   };
-
 
   return (
     <div className="flex items-center justify-center space-x-2">

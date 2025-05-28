@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { get, ref, set } from "firebase/database";
+import { get, ref, set, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 
 export async function GET(request: NextRequest) {
@@ -48,7 +48,20 @@ export async function POST(request: NextRequest) {
     // Escribir en Firebase
     const notesRef = ref(database, `expedientes/expediente${expedienteId}/notas`);
     await set(notesRef, notes || "");
-    
+
+    // Notificaciones 
+    const message = "Tienes notas nuevas en el expediente";
+    const timeStamp = Date.now();
+
+    await update(ref(database, `notificaciones/notificaciones${expedienteId}`), {
+      [timeStamp]: {
+        mensaje: message,
+        leido: false,
+        ruta: `candidato/expediente?tab=expediente`,
+        fijado: false,
+      },
+    });
+
     return NextResponse.json({ success: true, message: 'Notas guardadas correctamente' });
   } catch (error) {
     console.error("Error al guardar notas:", error);

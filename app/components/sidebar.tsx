@@ -27,7 +27,7 @@ export default function SideBar() {
             <li className="hover:bg-blue-700 p-2 rounded">Candidatos</li>
           </Link>
 
-          <Link href="/dashboard/credenciales">
+          <Link href="/dashboard/security/credenciales">
             <li className="hover:bg-blue-700 p-2 rounded">
               Generación de Credenciales
             </li>
