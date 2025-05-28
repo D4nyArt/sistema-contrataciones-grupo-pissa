@@ -125,118 +125,124 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="p-4">
+      {/* Alerta en la parte superior */}
       {alerta && (
-        <Alerta
-          tipo={alerta.type}
-          mensaje={alerta.mensaje}
-        />
-      )}
-      
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Perfil de Usuario
-        </h2>
-
-        <div className="flex justify-center mb-6">
-          <ProfilePicture
-            nombre={name}
-            width={"w-15"}
-            height={"h-15"}
-            textSize={"text-3xl"}
+        <div className="mb-4 flex justify-center">
+          <Alerta
+            tipo={alerta.type}
+            mensaje={alerta.mensaje}
           />
         </div>
+      )}
+      
+      {/* Contenedor principal centrado */}
+      <div className="flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            Perfil de Usuario
+          </h2>
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-gray-600 text-sm">Nombre</label>
-            <p className="text-lg font-medium">{name}</p>
+          <div className="flex justify-center mb-6">
+            <ProfilePicture
+              nombre={name}
+              width={"w-15"}
+              height={"h-15"}
+              textSize={"text-3xl"}
+            />
           </div>
 
-          <div>
-            <label className="text-gray-600 text-sm">Apellidos</label>
-            <p className="text-lg font-medium">{lastname}</p>
-          </div>
-
-          <div>
-            <label className="text-gray-600 text-sm">Rol</label>
-            <p className="text-lg font-medium">{role}</p>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="text-gray-600 text-sm">Correo Principal</label>
-              {edit && (
-                <button
-                  type="button"
-                  onClick={toggleSecondaryEmail}
-                  className="text-emerald-500 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
-                  title={showSecondaryEmail ? "Quitar email secundario" : "Agregar email secundario"}
-                >
-                  {showSecondaryEmail ? (
-                    <>
-                      <span className="text-lg">−</span>
-                      Email secundario
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-lg">+</span>
-                      Email secundario
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-            <p className="text-lg font-medium">{mail}</p>
-          </div>
-
-          {/* Email Secundario */}
-          {showSecondaryEmail && (
+          <div className="space-y-4">
             <div>
-              <label className="text-gray-600 text-sm">Email Secundario</label>
+              <label className="text-gray-600 text-sm">Nombre</label>
+              <p className="text-lg font-medium">{name}</p>
+            </div>
+
+            <div>
+              <label className="text-gray-600 text-sm">Apellidos</label>
+              <p className="text-lg font-medium">{lastname}</p>
+            </div>
+
+            <div>
+              <label className="text-gray-600 text-sm">Rol</label>
+              <p className="text-lg font-medium">{role}</p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="text-gray-600 text-sm">Correo Principal</label>
+                {edit && (
+                  <button
+                    type="button"
+                    onClick={toggleSecondaryEmail}
+                    className="text-emerald-500 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
+                    title={showSecondaryEmail ? "Quitar email secundario" : "Agregar email secundario"}
+                  >
+                    {showSecondaryEmail ? (
+                      <>
+                        <span className="text-lg">−</span>
+                        Email secundario
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-lg">+</span>
+                        Email secundario
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+              <p className="text-lg font-medium">{mail}</p>
+            </div>
+
+            {/* Email Secundario */}
+            {showSecondaryEmail && (
+              <div>
+                <label className="text-gray-600 text-sm">Email Secundario</label>
+                {edit ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      className="flex-1 mt-1 p-2 border rounded"
+                      value={emailSecundario}
+                      onChange={(e) => setEmailSecundario(e.target.value)}
+                      placeholder="email.secundario@ejemplo.com"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
+                )}
+              </div>
+            )}
+
+            <div>
+              <label className="text-gray-600 text-sm">Teléfono</label>
               {edit ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="email"
-                    className="flex-1 mt-1 p-2 border rounded"
-                    value={emailSecundario}
-                    onChange={(e) => setEmailSecundario(e.target.value)}
-                    placeholder="email.secundario@ejemplo.com"
-                  />
-                </div>
+                <input
+                  type="tel"
+                  className="w-full mt-1 p-2 border rounded"
+                  value={tel}
+                  onChange={(e) => setTel(e.target.value)}
+                  placeholder="Número de teléfono"
+                />
               ) : (
-                <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
+                <p className="text-lg font-medium">{tel || "No configurado"}</p>
               )}
             </div>
-          )}
-
-          <div>
-            <label className="text-gray-600 text-sm">Teléfono</label>
-            {edit ? (
-              <input
-                type="tel"
-                className="w-full mt-1 p-2 border rounded"
-                value={tel}
-                onChange={(e) => setTel(e.target.value)}
-                placeholder="Número de teléfono"
-              />
-            ) : (
-              <p className="text-lg font-medium">{tel || "No configurado"}</p>
-            )}
           </div>
-        </div>
 
-        <button
-          onClick={changeProfile}
-          disabled={loading}
-          className={`mt-8 w-full ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-emerald-500 hover:bg-emerald-700"
-          } text-white py-2 rounded-lg transition-colors duration-200`}
-        >
-          {edit ? "Guardar cambios" : "Editar perfil"}
-        </button>
+          <button
+            onClick={changeProfile}
+            disabled={loading}
+            className={`mt-8 w-full ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-emerald-500 hover:bg-emerald-700"
+            } text-white py-2 rounded-lg transition-colors duration-200`}
+          >
+            {edit ? "Guardar cambios" : "Editar perfil"}
+          </button>
+        </div>
       </div>
     </div>
   );
