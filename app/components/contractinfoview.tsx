@@ -44,12 +44,13 @@ export default function ContractInfoView({ id }: { id: string }) {
             const userRef = ref(database, `contratos/corporativo/${id}`);
             const snapshot = await get(userRef);
             data = snapshot.val() || {};
-            type = "pro"
+           
+            type = "cor";
             setIsproject(false);
           }
 
           else {
-            type = "cor";
+             type = "pro"
             setIsproject(true);
           }
   
@@ -97,17 +98,15 @@ export default function ContractInfoView({ id }: { id: string }) {
           {options.map((option) => {
             const LinkIcon = option.icon;
             return (
-              <button key={option.id}
-                onClick={() => {
-                }}
+              <div key={option.id}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
                 ${selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500 hover:border-[#08b177] hover:text-[#08b177]"}`}
+                    : "border-gray-300 text-gray-500"}`}
               >
                 <LinkIcon/>
                 {option.label}
-              </button>
+              </div>
             );
           })}
         </div>
