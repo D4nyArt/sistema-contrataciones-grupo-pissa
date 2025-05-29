@@ -1,4 +1,4 @@
 # HRS-GrupoPissa
 
-Esteban no la chupa tanto en esta branch
+El procedimiento adecuado la chupa.
 Si alguien de grupo pissa lee este commit ola, es puro bait ;)
