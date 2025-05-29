@@ -32,14 +32,14 @@ export default async function Inicio() {
   return (
     <div>
       <div className="animate-fade-in-up">
-        <h2 className={`${urbanist.className} text-3xl pl-8 text-[#495057]`}>
+        <h2 className={`${urbanist.className} text-3xl pl-4 text-[#495057]`}>
           Hola {usuario}.
         </h2>
-        <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-8`}>
+        <h1 className={`${urbanist.className} text-4xl text-[#212529] pl-4`}>
           <strong>{obtenerSaludo()}</strong>
         </h1>
       </div>
-      <div className="flex h-full w-full p-8 animate-fade-in-up">
+      <div className="flex h-full w-full p-4 animate-fade-in-up">
         <Bento />
       </div>
     </div>
