@@ -14,16 +14,16 @@ interface UploaderProps {
   contrato?: boolean;
 }
 
-const Uploader: React.FC<UploaderProps> = ({
+export default function Uploader({
   expedienteId,
   documentoId,
   onFileUploaded,
   folder = "pruebaInicial",
   contrato = false,
-}) => {
+}: UploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = useCallback(async (file: File) => {
     if (!file) return;
     setIsUploading(true);
 
@@ -71,13 +71,13 @@ const Uploader: React.FC<UploaderProps> = ({
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [expedienteId, documentoId, folder, contrato, onFileUploaded]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       handleUpload(acceptedFiles[0]);
     }
-  }, []);
+  }, [handleUpload]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -112,6 +112,4 @@ const Uploader: React.FC<UploaderProps> = ({
       </div>
     </div>
   );
-};
-
-export default Uploader;
+}

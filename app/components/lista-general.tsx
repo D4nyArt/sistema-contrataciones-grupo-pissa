@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import UserCard from "../components/tarjetaUsuarios";
 import UserMenu from "../components/menuUsuarios";
 import UserTable from "../components/tablaUsuarios";
@@ -24,6 +24,10 @@ export default function ListUsers() {
       }
     };
     fetchUsers();
+  }, []);
+
+  const setActivoCallback = useCallback((mode: "grid" | "tabla") => {
+    setActivo(mode);
   }, []);
 
   const filtrarUsuarios = users.filter((user) => {
@@ -67,7 +71,7 @@ export default function ListUsers() {
         activo={activo}
         setSearchTerm={setSearchTerm}
         setSortOption={setSortOption}
-        setActivo={setActivo}
+        setActivo={setActivoCallback}
       />
 
       {activo === "grid" ? (

@@ -40,6 +40,7 @@ export default function Profile() {
           setShowSecondaryEmail(true);
         }
       } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
         setAlerta({
           type: "errorSist",
           mensaje: "Error al obtener los datos del usuario",
@@ -102,6 +103,7 @@ export default function Profile() {
           });
         }
       } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
         setAlerta({
           type: "errorSist",
           mensaje: "Error de conexión al actualizar los datos",

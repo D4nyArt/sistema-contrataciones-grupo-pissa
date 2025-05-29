@@ -1,4 +1,7 @@
 "use client";
+
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "varsIgnorePattern": "^_" }] */
+
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
@@ -30,8 +33,8 @@ export default function Usuarios() {
   //const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
-  const [attempt, setAttempt] = useState(0);
-  const [time, setTime] = useState("-");
+  const [_attempt, setAttempt] = useState(0);
+  const [_time, setTime] = useState("-");
   const id = pathname.split("/")[2];
 
   useEffect(() => {

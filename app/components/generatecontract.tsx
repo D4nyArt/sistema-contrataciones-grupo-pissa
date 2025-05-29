@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Database, get, ref, set, update } from "firebase/database";
-import { database, auth } from "../../firebaseConfig";
+import { get, ref, update } from "firebase/database";
+import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
 
 

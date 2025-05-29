@@ -1,11 +1,10 @@
 "use client";
 
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "varsIgnorePattern": "^_" }] */
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import ProfilePicture from "./profile-picture";
 import { Table2 } from "lucide-react";
-import { urbanist } from "./fonts";
-
 import { handleBlock, handleUnblock } from "../components/block";
 
 interface User {
@@ -23,10 +22,10 @@ export default function ListUsers() {
   const [error, setError] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [activo, setActivo] = useState<"grid" | "tabla">("tabla"); // Cambiado a "tabla" por defecto
-  const [estadoUsuario, setStatus] = useState("");
-  const [attempt, setAttempt] = useState(0);
-  const [time, setTime] = useState("");
+  const [activo, setActivo] = useState<"grid" | "tabla">("tabla");
+  const [_estadoUsuario, setStatus] = useState("");
+  const [_attempt, setAttempt] = useState(0);
+  const [_time, setTime] = useState("");
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
   useEffect(() => {

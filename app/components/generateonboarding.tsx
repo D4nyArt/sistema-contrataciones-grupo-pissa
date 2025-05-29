@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Database, get, ref, remove, set, update } from "firebase/database";
-import { database, auth } from "../../firebaseConfig";
+import React, { useRef, useState } from "react";
+import { ref, remove, update } from "firebase/database";
+import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
 
 
@@ -12,17 +11,17 @@ export default function GenerateOnboardingCard({id}: {id: string}) {
   const [link_disabled, setLink_disabled] = useState(false);
   const [file_disabled, setFile_disabled] = useState(false);
   const [generated, setGenerated] = useState(false);
-  const [proy_num, setProy_num] = useState(0);
-  const [corp_num, setCorp_num] = useState(0);
+  // const [proy_num, setProy_num] = useState(0);
+  // const [corp_num, setCorp_num] = useState(0);
   const [onb_link, setOnb_link] = useState("");
    
+/*  
 useEffect(()=>{
 
   const getcontractnumber = async () => {
 
   const project_ref = ref(database, "contratos/proyectos");
   const corp_ref = ref(database, "contratos/corporativo");
-
 
   try {
     const p_snap = await get(project_ref);
@@ -39,7 +38,7 @@ useEffect(()=>{
 }
 
 getcontractnumber();
-}, [])
+}, []) */
 
 const clickResolveRef = useRef<(() => void)>(null);
 
@@ -65,7 +64,7 @@ const clickResolveRef = useRef<(() => void)>(null);
               "url": folder=="file"?`pruebaInicial/onboarding/${id}/${onboarding_name}.pdf`:onb_link
             }
         })
-        let things_to_del = ["url", "estadoArchivo"];
+        const things_to_del = ["url", "estadoArchivo"];
         const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[0]}`);
         const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[1]}`);
         

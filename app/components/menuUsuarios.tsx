@@ -30,7 +30,7 @@ export default function UserMenu({
         if (viewParam === "tabla" || viewParam === "grid") {
           setActivo(viewParam);
         }
-    }, [viewParam]);
+    }, [viewParam, setActivo]);
     
     const handleViewChange = (view: "grid" | "tabla") => {
         const params = new URLSearchParams(searchParams.toString());

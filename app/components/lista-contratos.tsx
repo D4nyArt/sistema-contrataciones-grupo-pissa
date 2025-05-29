@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ProfilePicture from "./profile-picture";
-import { Circle, EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
+import { EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
 import { urbanist } from "./fonts";
 
 interface Contract {
