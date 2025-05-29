@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ProfilePicture from "./profile-picture";
-import { Circle, EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
+import { EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
 import { urbanist } from "./fonts";
 
 interface Contract {
@@ -58,37 +57,26 @@ export default function ListContracts() {
     fetchUsers();
   }, []);
 
-  //const filtrarUsuarios = contracts.filter((user) => {
-  //  const buscar = searchTerm.toLowerCase();
-  //  const esCandidato = user.rol?.toLowerCase() === "candidato";
-  //  const nombreCompleto = `${user.nombre || ""} ${
-  //    user.apellidos || ""
-  //  }`.toLocaleLowerCase();
-  //
-  //  return (
-  //    esCandidato &&
-  //    (user.id?.toLowerCase().includes(buscar) ||
-  //      user.nombre?.toLowerCase().includes(buscar) ||
-  //      user.apellidos?.toLowerCase().includes(buscar) ||
-  //      user.email?.toLowerCase().includes(buscar) ||
-  //      user.telefono?.includes(buscar) ||
-  //      nombreCompleto.includes(buscar))
-  //  );
-  //});
+  const filtrarContratos = contracts.filter((contract) => {
+    const buscar = searchTerm.toLowerCase();
+  
+    return (
+        contract.name?.toLowerCase().includes(buscar)
+    );
+  });
 
-  //const sortedUsers = sortOption
-  //  ? [...filtrarUsuarios].sort((a, b) => {
-  //      let prop: keyof Contract = "nombre";
-  //      if (sortOption.includes("apellido")) prop = "apellidos";
-  //
-  //      const textA = (a[prop] || "").toLowerCase();
-  //      const textB = (b[prop] || "").toLowerCase();
-  //
-  //      return sortOption.includes("ZA")
-  //        ? textB.localeCompare(textA)
-  //        : textA.localeCompare(textB);
-  //    })
-  //  : filtrarUsuarios;
+  const sortedContratos = sortOption
+    ? [...filtrarContratos].sort((a, b) => {
+        let prop: keyof Contract = "name";
+  
+        const textA = (a[prop] || "").toLowerCase();
+        const textB = (b[prop] || "").toLowerCase();
+  
+        return sortOption.includes("ZA")
+          ? textB.localeCompare(textA)
+          : textA.localeCompare(textB);
+      })
+    : filtrarContratos;
 
   return (
     <main className="flex-1 p-4">
@@ -104,13 +92,11 @@ export default function ListContracts() {
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          className="cursor-pointer border p-1 pl-4 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177]"
+          className="cursor-pointer border border-gray-400 p-1 pl-4 rounded-lg bg-white text-[#495057] hover:bg-[#08b177] hover:text-white"
         >
           <option value="">Ordenar por</option>
           <option value="nombreAZ">Nombre A → Z</option>
           <option value="nombreZA">Nombre Z → A</option>
-          <option value="apellidoAZ">Apellido A → Z</option>
-          <option value="apellidoZA">Apellido Z → A</option>
         </select>
         <button
           value={sortOption}
@@ -146,7 +132,7 @@ export default function ListContracts() {
 
       {activo === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-5 gap-4 content-center">
-          {contracts.map((contract) => (
+          {sortedContratos.map((contract) => (
             <ContractCard key={contract.name} contract={contract} />
           ))}
         </div>
@@ -172,7 +158,7 @@ export default function ListContracts() {
               </tr>
             </thead>
             <tbody>
-              {contracts.length === 0 ? (
+              {sortedContratos.length === 0 ? (
                 <tr>
                   <td
                     className="border-b border-gray-300 px-4 py-4 text-center bg-white rounded-xl"
@@ -182,7 +168,7 @@ export default function ListContracts() {
                   </td>
                 </tr>
               ) : (
-                contracts.map((contract) => (
+                sortedContratos.map((contract) => (
                   <tr key={contract.name}>
                     <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
                       <FileText className="text-[#2d4583]"/>
