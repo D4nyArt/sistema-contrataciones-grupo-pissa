@@ -1,14 +1,9 @@
 import ContractInfo from "@/app/components/contractinfo";
-export default async function ContractInformation({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function ContractInformation() {
 
   return (
     <div>
-      <ContractInfo id={id} />
+      <ContractInfo/>
     </div>
   );
 }

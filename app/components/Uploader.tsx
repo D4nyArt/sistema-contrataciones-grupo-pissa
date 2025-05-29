@@ -1,6 +1,6 @@
 "use client";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
-import { ref as dbRef, get, set, update } from "firebase/database";
+import { ref as dbRef, get, update } from "firebase/database";
 import React, {
   useRef,
   useState,
@@ -111,7 +111,7 @@ const Uploader: React.FC<UploaderProps> = ({
       };
       const docRef = dbRef(database, dbPath);
       const snap = await get(docRef);
-      snap.exists() ? await update(docRef, data) : await set(docRef, data);
+      if (snap.exists()) await update(docRef, data);
 
       // e) Callback opcional
       await onFileUploaded?.();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import path from 'path';
 import DirectViewer from "./directFileView";
-import { get, ref, update } from "firebase/database";
+import { get, ref } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
 import { Building, FolderOpenDot, File } from "lucide-react";
@@ -13,13 +13,12 @@ export default function ContractInfoView({ id }: { id: string }) {
 
   const [duration, setDuration] = useState(""); // Duración del contrato en meses
   const [selected, setSelected] = useState("");
-  const [isproject, setIsproject] = useState(false);
-  const [name, setName] = useState("");
+  //const [isproject, setIsproject] = useState(false);
+  //const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-
-  let type = "";
-
+  const [type, setType] = useState("");
+  
   useEffect(() => {
       const fetchUser = async () => {
         try {
@@ -37,20 +36,20 @@ export default function ContractInfoView({ id }: { id: string }) {
             const snapshot = await get(userRef);
             data = snapshot.val() || {};
            
-            type = "cor";
-            setIsproject(false);
+            setType("cor");
+            //setIsproject(false);
           }
 
           else {
-             type = "pro"
-            setIsproject(true);
+             setType("pro");
+            //setIsproject(true);
           }
   
           console.log(data);
           console.log(type);
 
           setDuration(data.duration || "");
-          setName(data.name || "");
+          //setName(data.name || "");
           setUrl(data.url || "");
         } catch (e) {
           console.error(e);
@@ -63,8 +62,8 @@ export default function ContractInfoView({ id }: { id: string }) {
 
 
   //const contract = selectedProject || selectedCorporate;
-  let folder = path.dirname(url);
-  let fileName = path.basename(url);
+  const folder = path.dirname(url);
+  const fileName = path.basename(url);
 
   //console.log("url: ", url);
   //console.log("folder: ", folder);

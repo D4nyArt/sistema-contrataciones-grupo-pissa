@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     } else {
       return NextResponse.json({ fields: "" });
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Error al obtener los campos" },
       { status: 500 }

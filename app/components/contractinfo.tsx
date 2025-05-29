@@ -6,7 +6,7 @@ import AdminContractsPage from "./admincon";
 import { usePathname } from "next/navigation";
 import AdminOnboardingPage from "./admonbcard";
 
-export default function ContractInfo({ id }: { id: string }) {
+export default function ContractInfo() {
   
   const pathname = usePathname();
   const _id = pathname.split("/")[3];

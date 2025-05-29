@@ -64,6 +64,7 @@ export default function ArchivoExpediente({
 
   useEffect(() => {
     fetchFile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expedienteId, documentoId]);
 
   const handleDeleteFile = (): void => {

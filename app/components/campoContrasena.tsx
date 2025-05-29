@@ -26,7 +26,6 @@ export function CampoContrasena({
   value,
   onChange,
   placeholder = "Contraseña",
-  error = false,
   required = true,
   className = ""
 }: PropContrasena) {
