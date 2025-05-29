@@ -19,7 +19,7 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
     const lastDateStr = lastSnap.exists() ? lastSnap.val() : null;
 
     const now = new Date();
-    let reset = false;
+    //let reset = false;
 
     if (lastDateStr) {
       const lastDate = new Date(lastDateStr);
@@ -29,7 +29,7 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
       if (hoursPassed >= 24) {
         // Reset the counter if it's been more than 24 hours 
         await set(totalRef, 0);
-        reset = true;
+        //reset = true;
       }
     }
 
@@ -42,7 +42,7 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
     const finalSnap = await get(totalRef);
     const totalFinal = finalSnap.val() || 0;
     return MAX_ATTEMPTS - totalFinal;
-  } catch (_) {
+  } catch {
     return MAX_ATTEMPTS;
   }
 }
@@ -62,7 +62,7 @@ async function checkAndBlockUser(uid: string) {
         await update(userRef, { estadoUsuario: "bloqueado" });
       }
     }
-  } catch (_) {
+  } catch {
     // Silent failure
   }
 }
@@ -81,7 +81,7 @@ export async function resetAttempts(email: string) {
 
     await set(totalRef, 0);
     await set(lastRef, "-");
-  } catch (_) {
+  } catch {
     // Silent failure
   }
 }
