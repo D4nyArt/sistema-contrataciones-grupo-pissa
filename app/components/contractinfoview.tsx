@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import path from 'path';
-import SelectProjectContracts, {
-  Contract as ProjectContract,
-} from "./selectProjectContracts";
-import SelectCorporateContracts, {
-  Contract as CorpContract,
-} from "./selectCorporateContracts";
-//import ManagerViewer from "./ManagerViewer";
 import DirectViewer from "./directFileView";
-import PopUp from "./pop-up";
 import { get, ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";

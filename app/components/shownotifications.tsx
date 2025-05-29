@@ -61,7 +61,7 @@ export default function ShowNotifications() {
     fetchNotifications();
   }, [rhUID]);
 
-  async function updateReadStatus(id: string, read: boolean) {
+  async function updateReadStatus(id: string) {
     await fetch(`/api/markNotificationRead`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -204,7 +204,7 @@ export default function ShowNotifications() {
                     </td>
                     <td
                       onClick={async () => {
-                        await updateReadStatus(id, read);
+                        await updateReadStatus(id);
                         router.push(`/${path}&from=${encodeURIComponent(pathname)}`);
                       }}
                       className="px-8"

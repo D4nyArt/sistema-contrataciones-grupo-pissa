@@ -7,9 +7,6 @@ import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
 
 import { handleBlock, handleUnblock } from "./block";
-
-import RealizarSeguimiento from "./relizarseguimiento";
-import CancelarSeguimiento from "./cancelarseguimiento";
 import {
   CircleCheck,
   Clock,
@@ -29,8 +26,8 @@ export default function Usuarios() {
   // const searchparams = useSearchParams();
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
-  const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState("");
+  //const [mail, setMail] = useState("");
+  //const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -63,8 +60,8 @@ export default function Usuarios() {
         const data = snapshot.val() || {};
         setName(data.nombre || "");
         setLastname(data.apellidos || "");
-        setMail(data.email || "");
-        setPhone(data.telefono || "");
+        //setMail(data.email || "");
+        //setPhone(data.telefono || "");
         setRole(data.rol || "");
         setStatus(data.estadoUsuario || "");
       } catch (e) {

@@ -1,12 +1,9 @@
 "use client";
 import ListInformation from "@/app/components/usuario-phone";
-import ExpedienteCandidato from "@/app/components/expedienteCandidato";
 import React, { useState } from "react";
-import ContractsPage from "@/app/components/contractsPage";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
 import { usePathname } from "next/navigation";
-import OnboardingPage from "./admonbcard";
 import AdminOnboardingPage from "./admonbcard";
 
 export default function ContractInfo({ id }: { id: string }) {

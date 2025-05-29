@@ -3,7 +3,6 @@ import { Eye, Trash } from "lucide-react";
 import {
   ref as storageRef,
   deleteObject,
-  getDownloadURL,
 } from "firebase/storage";
 import {
   ref as dbRef,

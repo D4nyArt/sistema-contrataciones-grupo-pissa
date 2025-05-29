@@ -1,6 +1,7 @@
 "use client";
 import { getDownloadURL, getStorage, ref as storageRef } from "firebase/storage";
 import React, { useCallback, useState, useEffect } from "react";
+import Image from "next/image";
 
 interface PdfModalProps {
   pdfUrl: string;      // puede ser .pdf o .jpg
@@ -74,7 +75,7 @@ export default function PdfModal({
                 allowFullScreen
               />
             ) : (
-              <img
+              <Image
                 src={downloadableUrl}
                 alt={fileName}
                 className="max-w-full max-h-full object-contain border"
