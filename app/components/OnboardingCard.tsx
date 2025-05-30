@@ -11,33 +11,37 @@ interface OnboardingCardProps {
   key: string;
   url: string;
   nombre: string;
+  type: string;
 }
 
 export default function OnboardingCard({
   key,
   url,
-  nombre
+  nombre,
+  type
 }: OnboardingCardProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  
+
   // Nuevo estado para aceptación
   const [accepted, setAccepted] = useState<boolean>(false);
-
   const filePath = url;
 
   // 1) Traer URL del PDF
   useEffect(() => {
     const fetchPdfUrl = async () => {
+      console.log("type: ", type)
       try {
         setLoading(true);
-        const url = await getDownloadURL(storageRef(storage, filePath));
+        const url = type == "file" ? await getDownloadURL(storageRef(storage, filePath)) : filePath;
         setPdfUrl(url);
       } catch (err) {
         console.error("Error al obtener URL de descarga:", err);
-        setError("No se pudo cargar el PDF");
+        if (type != "file") setError("No se pudo cargar el PDF");
       } finally {
         setLoading(false);
       }
@@ -74,14 +78,18 @@ export default function OnboardingCard({
 
   // 3) callback para marcar como aceptado
   const handleAccept = async () => {
+    
     const user = auth.currentUser;
     if (!user) throw new Error("Usuario no autenticado");
     const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
     const now = Date.now(); 
     await update(docRef, { accepted: true, acceptedAt: now });
+    
     setAccepted(true);
   };
   return (
+    <>
+    {
     <div className="flex items-center justify-between space-x-2 p-2 border rounded">
       <div onClick={handleView} className="flex items-center space-x-1 cursor-pointer">
         {accepted
@@ -92,14 +100,17 @@ export default function OnboardingCard({
 
       {loading && <span className="text-gray-500 text-sm">Cargando...</span>}
       {error && <span className="text-red-500 text-sm">{error}</span>}
-
+      
       {showPdf && pdfUrl && (
         <PdfModal
           pdfUrl={pdfUrl}
           onClose={handleCloseModal}
           onAccept={handleAccept}
+          type={type}
         />
       )}
     </div>
+}
+    </>
   );
 }

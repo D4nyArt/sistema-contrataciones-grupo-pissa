@@ -48,10 +48,10 @@ const clickResolveRef = useRef<(() => void)>(null);
     });
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (isUpload: boolean) => {
     console.log("Upload done—waiting for button press…");
     setGenerated(true);
-    await waitForClick();
+    if (isUpload) await waitForClick();
     setGenerated(false);
 
     try {
@@ -89,6 +89,8 @@ const clickResolveRef = useRef<(() => void)>(null);
     
 
   };
+
+  
 
   return (
     <>
@@ -140,7 +142,7 @@ const clickResolveRef = useRef<(() => void)>(null);
         <Uploader
           filename={onboarding_name}
           storageUrl={`pruebaInicial/onboarding/${id}`}
-          onFileUploaded={handleUpload}
+          onFileUploaded={async () => handleUpload(true)}
           dbPath={id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${onboarding_name}`:`contratos/corporativo/${id}/onb${id}/${onboarding_name}`}
         />
 
@@ -166,6 +168,12 @@ const clickResolveRef = useRef<(() => void)>(null);
             value={onb_link}
             onChange={(event) => setOnb_link(event.target.value)}
           />
+          <button
+          className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
+          onClick={async() => handleUpload(false)}
+        >
+          Crear Apartado de Onboarding
+        </button>
           </>
           : null}
       </div>

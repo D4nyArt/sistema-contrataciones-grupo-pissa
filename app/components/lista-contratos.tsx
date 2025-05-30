@@ -30,7 +30,11 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
           {contract.name || "N/A"}
         </div>
         <div className="mb-4">
+          { contract.id?.startsWith("conproy")?
           <p className="text-[#495057]">Proyecto</p>
+          :
+          <p className="text-[#495057]">Corporativo</p>
+          }
         </div>
       </div>
     </div>

@@ -32,7 +32,7 @@ async function getContractid() {
 }
 
 
-type OnbCard = { nombre: string; url: string }
+type OnbCard = { nombre: string; url: string, type: string }
 async function getListOnbCards(rol: string, contract_id: string): Promise<Record<string, OnbCard>> {
 
 
@@ -77,6 +77,7 @@ export default async function OnboardingPage() {
             key={key}
             nombre={card.nombre}
             url={card.url}
+            type={card.type}
           />
         ))}
       </div>
