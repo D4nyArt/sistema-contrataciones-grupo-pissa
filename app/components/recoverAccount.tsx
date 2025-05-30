@@ -51,7 +51,7 @@ export default function ListUsers() {
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
     const esCandidato = user.rol?.toLowerCase() === "candidato";
-    const enProceso = user.estadoUsuario?.toLowerCase() === "enproceso";
+    const enProceso = user.estadoUsuario?.toLowerCase() === "enproceso2";
     
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""

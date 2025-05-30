@@ -60,6 +60,10 @@ async function checkAndBlockUser(uid: string) {
 
       if (total >= MAX_ATTEMPTS && status !== "bloqueado") {
         await update(userRef, { estadoUsuario: "bloqueado" });
+        const historyBlock = new Date().toISOString();
+        /* Pendientes: guardar en la base de datos del historial 
+         *  Llamar a la función de history que lo hace
+         */
       }
     }
   } catch {

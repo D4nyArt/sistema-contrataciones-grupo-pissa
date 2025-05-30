@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import JSZip from 'jszip'
 import {saveAs} from 'file-saver'
 import {getStorage, ref as storageRef, getDownloadURL} from 'firebase/storage'
+import {FolderDown} from "lucide-react";
 
 type Documento = {
   estadoArchivo: string
@@ -77,7 +78,7 @@ const DownloadBatchFilesButton: React.FC<Props> = ({expedienteId}) => {
   if (!expediente) {
     return (
       <button
-        className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+        className="px-3.5 py-2 text-xs text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
         disabled
       >
         Cargando expediente…
@@ -89,9 +90,9 @@ const DownloadBatchFilesButton: React.FC<Props> = ({expedienteId}) => {
     <button
       onClick={handleDownload}
       disabled={loading}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+      className="px-3.5 py-2 bg-blue-800 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-100 hover:text-blue-800 transition-colors"
     >
-      {loading ? 'Preparando descarga…' : 'Descargar expediente completo'}
+      {loading ? 'Preparando descarga…' : <FolderDown className="w-5" />}
     </button>
   )
 }

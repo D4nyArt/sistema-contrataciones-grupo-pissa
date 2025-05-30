@@ -11,6 +11,7 @@ import { incrementLoginAttempt, resetAttempts } from "../api/attempts/attempts";
 import { estilosClasificacion } from "./alertaEstilos";
 import { Alerta } from "./alertaPantalla";
 import { CampoContrasena } from "./campoContrasena";
+import { initializeUserHistory } from "../api/history/history";
 
 export default function Formulario() {
 
@@ -75,6 +76,9 @@ export default function Formulario() {
       );
       const uid = userCredentials.user.uid;
       console.log("Logged in as:", userCredentials.user);
+
+      // Inicializa el historial del usuario
+      await initializeUserHistory(uid);
 
       const response = await fetch("/api/saveUIDCookie", {
         method: "POST",
@@ -143,7 +147,7 @@ console.error("Error during login:", err);
  
 // To handle multiple failed attempts
 const remainingAttempts = await incrementLoginAttempt(email);
-let msg = "El usuario o la contraseña son incorrectos. ";
+let msg = "Su cuenta fue bloqueada debido a numerosos intentos consecutivos de inicio de sesión. Recupere su contraseña. ";
 
 if (remainingAttempts > 0 && remainingAttempts < 3){
   msg += ` Queda${remainingAttempts !== 1 ? "n " : " "} ${remainingAttempts} intento${remainingAttempts !== 1 ? "s" : ""} antes de que la cuenta sea bloqueada.`;

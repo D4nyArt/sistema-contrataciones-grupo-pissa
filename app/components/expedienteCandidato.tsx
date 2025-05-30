@@ -1,11 +1,10 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from "react";
 import DocumentoExpediente from "./documentoExpediente";
 import DownloadBatchFilesButton from "./downloadBatchFilesButton";
 
 interface ExpedienteCandidatoProps {
   userId: string;
 }
-
 
 const DOCUMENTOS = [
   {id: "ActaNacimiento", nombre: "Acta de Nacimiento"},
@@ -30,40 +29,59 @@ const DOCUMENTOS = [
 
 export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) {
   const [documentoId, setDocumentoId] = useState(DOCUMENTOS[0].id);
+
   useEffect(() => {
     async function initExp() {
-      await fetch('/api/expediente', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({expedienteId: userId})
+      await fetch("/api/expediente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expedienteId: userId }),
       });
     }
     initExp();
   }, [userId]);
+
   return (
-    <div>
-      <label htmlFor="doc-select">Seleccione documento:</label>
-      <select
-        id="doc-select"
-        value={documentoId}
-        onChange={e => setDocumentoId(e.target.value)}
-      >
-        {DOCUMENTOS.map(doc => (
-          <option key={doc.id} value={doc.id}>
-            {doc.nombre}
-          </option>
-        ))}
-      </select>
+    <div className="flex flex-col lg:flex-row gap-4 p-4 bg-gray-50 min-h-screen">
+      {/* Lado izquierdo */}
+      <div className="lg:w-1/4 w-full bg-white border rounded-xl shadow p-4">
+        <div className="flex items-center justify-between mb-4 space-x-3">
+          <h2 className="text-lg font-semibold text-gray-800">Documentos</h2>
+          <DownloadBatchFilesButton expedienteId={userId} />
+        </div>
+        <ul className="space-y-2">
+          {DOCUMENTOS.map((doc) => (
+            <li key={doc.id}>
+              <button
+                onClick={() => setDocumentoId(doc.id)}
+                className={`w-full text-left px-4 py-2 rounded-md transition
+                  ${
+                    documentoId === doc.id
+                      ? "bg-blue-100 text-blue-800 font-semibold"
+                      : "hover:bg-gray-200 text-gray-700"
+                  }`}
+              >
+                {doc.nombre}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <hr />
-      <DownloadBatchFilesButton expedienteId={userId} />
+      {/* Lado derecho */}
+      <div className="flex-1 bg-white border rounded-xl shadow p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">
+            {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}
+          </h3>
+        </div>
 
-      <DocumentoExpediente
-        expedienteId={userId}
-        documentoId={documentoId}
-        rol="candidato"
-      />
+        <DocumentoExpediente
+          expedienteId={userId}
+          documentoId={documentoId}
+          rol="candidato"
+        />
+      </div>
     </div>
   );
 }
-
