@@ -23,6 +23,8 @@ const DOCUMENTOS = [
   {id: "RetencionInfonavit", nombre: "Retención Infonavit"},
   {id: "DepositoNomina", nombre: "Desposito Nómina"},
   {id: "CertificadoMedico", nombre: "Certificado Médico"},
+  {id: "CertificadoAntecedentes", nombre: "Certificado de Antecedentes No Penales"},
+  {id: "EstadoCuenta", nombre: "Estado de Cuenta"},
 ];
 
 export default function ExpedienteRH({userId}: ExpedienteCandidatoProps) {
