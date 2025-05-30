@@ -37,10 +37,10 @@ export default function Contratos({ id }: { id: string }) {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in-up">
         <BotonRegresar />
       </div>
-      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6 animate-fade-in-up">
         <h1 className={`${urbanist.className} text-4xl text-[#212529]`}>
           <strong>{name || "Nombre del contrato"}</strong>
         </h1>

@@ -90,7 +90,7 @@ export default function ContractInfoView({ id }: { id: string }) {
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Selección de contrato */}
-      <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md">
+      <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md animate-fade-in-up">
         <div className="border-b pb-6 border-gray-300">
           <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de contrato</h2>
         </div>
@@ -118,7 +118,7 @@ export default function ContractInfoView({ id }: { id: string }) {
       </div>
 
       {/* Vista previa*/}
-      <div className="h-[500px] w-full">
+      <div className="h-[500px] w-full animate-fade-in-up">
       {loading ? (
           <>
             <DirectViewer

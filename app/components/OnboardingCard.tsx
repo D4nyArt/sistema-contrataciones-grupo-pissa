@@ -82,7 +82,7 @@ export default function OnboardingCard({
     setAccepted(true);
   };
   return (
-    <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+    <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md animate-fade-in-up">
       <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-200 to-blue-100 items-center flex justify-center">
         <FileText className='size-15 text-[#2d4583]'/>
       </div>

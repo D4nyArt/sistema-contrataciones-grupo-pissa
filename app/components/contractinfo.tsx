@@ -35,8 +35,8 @@ export default function ContractInfo({ id }: { id: string }) {
         <Contratos id = {_id}/>
       </div>
 
-      <div className="">
-        <div className="space-x-6 border-b border-gray-300 items-center mb-6">
+      <div>
+        <div className="space-x-6 border-b border-gray-300 items-center mb-6 animate-fade-in-up">
           
           <button
             onClick={() => handleTabChange("contratos")}

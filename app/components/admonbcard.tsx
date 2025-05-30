@@ -37,7 +37,7 @@ export default function AdminOnboardingPage({ contractid }: { contractid: string
       </div>
       <button
         onClick={() => setShowConfirm(true)}
-        className="mb-12 ml-auto cursor-pointer w-16 h-16 rounded-full bg-[#2d4583] hover:bg-[#08b177] text-white shadow-lg flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="animate-fade-in-up mb-12 ml-auto cursor-pointer w-16 h-16 rounded-full bg-[#2d4583] hover:bg-[#08b177] text-white shadow-lg flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         <PlusIcon className="w-8 h-8" />
       </button>
