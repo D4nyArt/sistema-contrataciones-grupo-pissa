@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ref, update, get } from "firebase/database";
-import { verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
+import { verifyPasswordResetCode } from "firebase/auth";
 import { auth, database } from "../../firebaseConfig";
 
 import { CampoContrasena } from "./campoContrasena";

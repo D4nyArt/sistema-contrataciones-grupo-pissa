@@ -75,7 +75,7 @@ export default function ListContracts() {
 
   const sortedContratos = sortOption
     ? [...filtrarContratos].sort((a, b) => {
-        let prop: keyof Contract = "name";
+        const prop: keyof Contract = "name";
   
         const textA = (a[prop] || "").toLowerCase();
         const textB = (b[prop] || "").toLowerCase();

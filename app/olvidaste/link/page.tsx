@@ -1,6 +1,5 @@
 import EstablecerContrasenaLink from "../../components/establecerContrasenaLink";
 import Image from "next/image";
-import { urbanist } from "@/app/components/fonts";
 import FondoBlanco from "../../components/fondo-blanco";
 
 export default function EstablecerLink() {
