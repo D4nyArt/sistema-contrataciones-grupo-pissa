@@ -82,7 +82,7 @@ export default function OnboardingCard({
     setAccepted(true);
   };
   return (
-    <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md animate-fade-in-up">
+    <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
       <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-200 to-blue-100 items-center flex justify-center">
         <FileText className='size-15 text-[#2d4583]'/>
       </div>
@@ -91,7 +91,9 @@ export default function OnboardingCard({
         {accepted
           ? <p className="text-green-600 mb-2"> Completado </p>
           : <div><span></span><p className='mb-2'>Pendiente</p></div>}        
-        <button onClick={handleView} data-ripple-light="true" className="select-none rounded-lg bg-[#2d4583] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none cursor-pointer">Leer</button>
+        <button onClick={handleView} data-ripple-light="true" className="select-none rounded-lg bg-[#2d4583] hover:bg-[#08b177] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none cursor-pointer">
+          Leer
+        </button>
       </div>
 
       {loading && <span className="text-gray-500 text-sm">Cargando...</span>}
