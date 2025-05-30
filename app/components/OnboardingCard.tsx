@@ -5,7 +5,7 @@ import {ref as storageRef, getDownloadURL} from 'firebase/storage';
 import {ref as dbRef, update, get} from 'firebase/database';
 import {storage, database, auth} from '../../firebaseConfig';
 import PdfModal from '@/app/components/OnboardingModal';
-import {File, CheckCircle, FileText} from "lucide-react";
+import {FileText} from "lucide-react";
 
 interface OnboardingCardProps {
   key: string;
