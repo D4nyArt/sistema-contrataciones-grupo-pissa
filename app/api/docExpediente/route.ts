@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ref, get, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 async function recalcEstadoGeneral(expId: string, docId: string) {
   console.log("Recalculando estado general");
@@ -97,32 +98,11 @@ export async function PATCH(request: NextRequest) {
     );
 
     // Notificaciones por email
-    try {
-      const userRef = ref(database, `usuarios/${expedienteId}/email`);
-      const userSnap = await get(userRef);
-
-      if (userSnap.exists()) {
-        const userEmail = userSnap.val();
-
-        const emailResponse = await fetch("/api/sendEmail", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            addressee: userEmail,
-            subject: `Estado de documento actualizado - ${documentoId}`,
-            text: `Hola,\n\n${message}\n\nPuedes revisar el estado de tu expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`,
-          }),
-        });
-
-        if (!emailResponse.ok) {
-          console.error("Error sending email notification");
-        }
-      }
-    } catch (error) {
-      console.error("Error sending email notification:", error);
-    }
+    await sendEmailNotification(
+      expedienteId,
+      `Estado de documento actualizado - ${documentoId}`,
+      `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+    );
   }
 
   // recalcula siempre
