@@ -58,13 +58,13 @@ export default function PopUp({ show, onClose, children }: PopUpProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded shadow-lg max-w-sm w-full"
+        className="bg-white rounded-xl p-6 shadow-lg max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
         {onClose && (
           <button
-            className="mt-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+            className="mt-4 px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer"
             onClick={onClose}
           >
             Cerrar

@@ -152,7 +152,7 @@ const clickResolveRef = useRef<(() => void)>(null);
           )}
 
         <button
-          className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
+          className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1 cursor-pointer" 
           onClick={handlePress}
         >
           Crear Apartado de Onboarding

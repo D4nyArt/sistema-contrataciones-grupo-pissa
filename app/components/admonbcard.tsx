@@ -29,18 +29,19 @@ export default function AdminOnboardingPage({ contractid }: { contractid: string
   }, [contractid])
 
   return (
-    <main className="relative mt-10">
+    <main className="relative">
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="animate-fade-in-up mb-12 cursor-pointer px-4 py-4 rounded-lg bg-[#2d4583] hover:bg-[#08b177] text-white shadow-lg flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <PlusIcon className='md:pr-2'/>
+        <span className='md:block hidden'>Nuevo apartado</span>
+      </button>
       <div className="parent grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-x-4 gap-y-10 content-center">
         {Object.entries(onbCards).map(([key, card]) => (
           <OnboardingCard key={key} nombre={card.nombre} url={card.url} />
         ))}
       </div>
-      <button
-        onClick={() => setShowConfirm(true)}
-        className="animate-fade-in-up mb-12 ml-auto cursor-pointer w-16 h-16 rounded-full bg-[#2d4583] hover:bg-[#08b177] text-white shadow-lg flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        <PlusIcon className="w-8 h-8" />
-      </button>
       <PopUp show = {showConfirm} onClose={() => setShowConfirm(false)}>
         <GenerateOnboardingCard id={contractid}/>
       </PopUp>
