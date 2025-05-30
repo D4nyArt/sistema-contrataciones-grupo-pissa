@@ -5,6 +5,7 @@ import { storage, database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
 import { Clock, ThumbsUp, ThumbsDown, X, Upload } from "lucide-react";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -172,6 +173,13 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
                 },
               }
             );
+
+            // Notificación por email a personal RH
+            await sendEmailNotification(
+              userId,
+              `Nuevo contrato subido por ${nombre}`,
+              `Hola,\n\n${message}".\n\nPuedes revisar el contrato ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+            );
           }
         }
       }
@@ -186,6 +194,13 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
             fijado: false,
           },
         }
+      );
+
+      // Notificación por email al revisor
+      await sendEmailNotification(
+        reviewer.rID,
+        `Nuevo contrato subido por ${nombre}`,
+        `Hola,\n\n${message}".\n\nPuedes revisar el contrato ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
       );
     }
   };

@@ -12,6 +12,7 @@ import { ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
 import { Building, FolderOpenDot, File } from "lucide-react";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 export default function ContractSendAndPreview({ uid }: { uid: string }) {
   const [selectedProject, setSelectedProject] =
@@ -68,6 +69,13 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
           fijado: false,
         },
       });
+
+      // Notificación por email
+      await sendEmailNotification(
+        uid,
+        `Nuevo contrato asignado`,
+        `Hola,\n\n${message}\n\nPuedes revisar tus contratos ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+      );
     } catch (err) {
       console.error("Error enviando contrato:", err);
     }
