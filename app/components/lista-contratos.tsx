@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
 import { urbanist } from "./fonts";
 
@@ -13,10 +13,13 @@ interface Contract {
 
 const ContractCard = ({ contract }: { contract: Contract }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fullPath = `${pathname}?${searchParams.toString()}`;
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/contratos/${contract.id}`)}
+      onClick={() => router.push(`/dashboard/contratos/${contract.id}?from=${encodeURIComponent(fullPath)}`)}
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-row">
