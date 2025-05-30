@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ref as storageRef, getDownloadURL } from 'firebase/storage';
-import { ref as dbRef, update, get } from 'firebase/database';
-import { storage, database, auth } from '../../firebaseConfig';
+import React, {useState, useEffect} from 'react';
+import {ref as storageRef, getDownloadURL} from 'firebase/storage';
+import {ref as dbRef, update, get} from 'firebase/database';
+import {storage, database, auth} from '../../firebaseConfig';
 import PdfModal from '@/app/components/OnboardingModal';
-import { File, CheckCircle } from "lucide-react";
+import {File, CheckCircle, FileText} from "lucide-react";
 
 interface OnboardingCardProps {
   key: string;
@@ -25,7 +25,7 @@ export default function OnboardingCard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  
+
 
   // Nuevo estado para aceptación
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -57,11 +57,11 @@ export default function OnboardingCard({
       const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
       const snap = await get(docRef);
       if (snap.exists()) {
-        const data = snap.val() as { accepted: boolean; acceptedAt?: number };
+        const data = snap.val() as {accepted: boolean; acceptedAt?: number};
         setAccepted(!!data.accepted);
         setAccepted(!!data.acceptedAt);
         // inicializar nodo
-        await update(docRef, { accepted: false, acceptedAt: null });
+        await update(docRef, {accepted: false, acceptedAt: null});
       }
     };
     checkAccepted();
@@ -78,29 +78,33 @@ export default function OnboardingCard({
 
   // 3) callback para marcar como aceptado
   const handleAccept = async () => {
-    
+
     const user = auth.currentUser;
     if (!user) throw new Error("Usuario no autenticado");
     const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
-    const now = Date.now(); 
-    await update(docRef, { accepted: true, acceptedAt: now });
-    
+    const now = Date.now();
+    await update(docRef, {accepted: true, acceptedAt: now});
+
     setAccepted(true);
   };
   return (
-    <>
-    {
-    <div className="flex items-center justify-between space-x-2 p-2 border rounded">
-      <div onClick={handleView} className="flex items-center space-x-1 cursor-pointer">
+    <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+      <div onClick={handleView} className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-200 to-blue-100 items-center flex justify-center">
+        <FileText className='size-15 text-[#2d4583]' />
+      </div>
+      <div className="p-6">
+        <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased" title={nombre} key={key}>{nombre}</h5>
         {accepted
-          ? <CheckCircle className="text-green-600" />
-          : <File />}
-        <span className="truncate max-w-xs" title={nombre} key={key}>{nombre}</span>
+          ? <p className="text-green-600 mb-2"> Completado </p>
+          : <div><span></span><p className='mb-2'>Pendiente</p></div>}
+        <button onClick={handleView} data-ripple-light="true" className="select-none rounded-lg bg-[#2d4583] hover:bg-[#08b177] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none cursor-pointer">
+          Leer
+        </button>
       </div>
 
       {loading && <span className="text-gray-500 text-sm">Cargando...</span>}
       {error && <span className="text-red-500 text-sm">{error}</span>}
-      
+
       {showPdf && pdfUrl && (
         <PdfModal
           pdfUrl={pdfUrl}
@@ -110,7 +114,5 @@ export default function OnboardingCard({
         />
       )}
     </div>
-}
-    </>
   );
 }

@@ -8,7 +8,7 @@ export default async function UserInformation() {
 
   return(
     <>
-      <h1 className={`${urbanist.className} font-bold text-4xl mb-6`}>Expediente</h1>
+      <h1 className={`${urbanist.className} font-bold text-4xl mb-6 text-[#212529]`}>Expediente</h1>
       <SelectCandidateTab userID={userID} />
     </>
   );
