@@ -118,7 +118,7 @@ export default function ContractInfoView({ id }: { id: string }) {
       </div>
 
       {/* Vista previa*/}
-      <div className="h-[400px] w-[500px]">
+      <div className="h-[500px] w-full">
       {loading ? (
           <>
             <DirectViewer

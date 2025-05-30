@@ -11,7 +11,7 @@ function obtenerSaludo(): string {
 export default function Bienvenida() {
     return (
       <div className="space-y-6">
-        <h1 className={`${urbanist.className} text-4xl font-bold animate-fade-in-up`}>{obtenerSaludo()}</h1>
+        <h1 className={`${urbanist.className} text-4xl font-bold animate-fade-in-up text-[#212529]`}>{obtenerSaludo()}</h1>
         <Proceso/>
       </div>
     );

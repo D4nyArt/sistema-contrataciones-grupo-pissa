@@ -1,38 +1,46 @@
 "use client";
-import ListInformation from "@/app/components/usuario-phone";
-import ExpedienteCandidato from "@/app/components/expedienteCandidato";
-import React, { useState } from "react";
-import ContractsPage from "@/app/components/contractsPage";
+
+import React, { useEffect, useState } from "react";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
-import { usePathname } from "next/navigation";
-import OnboardingPage from "./admonbcard";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminOnboardingPage from "./admonbcard";
 
 export default function ContractInfo({ id }: { id: string }) {
   
   const pathname = usePathname();
   const _id = pathname.split("/")[3];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
   
-  const [active, setActive] = useState<"onboarding" | "contratos">(
-    "contratos"
-  );
+  const [active, setActive] = useState<"onboarding" | "contratos">("contratos");
+
+  useEffect(() => {
+    if (tabParam === "onboarding" || tabParam === "contratos") {
+      setActive(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: "onboarding" | "contratos") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.push(`?${params.toString()}`);
+    setActive(tab);
+  }
 
   return (
     <div>
-      <div className="hidden md:block">
+      <div className="flex">
         <Contratos id = {_id}/>
-      </div>
-      <div className="block md:hidden">
-        <ListInformation/>
       </div>
 
       <div className="">
         <div className="space-x-6 border-b border-gray-300 items-center mb-6">
           
           <button
-            onClick={() => setActive("contratos")}
-            className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
+            onClick={() => handleTabChange("contratos")}
+            className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
               active === "contratos"
                 ? "border-[#2d4583] text-[#2d4583]"
                 : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"
@@ -42,8 +50,8 @@ export default function ContractInfo({ id }: { id: string }) {
           </button> 
           
           <button
-            onClick={() => setActive("onboarding")}
-            className={`cursor-pointer pb-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
+            onClick={() => handleTabChange("onboarding")}
+            className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
               active === "onboarding"
                 ? "border-[#2d4583] text-[#2d4583]"
                 : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"

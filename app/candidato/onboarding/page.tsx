@@ -2,6 +2,7 @@ import OnboardingCard from '@/app/components/OnboardingCard'
 import { cookies } from 'next/headers'
 import { ref, get } from 'firebase/database'
 import { database } from '@/firebaseConfig'
+import { urbanist } from '@/app/components/fonts'
 
 async function getRole() {
   const cookieStore = await cookies()
@@ -68,10 +69,10 @@ export default async function OnboardingPage() {
   const onbCards = await getListOnbCards(role, contract_id);
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Onboarding</h1>
-      <p className="mb-6">Tu rol es: <strong>{role}</strong></p>
-      <div className="parent md:grid md:grid-cols-3 md:grid-rows-5 gap-4">
+    <main className="mb-10">
+      <h1 className={`${urbanist.className} font-bold text-4xl text-[#212529]`}>Onboarding</h1>
+      <p className="mb-10">Tu rol es: <strong>{role}</strong></p>
+      <div className="parent grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-x-4 gap-y-10 content-center">
         {Object.entries(onbCards).map(([key, card]) => (
           <OnboardingCard
             key={key}

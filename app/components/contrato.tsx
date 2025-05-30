@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { database } from "../../firebaseConfig";
 import { ref, get } from "firebase/database";
-import ProfilePicture from "./profile-picture";
-import { CircleUser } from "lucide-react";
 import { urbanist } from "./fonts";
+import BotonRegresar from "./botonRegresar";
 
 export default function Contratos({ id }: { id: string }) {
   // const router = useRouter();
@@ -38,37 +37,13 @@ export default function Contratos({ id }: { id: string }) {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
-        <ProfilePicture
-          nombre={`${name}`}
-          width={"w-15"}
-          height={"h-15"}
-          textSize={"text-3xl"}
-        />
-        <span className="pl-4">
-          <div>
-            <div className="flex flex-row items-center">
-              <strong
-                className={`${urbanist.className} text-2xl text-[#212529]`}
-              >
-                {name || "name"}
-              </strong>
-            </div>
-          </div>
-        </span>
+      <div className="mb-8">
+        <BotonRegresar />
       </div>
-      <div className="pb-6 pt-2 border-b border-gray-300 text-sm">
-        <table className="table-auto text-[#495057]">
-          <tbody>
-            <tr>
-              <td className="inline-flex pr-8">
-                <CircleUser className="pr-2" />
-                ID del Contrato
-              </td>
-              <td>{id}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
+        <h1 className={`${urbanist.className} text-4xl text-[#212529]`}>
+          <strong>{name || "Nombre del contrato"}</strong>
+        </h1>
       </div>
     </div>
   );
