@@ -79,6 +79,11 @@ export default function PdfModal({
                 src={downloadableUrl}
                 alt={fileName}
                 className="max-w-full max-h-full object-contain border"
+                width={500}
+                height={500}
+                unoptimized={true} // para evitar problemas de optimización con imágenes grandes
+                loading="lazy"
+                draggable={false}
               />
             )
           ) : (
