@@ -147,7 +147,7 @@ console.error("Error during login:", err);
  
 // To handle multiple failed attempts
 const remainingAttempts = await incrementLoginAttempt(email);
-let msg = "El usuario o la contraseña son incorrectos. ";
+let msg = "Su cuenta fue bloqueada debido a numerosos intentos consecutivos de inicio de sesión. Recupere su contraseña. ";
 
 if (remainingAttempts > 0 && remainingAttempts < 3){
   msg += ` Queda${remainingAttempts !== 1 ? "n " : " "} ${remainingAttempts} intento${remainingAttempts !== 1 ? "s" : ""} antes de que la cuenta sea bloqueada.`;
