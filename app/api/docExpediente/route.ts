@@ -95,6 +95,36 @@ export async function PATCH(request: NextRequest) {
         },
       }
     );
+
+    // Notificaciones por email
+    try {
+      // Get user email from database
+      const userRef = ref(database, `usuarios/${expedienteId}/email`);
+      const userSnap = await get(userRef);
+
+      if (userSnap.exists()) {
+        const userEmail = userSnap.val();
+
+        // Send email notification
+        const emailResponse = await fetch("/api/sendEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            addressee: userEmail,
+            subject: `Estado de documento actualizado - ${documentoId}`,
+            text: `Hola,\n\n${message}\n\nPuedes revisar el estado de tu expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error("Error sending email notification");
+        }
+      }
+    } catch (error) {
+      console.error("Error sending email notification:", error);
+    }
   }
 
   // recalcula siempre
