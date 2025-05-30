@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-
   if (!checkUserRes.ok) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -30,9 +29,13 @@ export async function middleware(request: NextRequest) {
 
   // Redirect on /auth/redirector
   if (pathname === "/auth/redirector") {
-    if (role === "candidato" || role === "enCorporativo" || role === "enProyecto") {
+    if (
+      role === "candidato" ||
+      role === "enCorporativo" ||
+      role === "enProyecto"
+    ) {
       console.log("➡️ Redirecting candidato to expediente");
-      return NextResponse.redirect(new URL("/candidato/expediente", request.url));
+      return NextResponse.redirect(new URL("/candidato", request.url));
     }
     if (role === "rh") {
       console.log("➡️ Redirecting RH to dashboard");
@@ -43,17 +46,19 @@ export async function middleware(request: NextRequest) {
   }
 
   // 🔄 Order matters: check /candidato FIRST
-  if (pathname.startsWith("/candidato") && role !== "candidato" && role !== "enCorporativo" && role !== "enProyecto") {
+  if (
+    pathname.startsWith("/candidato") &&
+    role !== "candidato" &&
+    role !== "enCorporativo" &&
+    role !== "enProyecto"
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  else if (pathname.startsWith("/dashboard") && role !== "rh") {
-    return NextResponse.redirect(new URL("/candidato/expediente", request.url));
+  } else if (pathname.startsWith("/dashboard") && role !== "rh") {
+    return NextResponse.redirect(new URL("/candidato", request.url));
   }
 
   console.log("✅ Access granted");
-  
-  
+
   return NextResponse.next();
 }
 
@@ -63,6 +68,6 @@ export const config = {
     "/auth/redirector",
     "/dashboard/:path*",
     "/dashboard/perfil",
-    "/candidato/:path*"
+    "/candidato/:path*",
   ],
 };
