@@ -45,7 +45,7 @@ export default function SeguimientoToggle({ rhUID, candidateUID }: Props) {
   };
 
   if (estaSiguiendo === null) {
-    return <p>Cargando...</p>;
+    return <div className=" flex items-center justify-center border-2 border-gray-500 text-[#212529] rounded-lg cursor-pointer mr-2 py-2 px-4 w-40">Seguir</div>;
   }
 
   if (estaSiguiendo) {
