@@ -186,7 +186,12 @@ export default function FormularioOlvide() {
               console.log("Estado de usuario actualizado a 'enProceso'");
 
               // Luego enviamos el correo de recuperación
-              await sendPasswordResetEmail(auth, email);
+              await sendPasswordResetEmail(auth, email, {
+                url: process.env.NODE_ENV === 'development'
+                ? "http://localhost:3000/olvidaste/link"
+                : "https://sistema-contrataciones-grupo-pissa-b8fo.vercel.app/olvidaste/link",
+                handleCodeInApp: true
+              });
               console.log("Correo de recuperación enviado");
 
               setAlertaRecuperar({
