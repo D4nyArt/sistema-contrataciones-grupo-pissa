@@ -7,21 +7,22 @@ import React, { useEffect, useState } from "react";
 import ContractsPage from "@/app/components/contractsPage";
 import { useRouter, useSearchParams } from "next/navigation";
 import InfoPerfil from "./informacionPerfil";
+import History from "./history/history"
 
 export default function UserInfo({ id }: { id: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
 
-  const [active, setActive] = useState<"información" | "expediente" | "contratos"> ("información");
+  const [active, setActive] = useState<"información" | "expediente" | "contratos" | "histórico"> ("información");
 
   useEffect(() => {
-      if (tabParam === "contratos" || tabParam === "expediente" || tabParam === "información") {
+      if (tabParam === "contratos" || tabParam === "expediente" || tabParam === "información" || tabParam === "histórico") {
         setActive(tabParam);
       }
     }, [tabParam]);
   
-    const handleTabChange = (tab: "información" | "expediente" | "contratos") => {
+    const handleTabChange = (tab: "información" | "expediente" | "contratos"| "histórico") => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", tab);
       router.push(`?${params.toString()}`);
@@ -69,8 +70,20 @@ export default function UserInfo({ id }: { id: string }) {
           >
             Contratos
           </button>
-        </div>
 
+          <button
+            onClick={() => handleTabChange("histórico")}
+            className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
+              active === "histórico"
+                ? "border-[#2d4583] text-[#2d4583]"
+                : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"
+            }`}
+          >
+            Histórico
+          </button>
+
+        </div>
+        {active === "histórico" && <History/>}
         {active === "contratos" && <ContractsPage uid={id} />}
         {active === "expediente" && <ExpedienteRH userId={id} />}
         {active === "información" && ( <InfoPerfil />

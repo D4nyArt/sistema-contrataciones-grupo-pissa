@@ -11,6 +11,7 @@ import { incrementLoginAttempt, resetAttempts } from "../api/attempts/attempts";
 import { estilosClasificacion } from "./alertaEstilos";
 import { Alerta } from "./alertaPantalla";
 import { CampoContrasena } from "./campoContrasena";
+import { initializeUserHistory } from "../api/history/history";
 
 export default function Formulario() {
 
@@ -75,6 +76,9 @@ export default function Formulario() {
       );
       const uid = userCredentials.user.uid;
       console.log("Logged in as:", userCredentials.user);
+
+      // Inicializa el historial del usuario
+      await initializeUserHistory(uid);
 
       const response = await fetch("/api/saveUIDCookie", {
         method: "POST",
