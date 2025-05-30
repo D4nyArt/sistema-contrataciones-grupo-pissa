@@ -39,8 +39,9 @@ export function CampoContrasena({
         value={value}
         onChange={onChange}
         required={required}
-        className={`w-full p-2 border rounded-lg mt-1 bg-[#fafbfc] ${className}`}
-
+        className={`w-full p-2 
+          border border-gray-300 rounded-lg 
+          mt-1 bg-[#fafbfc] text-black  ${className}`}
       />
       {value.length > 0 && (
         <button
