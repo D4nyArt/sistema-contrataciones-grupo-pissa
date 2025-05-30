@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "varsIgnorePattern": "^_" }] */
+
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -40,6 +42,7 @@ export default function EstablecerContrasenaLink() {
             await verifyPasswordResetCode(auth, oobCode);
             setTokenVerificado(true);
         } catch (error) {
+            console.error("Error en ", error);
             setAlerta({
                 type: 'errorSist',
                 mensaje:'El Link desde el que se accedió ha caducado'
@@ -167,7 +170,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             if (snapshot.exists()) {
                 const usuarios = snapshot.val();
                 const usuarioEncontrado = Object.entries(usuarios).find(
-                    ([uid, userData]: [string, any]) => userData.email === email
+                    ([_uid, userData]: [string, any]) => userData.email === email
                 );
 
                 if (usuarioEncontrado) {
