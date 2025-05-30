@@ -133,6 +133,12 @@ export async function PATCH(request: NextRequest) {
           },
         }
       );
+      // Notificación por email al candidato
+      await sendEmailNotification(
+        expedienteId,
+        `Revisión de campos en tu expediente`,
+        `Hola,\n\nEl revisor ha revisado los campos en tu expediente.\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+      );
     } else {
       const revSnap = await get(
         ref(database, `usuarios/${expedienteId}/revisor`)
@@ -180,6 +186,13 @@ export async function PATCH(request: NextRequest) {
                   },
                 }
               );
+
+              // Notificación por email a cada persona RH
+              await sendEmailNotification(
+                userId,
+                `Actualización de campos en expediente de ${fullName}`,
+                `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+              );
             }
           }
         }
@@ -195,6 +208,13 @@ export async function PATCH(request: NextRequest) {
             },
           }
         );
+
+        // Notificación por email al revisor
+        await sendEmailNotification(
+          reviewer,
+          `Actualización de campos en expediente de ${fullName}`,
+          `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+        );
       }
     }
     return NextResponse.json({ ok: true });
@@ -204,5 +224,39 @@ export async function PATCH(request: NextRequest) {
       { error: "No se pudo actualizar" },
       { status: 500 }
     );
+  }
+
+  async function sendEmailNotification(
+    userId: string,
+    emailSubject: string,
+    emailText: string
+  ) {
+    // Notificaciones por email
+    try {
+      const userRef = ref(database, `usuarios/${userId}/email`);
+      const userSnap = await get(userRef);
+
+      if (userSnap.exists()) {
+        const userEmail = userSnap.val();
+
+        const emailResponse = await fetch("/api/sendEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            addressee: userEmail,
+            subject: emailSubject,
+            text: emailText,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error("Error sending email notification");
+        }
+      }
+    } catch (error) {
+      console.error("Error sending email notification:", error);
+    }
   }
 }

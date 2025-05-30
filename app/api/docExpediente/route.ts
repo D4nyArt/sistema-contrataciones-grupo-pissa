@@ -98,14 +98,12 @@ export async function PATCH(request: NextRequest) {
 
     // Notificaciones por email
     try {
-      // Get user email from database
       const userRef = ref(database, `usuarios/${expedienteId}/email`);
       const userSnap = await get(userRef);
 
       if (userSnap.exists()) {
         const userEmail = userSnap.val();
 
-        // Send email notification
         const emailResponse = await fetch("/api/sendEmail", {
           method: "POST",
           headers: {
