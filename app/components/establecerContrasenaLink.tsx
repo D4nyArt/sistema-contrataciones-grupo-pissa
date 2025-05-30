@@ -1,6 +1,6 @@
 'use client';
 
-/* eslint @typescript-eslint/no-unused-vars: ["error", { "varsIgnorePattern": "^_" }] */
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
