@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { get, ref, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 async function recalcEstadoCampos(expId: string, docId: string) {
   const basePath = `expedientes/expediente${expId}/documentos/${docId}`;
@@ -133,6 +134,12 @@ export async function PATCH(request: NextRequest) {
           },
         }
       );
+      // Notificación por email al candidato
+      await sendEmailNotification(
+        expedienteId,
+        `Revisión de campos en tu expediente`,
+        `Hola,\n\n${message}.\n\nPuedes revisar el estado de tu expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+      );
     } else {
       const revSnap = await get(
         ref(database, `usuarios/${expedienteId}/revisor`)
@@ -180,6 +187,13 @@ export async function PATCH(request: NextRequest) {
                   },
                 }
               );
+
+              // Notificación por email a cada persona RH
+              await sendEmailNotification(
+                userId,
+                `Actualización de campos en expediente de ${fullName}`,
+                `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+              );
             }
           }
         }
@@ -194,6 +208,13 @@ export async function PATCH(request: NextRequest) {
               fijado: false,
             },
           }
+        );
+
+        // Notificación por email al revisor
+        await sendEmailNotification(
+          reviewer,
+          `Actualización de campos en expediente de ${fullName}`,
+          `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
         );
       }
     }

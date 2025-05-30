@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { EllipsisVertical, FileText, LayoutGrid, Plus, Table2 } from "lucide-react";
 import { urbanist } from "./fonts";
+import PopUp from './pop-up'
+import GenerateContract from "./generatecontract";
 
 interface Contract {
   id?: string;
@@ -13,10 +15,13 @@ interface Contract {
 
 const ContractCard = ({ contract }: { contract: Contract }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fullPath = `${pathname}?${searchParams.toString()}`;
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/contratos/${contract.id}`)}
+      onClick={() => router.push(`/dashboard/contratos/${contract.id}?from=${encodeURIComponent(fullPath)}`)}
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-row">
@@ -42,7 +47,6 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
 };
 
 export default function ListContracts() {
-  const router = useRouter();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [sortOption, setSortOption] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,6 +86,8 @@ export default function ListContracts() {
       })
     : filtrarContratos;
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   return (
     <main className="flex-1 p-4">
       <div className="mb-4 flex gap-6 text-black animate-fade-in-up">
@@ -104,7 +110,7 @@ export default function ListContracts() {
         </select>
         <button
           value={sortOption}
-          onClick={() => router.push("/dashboard/contratos/nuevo_contrato")}
+          onClick={() => setShowConfirm(true)}
           className="cursor-pointer border p-1 gap-2 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177] w-70 inline-flex justify-center items-center"
         >
           <Plus/>
@@ -196,6 +202,9 @@ export default function ListContracts() {
           </table>
         </div>
       )}
+      <PopUp show = {showConfirm} onClose={() => setShowConfirm(false)}>
+        <GenerateContract/>
+      </PopUp>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ref, get, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 async function recalcEstadoGeneral(expId: string, docId: string) {
   console.log("Recalculando estado general");
@@ -94,6 +95,13 @@ export async function PATCH(request: NextRequest) {
           fijado: false,
         },
       }
+    );
+
+    // Notificaciones por email
+    await sendEmailNotification(
+      expedienteId,
+      `Estado de documento actualizado - ${documentoId}`,
+      `Hola,\n\n${message}\n\nPuedes revisar el estado del expediente ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
     );
   }
 

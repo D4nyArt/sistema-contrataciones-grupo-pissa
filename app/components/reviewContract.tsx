@@ -7,6 +7,7 @@ import DirectViewer from "./directFileView";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
 import { urbanist } from "./fonts";
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -86,6 +87,13 @@ export default function ReviewContract({ uid }: { uid: string }) {
         fijado: false,
       },
     });
+
+    // Enviar notificación por email
+    await sendEmailNotification(
+      uid,
+      `Actualización de estado en contrato`,
+      `Hola,\n\n${message}"Puedes revisar el estado del contrato ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+    );
   };
 
   const current = info.state ? stateMap[info.state] : null;
