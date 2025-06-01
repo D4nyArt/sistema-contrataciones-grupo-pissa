@@ -3,6 +3,26 @@ import { ref, get, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
+async function recalcExpedienteCompleto(expId: string) {
+  console.log("Recalculando expediente_completo");
+  
+  const expedienteRef = ref(database, `expedientes/expediente${expId}`);
+  const snap = await get(expedienteRef);
+  if (!snap.exists()) return;
+
+  const expediente = snap.val() as any;
+  const documentos = expediente.documentos || {};
+
+  // Revisar si todos los documentos tienen estadoGeneral === "aprobado"
+  const allDocuments = Object.values(documentos) as any[];
+  const expedienteCompleto = allDocuments.length > 0 && 
+    allDocuments.every(doc => doc.estadoGeneral === "aprobado");
+
+  // Actualizar el campo de expediente_completo
+  await update(expedienteRef, { expediente_completo: expedienteCompleto });
+  console.log("Expediente completo actualizado:", expedienteCompleto);
+}
+
 async function recalcEstadoGeneral(expId: string, docId: string) {
   console.log("Recalculando estado general");
 
@@ -30,6 +50,9 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   // Fix: update the specific node reference
   await update(nodeRef, { estadoGeneral: nuevo });
   console.log("Estado general actualizado:", nuevo);
+
+  // Recalcular expediente completo
+  await recalcExpedienteCompleto(expId);
 }
 
 export async function GET(request: NextRequest) {
