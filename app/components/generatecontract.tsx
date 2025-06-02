@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { get, ref, update } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
+import { useRouter } from "next/navigation";
 
 
 export default function GenerateContract() {
@@ -13,6 +14,9 @@ export default function GenerateContract() {
   const [generated, setGenerated] = useState(false);
   const [proy_num, setProy_num] = useState(0);
   const [corp_num, setCorp_num] = useState(0);
+
+  const router = useRouter();
+
    
 useEffect(()=>{
 
@@ -69,7 +73,9 @@ const clickResolveRef = useRef<(() => void)>(null);
   const handlePress = () => {
     clickResolveRef.current?.();
     clickResolveRef.current = null;
-    
+
+    alert(`El contrato ${contract_name} fue creado con éxito.`);
+    window.location.reload();
 
   };
 

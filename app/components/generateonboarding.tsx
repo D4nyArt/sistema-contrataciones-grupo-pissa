@@ -76,6 +76,11 @@ const clickResolveRef = useRef<(() => void)>(null);
         await remove(del_ref_1);
         await remove(del_ref_2);
 
+        if (!isUpload) {
+          alert(`El apartado de onboarding ${onboarding_name} fue creado con éxito.`);
+          window.location.reload();
+        }
+
 
     }
     catch (e) {
@@ -86,6 +91,9 @@ const clickResolveRef = useRef<(() => void)>(null);
   const handlePress = () => {
     clickResolveRef.current?.();
     clickResolveRef.current = null;
+
+    alert(`El apartado de onboarding ${onboarding_name} fue creado con éxito.`);
+    window.location.reload();
     
 
   };
