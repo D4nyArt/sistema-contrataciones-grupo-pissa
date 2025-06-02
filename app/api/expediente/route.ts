@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         const defaultStructure = {
             id_candidato: expedienteId,
             notas: "",
+            expediente_completo: false,
             documentos: {
                 INE: {
                     campos: {

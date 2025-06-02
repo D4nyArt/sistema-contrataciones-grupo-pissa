@@ -5,7 +5,6 @@ import SelectProjectContracts, {
 import SelectCorporateContracts, {
   Contract as CorpContract,
 } from "./selectCorporateContracts";
-//import ManagerViewer from "./ManagerViewer";
 import DirectViewer from "./directFileView";
 import PopUp from "./pop-up";
 import { ref, update } from "firebase/database";
