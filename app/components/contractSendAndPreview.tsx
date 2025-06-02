@@ -38,6 +38,14 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     ? "pruebaInicial/contratos/corporativo"
     : "";
 
+    const [selected, setSelected] = useState("pro");
+
+    const options = [
+      { id: "pro", label: "Proyecto", icon: FolderOpenDot },
+      { id: "cor", label: "Corporativo", icon: Building },
+    ];
+
+
   // Acción al confirmar el envío
   const handleSend = async () => {
     if (!contract) return;
@@ -55,6 +63,13 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         estado: "no_firmado",
         duracion: duration,
       });
+      
+      
+      await update(ref(database, selected=="pro"?`contratos/proyectos/${contract.id}`:`contratos/corporativo/${contract.id}`), {
+        duration: duration,
+        assignation: uid
+      })
+      
 
       console.log("Contrato enviado:", contract.name);
 
@@ -86,12 +101,6 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     setShowConfirm(true);
   };
 
-  const [selected, setSelected] = useState("pro");
-
-  const options = [
-    { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-    { id: "cor", label: "Corporativo", icon: Building },
-  ];
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
