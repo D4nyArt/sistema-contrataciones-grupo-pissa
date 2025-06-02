@@ -45,7 +45,6 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   if (!snap.exists()) return;
 
   const { estadoArchivo, estadoCampos } = snap.val() as any;
-  let nuevo = "no_subido";
 
   let nuevo: "aprobado" | "pendiente" | "rechazado" | "no_subido" = "no_subido";
   if (estadoArchivo === "rechazado" || estadoCampos === "rechazado") {
@@ -55,12 +54,18 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   } else if (estadoArchivo === "pendiente" || estadoCampos === "pendiente") {
     nuevo = "pendiente";
 
+    // 2.5) uno aprobado y el otro NO aprobado → pendiente
+  } else if (
+    (estadoArchivo === "aprobado" && estadoCampos !== "aprobado") ||
+    (estadoCampos === "aprobado" && estadoArchivo !== "aprobado")
+  ) {
+    nuevo = "pendiente";
+
     // 3) solo si ambos aprobados
   } else if (estadoArchivo === "aprobado" && estadoCampos === "aprobado") {
     nuevo = "aprobado";
   }
 
-  // Fix: update the specific node reference
   await update(nodeRef, { estadoGeneral: nuevo });
   console.log("Estado general actualizado:", nuevo);
 
