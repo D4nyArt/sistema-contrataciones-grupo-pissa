@@ -13,11 +13,30 @@ export default function ContractInfoView({ id }: { id: string }) {
 
   const [duration, setDuration] = useState(""); // Duración del contrato en meses
   const [selected, setSelected] = useState("");
+  const [assignation, setAssignation] = useState("");
+  const [assigname, setAssigname] = useState("");
   //const [isproject, setIsproject] = useState(false);
   //const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState("");
+
+  const getAssignationName = async (id: string) => {
+
+    let fullname = "";
+    const namesnap = await get(ref(database, `usuarios/${id}/nombre`));
+    const lastnamesnap = await get(ref(database, `usuarios/${id}/apellidos`));
+    if (namesnap.exists()) {
+     fullname += namesnap.val();
+     fullname += " ";
+     fullname += lastnamesnap.val();
+
+     return fullname;
+    }
+    
+    return "N/A";
+
+  }
   
   useEffect(() => {
       const fetchUser = async () => {
@@ -30,6 +49,7 @@ export default function ContractInfoView({ id }: { id: string }) {
           console.log(data);
           console.log(type);
           
+
           //if the contract is not in "proyectos" search in "corporativo"
           if (!Object.keys(data).length) {
             const userRef = ref(database, `contratos/corporativo/${id}`);
@@ -49,8 +69,11 @@ export default function ContractInfoView({ id }: { id: string }) {
           console.log(type);
 
           setDuration(data.duration || "");
+          setAssignation(data.assignation || "");
           //setName(data.name || "");
           setUrl(data.url || "");
+
+          setAssigname(await getAssignationName(assignation));
         } catch (e) {
           console.error(e);
         }
@@ -90,7 +113,7 @@ export default function ContractInfoView({ id }: { id: string }) {
             const LinkIcon = option.icon;
             return (
               <div key={option.id}
-                className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
+                className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2
                 ${selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
                     : "border-gray-300 text-gray-500"}`}
@@ -102,9 +125,9 @@ export default function ContractInfoView({ id }: { id: string }) {
           })}
         </div>
         <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Duración del Contrato</h2>
-        <p>{duration || "N/A"}</p>
+        <p>{duration?`${duration} meses`:"N/A"}</p> 
         <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Asignación</h2>
-        <p>{"N/A"}</p>
+        <p>{assigname || "N/A"}</p>
       
       </div>
 
