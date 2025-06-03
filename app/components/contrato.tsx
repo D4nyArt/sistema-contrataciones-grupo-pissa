@@ -14,7 +14,6 @@ export default function Contratos({ id }: { id: string }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        console.log(`contratos/corporativo/${id}`);
         const userRef = ref(database, `contratos/proyectos/${id}`);
         const snapshot = await get(userRef);
         let data = snapshot.val() || {};
@@ -26,7 +25,6 @@ export default function Contratos({ id }: { id: string }) {
           data = snapshot.val() || {};
         }
 
-        console.log(data);
         setName(data.name || "");
       } catch (e) {
         console.error(e);

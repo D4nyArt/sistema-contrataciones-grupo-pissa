@@ -48,7 +48,6 @@ const clickResolveRef = useRef<(() => void)>(null);
   };
 
   const handleUpload = async () => {
-    console.log("Upload done—waiting for button press…");
     setGenerated(true);
     await waitForClick();
     setGenerated(false);

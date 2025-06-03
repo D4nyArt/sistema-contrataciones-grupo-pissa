@@ -135,7 +135,6 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
         }),
       });
       if (!res.ok) throw await res.json();
-      console.log(`Campo "${fieldKey}" marcado como "${newState}"`);
       onChangeState();
     } catch (err) {
       console.error("Error al actualizar estado del campo:", err);

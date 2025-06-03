@@ -25,7 +25,6 @@ async function recalcExpedienteCompleto(expId: string) {
 }
 
 async function recalcEstadoGeneral(expId: string, docId: string) {
-  console.log("Recalculando estado general");
 
   const path = `expedientes/expediente${expId}/documentos/${docId}`;
   const nodeRef = ref(database, path);

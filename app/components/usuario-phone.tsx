@@ -30,7 +30,6 @@ export default function PhoneUsuarios() {
 
   /*
   const handleRemoval = async () => {
-    //console.log("something is happening")
     await set(
       ref(database, `usuarios/${id}/estadoUsuario`),
       "dado de baja"

@@ -39,7 +39,6 @@ export default function Uploader({
 
       const fileReference = storageRef(storage, filePath);
       const snapshot = await uploadBytes(fileReference, file);
-      console.log("Archivo subido correctamente:", snapshot);
 
       if (expedienteId && documentoId) {
         const docRef = dbRef(
