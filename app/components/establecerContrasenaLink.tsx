@@ -195,10 +195,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
                     // Actualizar el estado del usuario a enProceso2
                     await update(ref(database, `usuarios/${uid}`), {
-                        estadoUsuario: 'enProceso2'
+                        estadoUsuario: 'cambioContrasena'
                     });
                     
-                    console.log("Estado actualizado a enProceso2");
+                    console.log("Estado actualizado a cambioContrasena");
                 } else {
                     console.log("Usuario no encontrado en la base de datos");
                     setAlerta({
