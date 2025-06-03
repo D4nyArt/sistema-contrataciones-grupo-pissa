@@ -82,6 +82,7 @@ export default function FormularioOlvide() {
             Primera verificación en el backend
       */
     try {
+      console.log("Verificando email:", email);
 
       // Paso 1: Intentar verificar en Firebase Authentication
       // let emailExisteEnAuth = false;
@@ -90,7 +91,9 @@ export default function FormularioOlvide() {
         const signInMethods = await fetchSignInMethodsForEmail(auth, email);
         if (signInMethods.length > 0) {
           // emailExisteEnAuth = true;
+          console.log("Email encontrado en Authentication");
         } else {
+          console.log("Email no encontrado en Authentication");
         }
       } catch (authError) {
         console.error("Error al verificar en Authentication:", authError);
@@ -106,6 +109,10 @@ export default function FormularioOlvide() {
 
         if (usersSnapshot.exists()) {
           const usersData = usersSnapshot.val();
+          console.log(
+            "Número de usuarios encontrados:",
+            Object.keys(usersData).length
+          );
 
           // Búsqueda case-insensitive
           const emailBuscado = email.toLowerCase();
@@ -114,8 +121,11 @@ export default function FormularioOlvide() {
             const userEmail = usersData[userId].email;
             if (userEmail && userEmail.toLowerCase() === emailBuscado) {
               uid = userId;
+              console.log("Usuario encontrado con UID:", uid);
             }
           });
+        } else {
+          console.log("No se encontraron usuarios en la base de datos");
         }
       } catch (dbError) {
         console.error("Error al consultar la base de datos:", dbError);
@@ -124,6 +134,7 @@ export default function FormularioOlvide() {
 
       // Si no se encontró el usuario en la base de datos
       if (!uid) {
+        console.log("Email no encontrado en la base de datos");
         setAlertaRecuperar({
           type: "errorSist",
           mensaje:
@@ -134,12 +145,14 @@ export default function FormularioOlvide() {
       /***************************************************************/
 
       // Paso 3: Verificar el estado del usuario
+      console.log("Verificando estado del usuario");
       const userStatusRef = ref(database, `usuarios/${uid}/estadoUsuario`);
 
       try {
         const snapshot = await get(userStatusRef);
 
         if (!snapshot.exists()) {
+          console.log("Estado de usuario no encontrado");
           setAlertaRecuperar({
             type: "errorSist",
             mensaje: "No se encontró el estado del usuario en la base de datos",
@@ -149,6 +162,7 @@ export default function FormularioOlvide() {
 
         // Obtener el valor real del snapshot
         const estadoUsuario: string = snapshot.val();
+        console.log("Estado del usuario:", estadoUsuario);
 
         // Paso 4: Procesar según el estado del usuario
         switch (estadoUsuario) {
@@ -169,6 +183,8 @@ export default function FormularioOlvide() {
                 estadoUsuario: "enProceso",
               });
 
+              console.log("Estado de usuario actualizado a 'enProceso'");
+
               // Luego enviamos el correo de recuperación
               await sendPasswordResetEmail(auth, email, {
                 url: process.env.NODE_ENV === 'development'
@@ -176,6 +192,7 @@ export default function FormularioOlvide() {
                 : "https://sistema-contrataciones-grupo-pissa-b8fo.vercel.app/olvidaste/link",
                 handleCodeInApp: true
               });
+              console.log("Correo de recuperación enviado");
 
               setAlertaRecuperar({
                 type: "aprobado",
@@ -193,6 +210,14 @@ export default function FormularioOlvide() {
             break;
 
           case "enProceso":
+            setAlertaRecuperar({
+              type: "info",
+              mensaje:
+                "Ya tiene una solicitud en curso. Espere al administrador",
+            });
+            break;
+
+            case "cambioContrasena":
             setAlertaRecuperar({
               type: "info",
               mensaje:
