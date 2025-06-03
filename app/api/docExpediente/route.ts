@@ -8,26 +8,28 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
 
   const path = `expedientes/expediente${expId}/documentos/${docId}`;
   const nodeRef = ref(database, path);
+
+  // 1) Si no hay campos o está vacío → estadoCampos = "aprobado"
+  const camposRef = ref(database, `${path}/campos`);
+  const camposSnap = await get(camposRef);
+  if (!camposSnap.exists() || Object.keys(camposSnap.val() || {}).length === 0) {
+    await update(nodeRef, { estadoCampos: "aprobado" });
+  }
+
+  // 2) Recalcular estadoGeneral
   const snap = await get(nodeRef);
   if (!snap.exists()) return;
-
   const { estadoArchivo, estadoCampos } = snap.val() as any;
-  let nuevo = "no_subido";
 
-  // 1) rechazo lo tiene más peso
+  let nuevo: "aprobado" | "pendiente" | "rechazado" | "no_subido" = "no_subido";
   if (estadoArchivo === "rechazado" || estadoCampos === "rechazado") {
     nuevo = "rechazado";
-
-    // 2) cualquiera en pendiente
   } else if (estadoArchivo === "pendiente" || estadoCampos === "pendiente") {
     nuevo = "pendiente";
-
-    // 3) solo si ambos aprobados
   } else if (estadoArchivo === "aprobado" && estadoCampos === "aprobado") {
     nuevo = "aprobado";
   }
 
-  // Fix: update the specific node reference
   await update(nodeRef, { estadoGeneral: nuevo });
   console.log("Estado general actualizado:", nuevo);
 }
@@ -36,13 +38,11 @@ export async function GET(request: NextRequest) {
   const p = request.nextUrl.searchParams;
   const expedienteId = p.get("expedienteId");
   const documentoId = p.get("documentoId");
-
   if (!expedienteId || !documentoId) {
     return NextResponse.json({ error: "Faltan IDs" }, { status: 400 });
   }
 
   await recalcEstadoGeneral(expedienteId, documentoId);
-
   const nodeRef = ref(
     database,
     `expedientes/expediente${expedienteId}/documentos/${documentoId}`
@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
       { status: 404 }
     );
   }
-
   const data = snap.val() as any;
   return NextResponse.json({
     nombre: data.nombre,
@@ -81,10 +80,9 @@ export async function PATCH(request: NextRequest) {
   if (Object.keys(updates).length) {
     await update(ref(database), updates);
 
-    // Notificaciones (ese si funciona)
+    // Notificación al candidato
     const timestamp = Date.now();
     const message = `Tu documento "${documentoId}" ha sido marcado como "${estadoArchivo}"`;
-
     await update(
       ref(database, `notificaciones/notificaciones${expedienteId}`),
       {
@@ -96,8 +94,6 @@ export async function PATCH(request: NextRequest) {
         },
       }
     );
-
-    // Notificaciones por email
     await sendEmailNotification(
       expedienteId,
       `Estado de documento actualizado - ${documentoId}`,
@@ -105,7 +101,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  // recalcula siempre
+  // Siempre recalcular estadoGeneral
   await recalcEstadoGeneral(expedienteId, documentoId);
   return NextResponse.json({ ok: true });
 }
