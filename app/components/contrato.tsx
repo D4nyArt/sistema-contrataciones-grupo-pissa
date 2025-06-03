@@ -35,7 +35,7 @@ export default function Contratos({ id }: { id: string }) {
 
   return (
     <div>
-      <div className="mb-8 animate-fade-in-up">
+      <div className="mb-8 animate-fade-in-up hover:text-[#08b177] text-[#495057]">
         <BotonRegresar />
       </div>
       <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6 animate-fade-in-up">
