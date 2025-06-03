@@ -120,10 +120,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`
       );
       const snapshot = await uploadBytes(fileReference, file);
-      console.debug(snapshot);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      return;
     } finally {
       setIsUploading(false);
     }

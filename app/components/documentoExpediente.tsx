@@ -33,38 +33,22 @@ export default function DocumentoExpediente({
   const [docData, setDocData] = useState<DocData | undefined>();
   const [hasFields, setHasFields] = useState<boolean>(false);
 
-  const fetchDoc = async () => {
-    if (!expedienteId || !documentoId) return;
-    try {
-      const res = await fetch(
-        `/api/docExpediente?expedienteId=${expedienteId}&documentoId=${documentoId}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setDocData({
-          nombre: data.nombre,
-          estadoGeneral: data.estadoGeneral,
-          estadoArchivo: data.estadoArchivo,
-          estadoCampos: data.estadoCampos,
-        });
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    const fetchDoc = async () => {
+        if (!expedienteId || !documentoId) return;
+        try {
+            const response = await fetch(`/api/docExpediente?expedienteId=${expedienteId}&documentoId=${documentoId}`);
 
-  const fetchHasFields = async () => {
-    if (!expedienteId || !documentoId) return;
-    try {
-      const res = await fetch(
-        `/api/fields?expedienteId=${expedienteId}&documentoId=${documentoId}`
-      );
-      const data = await res.json();
-      setHasFields(res.ok && data.fields && Object.keys(data.fields).length > 0);
-    } catch {
-      setHasFields(false);
-    }
-  };
+            const data = await response.json();
+
+            if (response.ok) {
+                setDocData({nombre: data.nombre, estadoGeneral: data.estadoGeneral, estadoArchivo: data.estadoArchivo, estadoCampos: data.estadoCampos});
+            } else {
+                console.error("Error al obtener la informacion del documento:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+        }
+    };
 
   useEffect(() => {
     fetchDoc();

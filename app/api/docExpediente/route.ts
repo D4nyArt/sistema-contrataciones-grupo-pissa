@@ -50,10 +50,6 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   }
 
   await update(nodeRef, { estadoGeneral: nuevo });
-  console.log("Estado general actualizado:", nuevo);
-
-  // Recalcular expediente completo
-  await recalcExpedienteCompleto(expId);
 }
 
 export async function GET(request: NextRequest) {
