@@ -17,6 +17,8 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 //import crypto from "crypto";
 
 const generatePassword = () => {
@@ -142,11 +144,16 @@ export default function CreateCredentials() {
           />
 
           <div className="text-black mt-4">Teléfono</div>
-          <input
-            type="text"
+          <PhoneInput
+            international
+            defaultCountry="MX"
+            value={"+52"}
+            onChange={(value) => setPhone(value || "")}
             className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            style={{
+              '--PhoneInputCountryFlag-height': '1em',
+              '--PhoneInput-color--focus': '#2d4583'
+            }}
           />
 
           <div className="text-black mt-4">Género</div>
