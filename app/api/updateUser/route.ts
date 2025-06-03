@@ -72,6 +72,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
           allUsersSnapshot.forEach((child) => {
             const userData = child.val();
             userIndex++;
+            console.debug(`Usuario ${userIndex}, userDate:`, userData);
           });
         }
       } catch (debugError) {

@@ -188,6 +188,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                     }
 
                     const estadoUsuario: string = statusSnapshot.val();
+                    console.debug("Estado del usuario:", estadoUsuario);
 
                     // Actualizar el estado del usuario a enProceso2
                     await update(ref(database, `usuarios/${uid}`), {
