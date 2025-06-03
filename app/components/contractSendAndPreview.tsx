@@ -62,13 +62,6 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         estado: "no_firmado",
         duracion: duration,
       });
-      
-      
-      await update(ref(database, selected=="pro"?`contratos/proyectos/${contract.id}`:`contratos/corporativo/${contract.id}`), {
-        duration: duration,
-        assignation: uid
-      })
-      
 
       // Notificaciones
       const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
