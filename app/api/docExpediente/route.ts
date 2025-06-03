@@ -43,25 +43,13 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   // 2) Recalcular estadoGeneral
   const snap = await get(nodeRef);
   if (!snap.exists()) return;
-
   const { estadoArchivo, estadoCampos } = snap.val() as any;
 
   let nuevo: "aprobado" | "pendiente" | "rechazado" | "no_subido" = "no_subido";
   if (estadoArchivo === "rechazado" || estadoCampos === "rechazado") {
     nuevo = "rechazado";
-
-    // 2) cualquiera en pendiente
   } else if (estadoArchivo === "pendiente" || estadoCampos === "pendiente") {
     nuevo = "pendiente";
-
-    // 2.5) uno aprobado y el otro NO aprobado → pendiente
-  } else if (
-    (estadoArchivo === "aprobado" && estadoCampos !== "aprobado") ||
-    (estadoCampos === "aprobado" && estadoArchivo !== "aprobado")
-  ) {
-    nuevo = "pendiente";
-
-    // 3) solo si ambos aprobados
   } else if (estadoArchivo === "aprobado" && estadoCampos === "aprobado") {
     nuevo = "aprobado";
   }
