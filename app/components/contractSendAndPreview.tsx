@@ -70,8 +70,6 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       })
       
 
-      console.log("Contrato enviado:", contract.name);
-
       // Notificaciones
       const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
       const timestamp = Date.now();

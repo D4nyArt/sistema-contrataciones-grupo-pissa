@@ -15,26 +15,14 @@ import { initializeUserHistory } from "../api/history/history";
 
 export default function Formulario() {
 
-  try {
-
-   useEffect(() => {
+  useEffect(() => {
       async function deleteCookie() {
         await fetch("/api/deleteCookie?name=candidateId", {
           method: "DELETE",
-        }).then((resp) => {
-          console.log(resp);
-        });
+        })
       }
       deleteCookie();
     }, []);
-
-  }
-
-  catch {
-
-    console.log("No se detecto un usario loggeado.");
-
-  }
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +63,6 @@ export default function Formulario() {
         password
       );
       const uid = userCredentials.user.uid;
-      console.log("Logged in as:", userCredentials.user);
 
       // Inicializa el historial del usuario
       await initializeUserHistory(uid);
@@ -92,10 +79,6 @@ export default function Formulario() {
         throw new Error("Error guardando la cookie");
       }
 
-      if (response.ok) {
-        console.log("El uid se ha guardado en una cookie :)");
-      }
-
       /**********************************
        * Si el inicio salió bien, entonces verifica si el usuario
        * es nuevo para que cambie su contraseña
@@ -106,11 +89,9 @@ export default function Formulario() {
 
       if (snapshot.exists()) {
         const userData = snapshot.val();
-        //console.log("Datos del usuario:", userData);
 
  // Lógica de los estados de usuario
  if (userData.estadoUsuario === "previo") {
-  console.log("Establezca su contraseña por primera vez");
   router.push("/olvidaste/reestablecer");
 } else if (userData.estadoUsuario === "bloqueado") {
   // Usuario bloqueado: intentos de inicio de sesión fallidos

@@ -41,13 +41,9 @@ export default function ContractInfoView({ id }: { id: string }) {
   useEffect(() => {
       const fetchUser = async () => {
         try {
-          console.log(`contratos/corporativo/${id}`);
           const userRef = ref(database, `contratos/proyectos/${id}`);
           const snapshot = await get(userRef);
           let data = snapshot.val() || {};
-          console.log(id);
-          console.log(data);
-          console.log(type);
           
 
           //if the contract is not in "proyectos" search in "corporativo"
@@ -65,9 +61,6 @@ export default function ContractInfoView({ id }: { id: string }) {
             //setIsproject(true);
           }
   
-          console.log(data);
-          console.log(type);
-
           setDuration(data.duration || "");
           setAssignation(data.assignation || "");
           //setName(data.name || "");
@@ -87,14 +80,9 @@ export default function ContractInfoView({ id }: { id: string }) {
   //const contract = selectedProject || selectedCorporate;
   const folder = path.dirname(url);
   const fileName = path.basename(url);
-
-  //console.log("url: ", url);
-  //console.log("folder: ", folder);
-  //console.log("filename: ", fileName);
 //
   //// Acción al confirmar el envío
 //
-  //console.log("selected: ", selected);
 
   const options = [
     { id: "pro", label: "Proyecto", icon: FolderOpenDot },

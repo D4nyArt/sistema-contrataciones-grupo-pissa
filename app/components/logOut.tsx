@@ -9,10 +9,9 @@ export default function ForLogOut(){
     const onLogout = async () => {
     await fetch("/api/deleteCookie?name=candidateId", {
         method: "DELETE",
-    }).then((resp) => {
-        console.log(resp);
-        router.push("/auth/redirector");
     });
+    
+    router.push("/auth/redirector");
     };
 
     return(

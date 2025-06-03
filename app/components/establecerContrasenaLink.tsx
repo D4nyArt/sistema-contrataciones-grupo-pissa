@@ -161,7 +161,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         try {
             const email = await verifyPasswordResetCode(auth, oobCode!);
-            console.log("Email del usuario:", email);
             
             // Buscar el usuario por email en la base de datos
             const usuariosRef = ref(database, 'usuarios');
@@ -175,14 +174,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
                 if (usuarioEncontrado) {
                     const [uid] = usuarioEncontrado;
-                    console.log("UID encontrado:", uid);
                     
                     // Verificar el estado actual del usuario
                     const userStatusRef = ref(database, `usuarios/${uid}/estadoUsuario`);
                     const statusSnapshot = await get(userStatusRef);
                     
                     if (!statusSnapshot.exists()) {
-                        console.log("Estado de usuario no encontrado");
                         setAlerta({
                             type: "errorSist",
                             mensaje: "No se encontró el estado del usuario en la base de datos",
@@ -191,16 +188,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                     }
 
                     const estadoUsuario: string = statusSnapshot.val();
-                    console.log("Estado actual del usuario:", estadoUsuario);
 
                     // Actualizar el estado del usuario a enProceso2
                     await update(ref(database, `usuarios/${uid}`), {
                         estadoUsuario: 'cambioContrasena'
                     });
                     
-                    console.log("Estado actualizado a cambioContrasena");
                 } else {
-                    console.log("Usuario no encontrado en la base de datos");
                     setAlerta({
                         type: 'errorSist',
                         mensaje: 'No se encontró el usuario en la base de datos'
@@ -208,7 +202,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                     return;
                 }
             } else {
-                console.log("No se encontraron usuarios en la base de datos");
                 setAlerta({
                     type: 'errorSist',
                     mensaje: 'No se encontraron usuarios en la base de datos'

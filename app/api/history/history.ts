@@ -40,9 +40,6 @@ export async function initializeUserHistory(uid: string) {
         };
 
         await set(historyRef, initialStructure);
-        console.log("History structure created for user:", uid);
-    } else {
-        console.log("User history already exists:", uid);
     }
     } catch (error) {
     console.error("Error creating user history:", error);
@@ -68,7 +65,6 @@ export async function addHistoryEntry(
   
     try {
       await push(historyRef, newEntry);
-      console.log(`Event added to ${category} history for user: ${uid}`);
     } catch (error) {
       console.error("Error adding history entry:", error);
     }

@@ -34,7 +34,6 @@ export default function OnboardingCard({
   // 1) Traer URL del PDF
   useEffect(() => {
     const fetchPdfUrl = async () => {
-      console.log("type: ", type)
       try {
         setLoading(true);
         const url = type == "file" ? await getDownloadURL(storageRef(storage, filePath)) : filePath;

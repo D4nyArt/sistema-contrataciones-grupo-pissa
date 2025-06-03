@@ -24,7 +24,6 @@ export async function GET() {
     }));
 
     const usersArray_final = usersArray.concat(usersArray2);
-    console.log(usersArray_final);
 
 
     return NextResponse.json(usersArray_final, { status: 200 });

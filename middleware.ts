@@ -34,11 +34,9 @@ export async function middleware(request: NextRequest) {
       role === "enCorporativo" ||
       role === "enProyecto"
     ) {
-      console.log("➡️ Redirecting candidato to expediente");
       return NextResponse.redirect(new URL("/candidato", request.url));
     }
     if (role === "rh") {
-      console.log("➡️ Redirecting RH to dashboard");
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
@@ -56,8 +54,6 @@ export async function middleware(request: NextRequest) {
   } else if (pathname.startsWith("/dashboard") && role !== "rh") {
     return NextResponse.redirect(new URL("/candidato", request.url));
   }
-
-  console.log("✅ Access granted");
 
   return NextResponse.next();
 }
