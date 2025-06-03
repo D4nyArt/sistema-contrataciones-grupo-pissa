@@ -33,6 +33,10 @@ export default function CreateCredentials() {
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
+  const [email_corporativo, setEmailCorporativo] = useState("");
+  const [genero, setGenero] = useState("");
+  const [puesto, setPuesto] = useState("");
+  const [area, setArea] = useState("");
 
   const handlePress = async () => {
     // Generamos una contraseña (opcional: podrías permitir que el usuario defina la suya)
@@ -55,7 +59,11 @@ export default function CreateCredentials() {
         data = {
           apellidos: lastname,
           email: mail,
+          email_corporativo: email_corporativo,
           estadoUsuario: "previo",
+          genero: genero,
+          puesto: puesto,
+          area: area,
           nombre: name,
           rol: role,
           telefono: phone,
@@ -66,7 +74,11 @@ export default function CreateCredentials() {
         data = {
           apellidos: lastname,
           email: mail,
+          email_corporativo: email_corporativo,
           estadoUsuario: "previo",
+          genero: genero,
+          puesto: puesto,
+          area: area,
           nombre: name,
           rol: role,
           telefono: phone,
@@ -121,12 +133,48 @@ export default function CreateCredentials() {
             onChange={(event) => setMail(event.target.value)}
           />
 
+          <div className="text-black mt-4">Correo Corporativo</div>
+          <input
+            type="email"
+            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
+            value={email_corporativo}
+            onChange={(event) => setEmailCorporativo(event.target.value)}
+          />
+
           <div className="text-black mt-4">Teléfono</div>
           <input
             type="text"
             className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
+          />
+
+          <div className="text-black mt-4">Género</div>
+          <select
+            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
+            value={genero}
+            onChange={(event) => setGenero(event.target.value)}
+          >
+            <option value="">Seleccione un género</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+          </select>
+
+          <div className="text-black mt-4">Puesto</div>
+          <input
+            type="text"
+            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
+            value={puesto}
+            onChange={(event) => setPuesto(event.target.value)}
+          />
+
+          <div className="text-black mt-4">Área</div>
+          <input
+            type="text"
+            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
+            value={area}
+            onChange={(event) => setArea(event.target.value)}
           />
 
           {/*<div className="text-black mt-4">Tipo de Usuario</div>*/}
