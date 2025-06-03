@@ -186,7 +186,11 @@ export default function ListContracts() {
                     </td>
                     <td className="px-4 py-4 bg-white">
                       <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
-                        Proyecto
+                        { contract.id?.startsWith("conproy")?
+                        <p>Proyecto</p>
+                        :
+                        <p>Corporativo</p>
+                        }
                       </div>
                     </td>
                     <td className="px-4 py-4 bg-white">
