@@ -5,7 +5,16 @@
 
     2.  Guardar dentro del historial 
         Parámetros: (UID, clasificacion, fecha(string), rh?, nota? )
- */        
+ 
+ 
+ PENDIENTES:
+
+  a) Parseo del UID del RH 
+  b) Parseo de la fecha 
+  c) Generación de un PID (password ID) descriptivo
+            *** No utilizar el que tiene firebase por defecto  
+ 
+*/        
 import { getDatabase, ref, get, set, push } from "firebase/database";
 
 export async function initializeUserHistory(uid: string) {
@@ -19,11 +28,10 @@ export async function initializeUserHistory(uid: string) {
         const now = new Date().toISOString();
 
         const initialStructure = {
-        contrasena: {
+        contrasenas: {
             init: {
-            id: "PI",
-            detalles: "creación",
-            fecha: now
+              date: now,
+            note: "creación"
             }
         },
         documentos: {},
@@ -50,7 +58,7 @@ export async function addHistoryEntry(
     note?: string
   ) {
     const db = getDatabase();
-    const historyRef = ref(db, `historial/${uid}/${category}`);
+    const historyRef = ref(db, `historial/historial${uid}/${category}`);
   
     const newEntry = {
       date,

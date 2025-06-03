@@ -124,7 +124,7 @@ export default function Formulario() {
     type: "denegado",
     mensaje: "Su cuenta está inhabilitada de forma permanente.",
   });
-} else if (userData.estadoUsuario === "enProceso") {
+} else if (userData.estadoUsuario === "enProceso" || userData.estadoUsuario === "cambioContrasena") {
   // enProceso: Cuenta en Proceso de Recuperación
   setAlertaAcceso({
     type: "info",

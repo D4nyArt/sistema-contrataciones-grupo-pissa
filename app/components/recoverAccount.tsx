@@ -6,6 +6,12 @@ import { useEffect, useState } from "react";
 import ProfilePicture from "./profile-picture";
 import { Table2 } from "lucide-react";
 import { handleBlock, handleUnblock } from "../components/block";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
+const rhID = auth.currentUser?.uid;
+
 
 interface User {
   id: string;
@@ -16,7 +22,7 @@ interface User {
   estadoUsuario: string;
 }
 
-export default function ListUsers() {
+export default  function ListUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -51,7 +57,7 @@ export default function ListUsers() {
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
     const esCandidato = user.rol?.toLowerCase() === "candidato";
-    const enProceso = user.estadoUsuario?.toLowerCase() === "enproceso2";
+    const enProceso = user.estadoUsuario?.toLowerCase() === "cambiocontrasena";
     
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""
@@ -204,13 +210,15 @@ export default function ListUsers() {
                         <button
                           className="px-6 py-2 rounded bg-green-500 text-white transition-all duration-200 hover:bg-green-600 hover:shadow-lg hover:scale-105 focus:outline-none"
                           title="Aprobar"
-                          onClick={() => {
+                          onClick={async () => {
                             setRemovingUserId(user.id);
-                            setTimeout(() => {
+                            setTimeout(async () => {
                               handleUnblock(user.id, user.estadoUsuario || "", setStatus, setAttempt, setTime);
                               setUsers((prev) => prev.filter((u) => u.id !== user.id));
                               setRemovingUserId(null);
+                              await addHistoryEntry(user.id, 'contrasenas', new Date().toISOString(), rhID, 'Recuperación aprobada');
                             }, 300); 
+
                           }}
                         >
                           Aprobado
@@ -218,12 +226,13 @@ export default function ListUsers() {
                         <button
                           className="px-6 py-2 rounded bg-red-500 text-white transition-all duration-200 hover:bg-red-600 hover:shadow-lg hover:scale-105 focus:outline-none"
                           title="Denegar"
-                          onClick={() => {
+                          onClick={async () => {
                             setRemovingUserId(user.id);
-                            setTimeout(() => {
+                            setTimeout(async () => {
                               handleBlock(user.id, setStatus, user.estadoUsuario);
                               setUsers((prev) => prev.filter((u) => u.id !== user.id));
                               setRemovingUserId(null);
+                              await addHistoryEntry(user.id, 'contrasenas', new Date().toISOString(), rhID, 'Recuperación denegada');
                             }, 300);
                           }}
                                                   >
