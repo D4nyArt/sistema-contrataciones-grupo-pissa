@@ -1,7 +1,22 @@
 import { ref, set } from "firebase/database";
 import { database } from "../../firebaseConfig";
 
-export const handleBlock = async (userId: string, setStatus: (v: string) => void, currentStatus?: string) => {
+export const handleBlock = async (userId: string, setStatus: (v: string) => void, role: string, currentStatus?: string) => {
+  
+  const res = await fetch("/api/getCurrentUser");
+  const jason = await res.json();
+  const isAdmin = jason.rol === "admin";
+
+  if (role === "admin") {
+    alert("No se puede bloquear al ADMIN");
+    return;
+  }
+
+  if (!isAdmin && role === "rh") {
+    alert("Solo el ADMIN puede bloquear usuarios de rh");
+    return;
+  }
+
   if (currentStatus !== "baja") {
     await set(ref(database, `usuarios/${userId}/estadoUsuario`), "bloqueado");
     setStatus("bloqueado");
@@ -30,3 +45,31 @@ export const handleUnblock = async (
     alert("No se puede desbloquear un usuario que ya está dado de baja");
   }
 };
+
+export const handleRemoval = async (
+  id: string,
+  setStatus: (v: string) => void,
+  role: string
+) => {
+
+  const res = await fetch("/api/getCurrentUser");
+  const jason = await res.json();
+  const isAdmin = jason.rol === "admin";
+
+  if (role === "admin") {
+    alert("No se puede dar de baja al ADMIN");
+    return;
+  }
+
+  if (!isAdmin && role === "rh") {
+    alert("Solo el ADMIN puede dar de baja a usuarios de RH");
+    return;
+  }
+
+    await set(
+      ref(database, `usuarios/${id}/estadoUsuario`),
+      "baja"
+    ).then(() => {
+      setStatus("baja");
+    });
+  };

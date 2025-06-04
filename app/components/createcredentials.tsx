@@ -13,7 +13,7 @@ Estados de los usuarios:
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
@@ -34,7 +34,8 @@ export default function CreateCredentials() {
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("candidato");
+  const [ownrole, setOwnRole] = useState("");
   const [email_corporativo, setEmailCorporativo] = useState("");
   const [genero, setGenero] = useState("");
   const [puesto, setPuesto] = useState("");
@@ -105,6 +106,18 @@ export default function CreateCredentials() {
       }
     }
   };
+
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+
+        const res = await fetch("/api/getCurrentUser");
+        const jason = await res.json();
+        setOwnRole(jason.rol);
+
+    }
+    checkAdmin();
+  }, [ownrole])
 
   return (
     <>
@@ -185,6 +198,7 @@ export default function CreateCredentials() {
           />
 
           {/*<div className="text-black mt-4">Tipo de Usuario</div>*/}
+          {ownrole === "admin" ?
           <div className="flex-row flex items-center pb-10 pt-4 justify-between">
             <div className="flex-row flex">
               <input
@@ -209,6 +223,8 @@ export default function CreateCredentials() {
               <p className="text-black pl-2">RH</p>
             </div>
           </div>
+          : <></>
+          }
 
           <button
             className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
