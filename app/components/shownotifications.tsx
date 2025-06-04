@@ -14,7 +14,7 @@ type Notification = {
   pinned: boolean;
 };
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 10;
 
 export default function ShowNotifications() {
   const [rhUID, setRhUID] = useState<string | null>(null);
@@ -142,7 +142,7 @@ export default function ShowNotifications() {
   return (
     <div className="p-4">
       {/* Tabs */}
-      <div className="flex space-x-4 mb-4">
+      <div className="md:flex space-x-4 mb-4 hidden">
         {["all", "unread", "read", "saved"].map((tab) => (
           <button
             key={tab}
@@ -157,6 +157,24 @@ export default function ShowNotifications() {
               all: "Todas",
               unread: "No leídas",
               read: "Leídas",
+              saved: "Guardadas",
+            }[tab]}
+          </button>
+        ))}
+      </div>
+      <div className="md:hidden space-x-4 mb-4 flex">
+        {["all", "saved"].map((tab) => (
+          <button
+            key={tab}
+            className={`px-4 py-2 rounded-lg cursor-pointer animate-fade-in-up ${
+              activeTab === tab
+                ? "bg-[#2d4583] text-white"
+                : "bg-gray-200 hover:bg-[#08b177] hover:text-white"
+            }`}
+            onClick={() => handleTabChange(tab as typeof activeTab)}
+          >
+            {{
+              all: "Todas",
               saved: "Guardadas",
             }[tab]}
           </button>
@@ -197,7 +215,7 @@ export default function ShowNotifications() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto h-150">
+            <div className="overflow-x-auto h-100">
               <table className="w-full text-left table-auto">
                 <tbody>
                   {paginated.map(({ id, message, read, path, pinned }) => (
