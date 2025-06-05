@@ -8,7 +8,7 @@ import { Table2 } from "lucide-react";
 import { handleBlock, handleUnblock } from "../components/block";
 import { addHistoryEntry } from "../api/history/history";
 import { getAuth } from "firebase/auth";
-
+import sendEmailNotification from "../components/sendEmailNotification";
 const auth = getAuth();
 const rhID = auth.currentUser?.uid;
 
@@ -217,6 +217,7 @@ export default  function ListUsers() {
                               setUsers((prev) => prev.filter((u) => u.id !== user.id));
                               setRemovingUserId(null);
                               await addHistoryEntry(user.id, 'contrasenas', new Date().toISOString(), rhID, 'Recuperación aprobada');
+                              await sendEmailNotification(user.id, 'Su recuperación de contraseña fue aprobada', 'Ahora puede acceder a su cuenta con sus nuevas credenciales');
                             }, 300); 
 
                           }}
@@ -233,6 +234,7 @@ export default  function ListUsers() {
                               setUsers((prev) => prev.filter((u) => u.id !== user.id));
                               setRemovingUserId(null);
                               await addHistoryEntry(user.id, 'contrasenas', new Date().toISOString(), rhID, 'Recuperación denegada');
+                              await sendEmailNotification(user.id, 'Su recuperación de contraseña fue denegada', 'No se aprobó su cambio de contraseña, por favor, contacte al administrador.');
                             }, 300);
                           }}
                                                   >
