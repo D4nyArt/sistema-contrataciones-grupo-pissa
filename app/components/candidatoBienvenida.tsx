@@ -4,6 +4,7 @@ import { database } from "../../firebaseConfig";
 import { ArrowUpRight } from "lucide-react";
 import TarjetasColores from "./tarjetasColores";
 import TarjetasColoresScroll from "./tarjetasColoresPhone";
+import Link from "next/link";
 
 export default async function Proceso () {
     // Get cookie from headers, not from a NextRequest param
@@ -28,10 +29,13 @@ export default async function Proceso () {
                 <div className="flex flex-col items-start justify-center space-y-2 animate-fade-in-up">
                     <h2 className="text-gray-400">Hola {usuario}.</h2>
                     <p className="text-white font-semibold text-2xl">Para continuar con tu proceso debes completar los siguientes pasos.</p>
-                    <button className="bg-white text-[#0d324f] pt-2 pb-2 pl-4 pr-4 rounded-full mt-6 inline-flex gap-2 cursor-pointer hover:bg-[#08b177] hover:text-white">
-                        Iniciar
-                        <ArrowUpRight/>
-                    </button>
+                    <Link href="candidato/expediente">
+                        <button
+                            className="bg-white text-[#0d324f] pt-2 pb-2 pl-4 pr-4 rounded-full mt-6 inline-flex gap-2 cursor-pointer hover:bg-[#08b177] hover:text-white">
+                            Iniciar
+                            <ArrowUpRight/>
+                        </button>
+                    </Link>
                 </div>
                 <div className="hidden md:block ml-auto">
                     <TarjetasColores/>
