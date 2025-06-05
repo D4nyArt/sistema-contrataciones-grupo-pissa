@@ -42,9 +42,9 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
   }, [userId]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 p-4 bg-gray-50 min-h-screen">
+    <div className="flex flex-col lg:flex-row gap-4 min-h-screen">
       {/* Lado izquierdo */}
-      <div className="lg:w-1/4 w-full bg-white border rounded-xl shadow p-4">
+      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4">
         <div className="flex items-center justify-between mb-4 space-x-3">
           <h2 className="text-lg font-semibold text-gray-800">Documentos</h2>
           <DownloadBatchFilesButton expedienteId={userId} />
@@ -69,7 +69,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
       </div>
 
       {/* Lado derecho */}
-      <div className="flex-1 bg-white border rounded-xl shadow p-4">
+      <div className="flex-1 bg-white rounded-xl shadow p-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">
             {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}

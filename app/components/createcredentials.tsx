@@ -20,7 +20,6 @@ import { database, auth } from "../../firebaseConfig";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Briefcase, BriefcaseBusiness, Building, Mail, Phone, User, VenusAndMars } from "lucide-react";
-import { eventNames } from "process";
 import { urbanist } from "./fonts";
 //import crypto from "crypto";
 
@@ -44,7 +43,40 @@ export default function CreateCredentials() {
   const [puesto, setPuesto] = useState("");
   const [area, setArea] = useState("");
 
+  const [errors, setErrors] = useState({
+    name: false,
+    lastname: false,
+    mail: false,
+    phone: false,
+    email_corporativo: false,
+    genero: false,
+    puesto: false,
+    area: false
+  });
+
+  const validateFields = () => {
+  const newErrors = {
+      name: !name.trim(),
+      lastname: !lastname.trim(),
+      mail: !mail.trim(),
+      phone: !phone || phone === "+52",
+      email_corporativo: !email_corporativo.trim(),
+      genero: !genero,
+      puesto: !puesto,
+      area: !area.trim()
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error);
+  };
+
   const handlePress = async () => {
+
+    if (!validateFields()) {
+      alert("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
     // Generamos una contraseña (opcional: podrías permitir que el usuario defina la suya)
     const password = generatePassword();
 
@@ -125,71 +157,97 @@ export default function CreateCredentials() {
   return (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <div className="bg-white rounded-xl p-4 shadow-md">
-        <div className="border-b pb-2 mb-6 border-gray-300 animate-fade-in-up">
+      <div className="bg-white rounded-xl p-4 shadow-md animate-fade-in-up">
+        <div className="border-b pb-2 mb-6 border-gray-300">
           <h2
-            className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
+            className={`${urbanist.className} text-2xl font-semibold text-[#212529]`}
           >
-            Información Básica
+            Añadir Persona
           </h2>
+          <p className="mt-2 text-[#495057]">Completa el formulario para añadir una nueva persona.</p>
         </div>
-        <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6 animate-fade-in-up">
+        <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6">
           <div>
             <label className="text-[#495057] block mb-1">Nombre</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <input
                 type="text"
                 className="flex-1 outline-none w-1/2"
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => {
+                  setName(event.target.value);
+                  if (errors.name && event.target.value.trim()) {
+                    setErrors(prev => ({ ...prev, name: false }));
+                  }
+                }}
               />
               <User className="ml-2 text-gray-400" />
             </div>
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Apellidos</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.lastname ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <input
                 type="text"
                 className="flex-1 outline-none w-1/2"
                 value={lastname}
-                onChange={(event) => setLastname(event.target.value)}
+                onChange={(event) => {
+                  setLastname(event.target.value);
+                  if (errors.lastname && event.target.value.trim()) {
+                    setErrors(prev => ({ ...prev, lastname: false }));
+                  }
+                }}
               />
               <User className="ml-2 text-gray-400" />
             </div>
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Correo Personal</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.mail ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <input
                 type="email"
                 className="flex-1 outline-none w-1/2"
                 value={mail}
-                onChange={(event) => setMail(event.target.value)}
+                onChange={(event) => {
+                  setMail(event.target.value);
+                  if (errors.mail && event.target.value.trim()) {
+                    setErrors(prev => ({ ...prev, mail: false }));
+                  }
+                }}
               />
               <Mail className="ml-2 text-gray-400" />
             </div>
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Correo Corporativo</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.email_corporativo ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <input
                 type="email"
                 className="flex-1 outline-none w-1/2"
                 value={email_corporativo}
-                onChange={(event) => setEmailCorporativo(event.target.value)}
+                onChange={(event) => {
+                  setEmailCorporativo(event.target.value);
+                  if (errors.email_corporativo && event.target.value.trim()) {
+                    setErrors(prev => ({ ...prev, email_corporativo: false }));
+                  }
+                }}
               />
               <Building className="ml-2 text-gray-400" />
             </div>
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Teléfono</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <PhoneInput
                 international
                 defaultCountry="MX"
                 value={"+52"}
-                onChange={(value) => setPhone(value || "")}
+                onChange={(value) => {
+                  setPhone(value || "");
+                  if (errors.phone && value && value !== "+52") {
+                    setErrors(prev => ({ ...prev, phone: false }));
+                  }
+                }}
                 className="flex-1 outline-none w-1/2"
                 style={{
                   '--PhoneInputCountryFlag-height': '1em',
@@ -201,11 +259,16 @@ export default function CreateCredentials() {
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Género</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.genero ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <select
                 className="flex-1 outline-none w-1/2"
                 value={genero}
-                onChange={(event) => setGenero(event.target.value)}
+                onChange={(event) => {
+                  setGenero(event.target.value);
+                  if (errors.genero && event.target.value) {
+                    setErrors(prev => ({ ...prev, genero: false }));
+                  }
+                }}
               >
                 <option value=""></option>
                 <option value="Masculino">Masculino</option>
@@ -217,24 +280,70 @@ export default function CreateCredentials() {
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Puesto</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
-              <input
-                type="text"
+            <div className={`flex items-center p-2 border ${errors.puesto ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
+              <select
                 className="flex-1 outline-none w-1/2"
                 value={puesto}
-                onChange={(event) => setPuesto(event.target.value)}
-              />
+                onChange={(event) => {
+                  setPuesto(event.target.value);
+                  if (errors.puesto && event.target.value) {
+                    setErrors(prev => ({ ...prev, puesto: false }));
+                  }
+                }}
+              >
+                <option value=""></option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="lider_de_proyecto">Líder de Proyecto</option>
+                <option value="auxiliar_administrativo">Auxiliar Administrativo</option>
+                <option value="soporte_tecnico">Soporte Técnico</option>
+                <option value="asistente">Asistente</option>
+                <option value="chofer_ejecutivo">Chofer Ejecutivo</option>
+                <option value="ingeniero_en_redes">Ingeniero en Redes</option>
+                <option value="lider_de_proyecto_jr">Líder de Proyecto Jr.</option>
+                <option value="contador_jr">Contador Jr.</option>
+                <option value="jefe_ingenieria_de_software">Jefe Ingeniería de Software</option>
+                <option value="mesa_de_servicios">Mesa de servicios</option>
+                <option value="reclutador">Reclutador</option>
+                <option value="facturación_y_cobranza">Facturación y Cobranza</option>
+                <option value="licitador">Licitador</option>
+                <option value="contador_general">Contador General</option>
+                <option value="recepcionista">Recepcionista</option>
+                <option value="coordinador_de_nomina">Coordinador de Nomina</option>
+                <option value="personal_de_limpieza">Personal de limpieza</option>
+                <option value="field_service">Field Service</option>
+                <option value="gerente_de_operaciones_y_proyectos">Gerente de operaciones y Proye</option>
+                <option value="reclutador_sr">Reclutador Sr.</option>
+                <option value="chofer">Chofer</option>
+                <option value="contralor">Contralor</option>
+                <option value="tesorero">Tesorero</option>
+                <option value="almacenista">Almacenista</option>
+                <option value="lider_de_infraestructura">Líder de Infraestructura</option>
+                <option value="mensajero">Mensajero</option>
+                <option value="lider_administrativo_de_proyec">Líder Administrativo de Proyectos</option>
+                <option value="comprador">Comprador</option>
+                <option value="ejecutivo_de_cuentas">Ejecutivo de Cuentas</option>
+                <option value="arq_soluciones">Arquitecto de Soluciones</option>
+                <option value="senior_manager">Limpiador</option>
+                <option value="tecnico_lexmark">Técnico LEXMARK</option>
+                <option value="lider_rh">Líder RH</option>
+                <option value="lider_de_admon_y_finanzas">Líder de admon. y finanzas</option>
+              </select>
               <Briefcase className="ml-2 text-gray-400" />
             </div>
           </div>
           <div>
             <label className="text-[#495057] block mb-1">Área</label>
-            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+            <div className={`flex items-center p-2 border ${errors.area ? 'border-red-500' : 'border-gray-300'} rounded-lg bg-white md:w-md`}>
               <input
                 type="text"
                 className="flex-1 outline-none w-1/2"
                 value={area}
-                onChange={(event) => setArea(event.target.value)}
+                onChange={(event) => {
+                  setArea(event.target.value);
+                  if (errors.area && event.target.value.trim()) {
+                    setErrors(prev => ({ ...prev, area: false }));
+                  }
+                }}
               />
               <BriefcaseBusiness className="ml-2 text-gray-400" />
             </div>
