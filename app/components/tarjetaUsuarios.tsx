@@ -12,10 +12,24 @@ export default function UserCard({ user }: { user: User }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const fullPath = `${pathname}?${searchParams.toString()}`;
+  let userRole = "N/A";
+  if (user.rol === "enProyecto") {
+    userRole = "En Proyecto";
+  } else if (user.rol === "enCorporativo") {
+    userRole = "En Corporativo";
+  } else if (user.rol === "rh") {
+    userRole = "RH";
+  } else if (user.rol === "admin") {
+    userRole = "ADMIN";
+  }
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/${user.id}?from=${encodeURIComponent(fullPath)}`)}
+      onClick={() =>
+        router.push(
+          `/dashboard/${user.id}?from=${encodeURIComponent(fullPath)}`
+        )
+      }
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-col md:flex-row md:justify-between">
@@ -33,7 +47,7 @@ export default function UserCard({ user }: { user: User }) {
           {user.nombre || "N/A"} {user.apellidos || ""}
         </div>
         <div className="text-sm text-[#2975a0] flex-initial capitalize">
-          {user.rol || "N/A"}
+          {userRole || "N/A"}
         </div>
       </div>
       <div className="text-sm text-[#495057] flex flex-row">
