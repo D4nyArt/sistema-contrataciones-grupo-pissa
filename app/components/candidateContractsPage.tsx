@@ -8,6 +8,7 @@ import { urbanist } from "./fonts";
 import { Clock, ThumbsUp, ThumbsDown, X, Upload } from "lucide-react";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
+import PopUp from "./pop-up";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -36,6 +37,7 @@ const stateMap: Record<
 export default function CandidateContractsPage({ uid }: { uid: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const [contract, setContract] = useState<{
     id: string;
@@ -106,7 +108,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !contract) {
-      return <p className="text-gray-500">No hay contratos disponibles.</p>;
+      return;
     }
 
     // Subir archivo
@@ -119,6 +121,9 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       );
       const snapshot = await uploadBytes(fileReference, file);
       console.debug(snapshot);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return;
     } finally {
       setIsUploading(false);
     }
@@ -149,6 +154,9 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           }
         : null
     );
+
+    // Show success popup
+    setShowSuccessPopup(true);
 
     // Notificaciones
     let nombre = uid; // Valor por defecto en caso de error
@@ -269,6 +277,19 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           {isUploading && <p className="text-gray-500">Subiendo archivo...</p>}
         </label>
       </div>
+
+      {/* Success Popup */}
+      <PopUp show={showSuccessPopup} onClose={() => setShowSuccessPopup(false)}>
+        <div className="text-center">
+          <div className="text-green-600 mb-4">
+            <ThumbsUp size={48} className="mx-auto" />
+          </div>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">¡Éxito!</h3>
+          <p className="text-gray-700">
+            El contrato se ha subido correctamente
+          </p>
+        </div>
+      </PopUp>
     </div>
   );
 }
