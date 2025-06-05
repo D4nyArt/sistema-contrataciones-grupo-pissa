@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import ManagerViewer from "./ManagerViewer";
 import { update, ref as dbRef, get } from "firebase/database";
@@ -139,6 +141,16 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       url: `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`,
     });
 
+    setContract((prev) =>
+      prev
+        ? {
+            ...prev,
+            state: "revisando",
+          }
+        : null
+    );
+
+    // Notificaciones
     let nombre = uid; // Valor por defecto en caso de error
     try {
       const nombreSnap = await get(dbRef(database, `usuarios/${uid}/nombre`));
@@ -149,7 +161,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       console.error("Error al obtener el nombre del candidato:", error);
     }
 
-    // Notificaciones
     const message = `El candidato ${nombre} subió el contrato "${fileName}"`;
     const timestamp = Date.now();
 
