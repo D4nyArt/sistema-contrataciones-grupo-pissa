@@ -207,6 +207,7 @@ export default function CreateCredentials() {
                 value={genero}
                 onChange={(event) => setGenero(event.target.value)}
               >
+                <option value=""></option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
                 <option value="Otro">Otro</option>
