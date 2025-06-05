@@ -10,7 +10,6 @@ export default function Profile() {
   const [role, setrole] = useState("");
   const [tel, setTel] = useState("");
   const [emailSecundario, setEmailSecundario] = useState("");
-  const [showSecondaryEmail, setShowSecondaryEmail] = useState(false);
   const [edit, setEdit] = useState(false);
   const [originalEmail, setOriginalEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -33,12 +32,7 @@ export default function Profile() {
         setmail(jason.email);
         setrole(jason.rol);
         setTel(jason.telefono || "");
-        
-        // Si ya existe un email secundario, mostrarlo
-        if (jason.emailSecundario) {
-          setEmailSecundario(jason.emailSecundario);
-          setShowSecondaryEmail(true);
-        }
+        setEmailSecundario(jason.emailSecundario || "");
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
         setAlerta({
@@ -72,13 +66,8 @@ export default function Profile() {
           updateData.telefono = tel;
         }
 
-        // Manejar email secundario
-        if (showSecondaryEmail) {
-          updateData.emailSecundario = emailSecundario || null;
-        } else {
-          // Si se oculta el campo, eliminar el email secundario
-          updateData.emailSecundario = null;
-        }
+        // Incluir email secundario (puede ser vacío o null)
+        updateData.emailSecundario = emailSecundario || null;
 
         const res = await fetch("/api/updateUser", {
           method: "PATCH",
@@ -111,18 +100,6 @@ export default function Profile() {
       }
     } else {
       setEdit(true);
-    }
-  };
-
-  const toggleSecondaryEmail = () => {
-    if (!edit) return;
-    
-    if (showSecondaryEmail) {
-      // Si se oculta, limpiar el campo
-      setEmailSecundario("");
-      setShowSecondaryEmail(false);
-    } else {
-      setShowSecondaryEmail(true);
     }
   };
 
@@ -171,51 +148,25 @@ export default function Profile() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <label className="text-gray-600 text-sm">Correo Principal</label>
-                {edit && (
-                  <button
-                    type="button"
-                    onClick={toggleSecondaryEmail}
-                    className="text-emerald-500 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
-                    title={showSecondaryEmail ? "Quitar email secundario" : "Agregar email secundario"}
-                  >
-                    {showSecondaryEmail ? (
-                      <>
-                        <span className="text-lg">−</span>
-                        Email secundario
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-lg">+</span>
-                        Email secundario
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+              <label className="text-gray-600 text-sm">Correo Corporativo</label>
               <p className="text-lg font-medium">{mail}</p>
             </div>
 
-            {/* Email Secundario */}
-            {showSecondaryEmail && (
-              <div>
-                <label className="text-gray-600 text-sm">Email Secundario</label>
-                {edit ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="email"
-                      className="flex-1 mt-1 p-2 border rounded"
-                      value={emailSecundario}
-                      onChange={(e) => setEmailSecundario(e.target.value)}
-                      placeholder="email.secundario@ejemplo.com"
-                    />
-                  </div>
-                ) : (
-                  <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
-                )}
-              </div>
-            )}
+            {/* Email Secundario - Always visible */}
+            <div>
+              <label className="text-gray-600 text-sm">Correo Personal</label>
+              {edit ? (
+                <input
+                  type="email"
+                  className="w-full mt-1 p-2 border rounded"
+                  value={emailSecundario}
+                  onChange={(e) => setEmailSecundario(e.target.value)}
+                  placeholder="email.secundario@ejemplo.com"
+                />
+              ) : (
+                <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
+              )}
+            </div>
 
             <div>
               <label className="text-gray-600 text-sm">Teléfono</label>
