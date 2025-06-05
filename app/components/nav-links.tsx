@@ -1,6 +1,6 @@
 "use client";
 
-import {ShieldCheck, KeyRound, User, Users, House, Archive, Handshake, UserPlus, UserPen, Bell} from "lucide-react";
+import {ShieldCheck, KeyRound, User, Users, House, Archive, Handshake, UserPlus, Bell, FileText} from "lucide-react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -9,7 +9,7 @@ const linksRH = [
   { name: 'Inicio', href: '/dashboard', icon: House },
   { name: 'Personas', href: '/dashboard/personas', icon: Users },
   { name: 'Candidatos', href: '/dashboard/candidatos', icon: UserPlus},
-  { name: 'Contratos', href: '/dashboard/contratos', icon: UserPen },
+  { name: 'Plantillas', href: '/dashboard/contratos', icon: FileText },
   { name: 'Seguridad', href: '/dashboard/security/recover', icon: ShieldCheck},
   { name: 'Credenciales', href: '/dashboard/security/credenciales', icon: KeyRound },
   { name: 'Notificaciones', href: '/dashboard/notificaciones', icon: Bell },
