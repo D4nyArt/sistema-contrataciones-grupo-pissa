@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react';
 import {ref as storageRef, getDownloadURL} from 'firebase/storage';
-import {ref as dbRef, update, get} from 'firebase/database';
+import {ref, update, get} from 'firebase/database';
 import {storage, database, auth} from '../../firebaseConfig';
 import PdfModal from '@/app/components/OnboardingModal';
 import {FileText} from "lucide-react";
@@ -12,13 +12,17 @@ interface OnboardingCardProps {
   url: string;
   nombre: string;
   type: string;
+  accepted: boolean
+  reference?: string
 }
 
 export default function OnboardingCard({
   key,
   url,
   nombre,
-  type
+  type,
+  accepted,
+  reference
 }: OnboardingCardProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -28,7 +32,7 @@ export default function OnboardingCard({
 
 
   // Nuevo estado para aceptación
-  const [accepted, setAccepted] = useState<boolean>(false);
+  //const [accepted, setAccepted] = useState<boolean>(false);
   const filePath = url;
 
   // 1) Traer URL del PDF
@@ -53,12 +57,15 @@ export default function OnboardingCard({
     const checkAccepted = async () => {
       const user = auth.currentUser;
       if (!user) return;
-      const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
+      const docRef = ref(database, `onboarding/Onb${user.uid}/${nombre}`);
       const snap = await get(docRef);
+      
+      
+      
       if (snap.exists()) {
         const data = snap.val() as {accepted: boolean; acceptedAt?: number};
-        setAccepted(!!data.accepted);
-        setAccepted(!!data.acceptedAt);
+        //setAccepted(!!data.accepted);
+        //setAccepted(!!data.acceptedAt);
         // inicializar nodo
         await update(docRef, {accepted: false, acceptedAt: null});
       }
@@ -80,11 +87,19 @@ export default function OnboardingCard({
 
     const user = auth.currentUser;
     if (!user) throw new Error("Usuario no autenticado");
-    const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
-    const now = Date.now();
-    await update(docRef, {accepted: true, acceptedAt: now});
+    //const docRef = ref(database, `usuarios/Onb${user.uid}/${nombre}`);
 
-    setAccepted(true);
+    if(reference) {
+      const onbRef = ref(database, `${reference}/cards/${nombre}`);
+      let num_accepted = (await get(ref(database, `${reference}/accepted_onboarding`))).val();
+      num_accepted++;
+      await update(onbRef, {accepted: true}); 
+      await update(ref(database, reference), {accepted_onboarding: num_accepted});   
+
+      }
+    const now = Date.now();
+    //await update(docRef, {accepted: true, acceptedAt: now});
+    //setAccepted(true);
   };
   return (
     <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">

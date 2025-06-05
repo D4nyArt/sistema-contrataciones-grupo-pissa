@@ -54,10 +54,18 @@ const clickResolveRef = useRef<(() => void)>(null);
 
     try {
         const nc_ref = ref(database, folder==="proyectos"?`contratos/proyectos/conproy${proy_num+2}`:`contratos/corporativo/concorp${corp_num+2}`);
+        const onb_nc_ref = ref(database, folder==="proyectos"?`contratos/proyectos/conproy${proy_num+2}/onbconproy${proy_num+2}`:`contratos/corporativo/concorp${corp_num+2}/concorp${corp_num+2}`);
+        
+        
         await update(nc_ref, {
             "duration": "indefinida",
             "name": contract_name,
             "type": folder,
+        })
+
+        await update(onb_nc_ref, {
+          "number_of_onboarding": 0,
+          "accepted_onboarding": 0
         })
     }
     catch (e) {

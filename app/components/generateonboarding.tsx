@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { ref, remove, update } from "firebase/database";
+import { get, ref, remove, update } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
 
@@ -54,17 +54,25 @@ const clickResolveRef = useRef<(() => void)>(null);
     setGenerated(false);
 
     try {
-        const nc_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}`:`contratos/corporativo/${id}/onb${id}`);
+        const nc_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards`:`contratos/corporativo/${id}/onb${id}/cards`);
+        let num_onboarding = 0;
+        const num_onboarding_snap = await get(ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/number_of_onboarding`:`contratos/corporativo/${id}/onb${id}/number_of_onboarding`));
+        if (num_onboarding_snap.exists()) num_onboarding = num_onboarding_snap.val();
+        num_onboarding++; 
+
+        const num_onboarding_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}`:`contratos/corporativo/${id}/onb${id}`);
+        await update(num_onboarding_ref, {"number_of_onboarding": num_onboarding})
         await update(nc_ref, {
             [onboarding_name]: {
               "nombre": onboarding_name,
               "type": folder,
-              "url": folder=="file"?`pruebaInicial/onboarding/${id}/${onboarding_name}.pdf`:onb_link
+              "url": folder=="file"?`pruebaInicial/onboarding/${id}/${onboarding_name}.pdf`:onb_link,
+              "accepted": false,
             }
         })
         const things_to_del = ["url", "estadoArchivo"];
-        const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[0]}`);
-        const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[1]}`);
+        const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[0]}`);
+        const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[1]}`);
         
         await remove(del_ref_1);
         await remove(del_ref_2);
