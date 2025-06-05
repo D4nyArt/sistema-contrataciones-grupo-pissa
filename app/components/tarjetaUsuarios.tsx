@@ -21,6 +21,8 @@ export default function UserCard({ user }: { user: User }) {
     userRole = "RH";
   } else if (user.rol === "admin") {
     userRole = "ADMIN";
+  } else if (user.rol === "candidato") {
+    userRole = "Candidato"
   }
 
   return (

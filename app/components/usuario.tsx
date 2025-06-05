@@ -37,6 +37,19 @@ export default function Usuarios() {
   const [_time, setTime] = useState("-");
   const id = pathname.split("/")[2];
 
+  let userRole = "N/A";
+  if (role === "enProyecto") {
+    userRole = "En Proyecto";
+  } else if (role === "enCorporativo") {
+    userRole = "En Corporativo";
+  } else if (role === "rh") {
+    userRole = "RH";
+  } else if (role === "admin") {
+    userRole = "ADMIN";
+  } else if (role === "candidato") {
+    userRole = "Candidato"
+  }
+
   useEffect(() => {
     const auth = getAuth();
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -129,7 +142,7 @@ export default function Usuarios() {
                 )}
               </div>
             </div>
-            <p className="text-[#2975a0] capitalize">{role}</p>
+            <p className="text-[#2975a0] capitalize">{userRole}</p>
           </div>
         </span>
         <div className="md:ml-auto flex">
