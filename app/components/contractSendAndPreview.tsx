@@ -5,7 +5,6 @@ import SelectProjectContracts, {
 import SelectCorporateContracts, {
   Contract as CorpContract,
 } from "./selectCorporateContracts";
-//import ManagerViewer from "./ManagerViewer";
 import DirectViewer from "./directFileView";
 import PopUp from "./pop-up";
 import { ref, update } from "firebase/database";
@@ -38,6 +37,14 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     ? "pruebaInicial/contratos/corporativo"
     : "";
 
+    const [selected, setSelected] = useState("pro");
+
+    const options = [
+      { id: "pro", label: "Proyecto", icon: FolderOpenDot },
+      { id: "cor", label: "Corporativo", icon: Building },
+    ];
+
+
   // Acción al confirmar el envío
   const handleSend = async () => {
     if (!contract) return;
@@ -55,8 +62,13 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         estado: "no_firmado",
         duracion: duration,
       });
-
-      console.log("Contrato enviado:", contract.name);
+      
+      
+      await update(ref(database, selected=="pro"?`contratos/proyectos/${contract.id}`:`contratos/corporativo/${contract.id}`), {
+        duration: duration,
+        assignation: uid
+      })
+      
 
       // Notificaciones
       const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
@@ -86,12 +98,6 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
     setShowConfirm(true);
   };
 
-  const [selected, setSelected] = useState("pro");
-
-  const options = [
-    { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-    { id: "cor", label: "Corporativo", icon: Building },
-  ];
 
   return (
     <div className="flex flex-col md:flex-row gap-6">

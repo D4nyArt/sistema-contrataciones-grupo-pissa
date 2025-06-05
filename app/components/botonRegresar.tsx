@@ -19,7 +19,7 @@ export default function BotonRegresar() {
   return (
     <button
       onClick={handleRegresar}
-      className="items-center flex hover:text-[#08b177] text-[#495057] group cursor-pointer"
+      className="items-center flex group cursor-pointer"
     >
       <ChevronLeft/>
       <span className="pl-2">Regresar</span>

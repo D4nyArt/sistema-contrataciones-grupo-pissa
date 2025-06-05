@@ -21,7 +21,7 @@ export function LoginFAQ() {
   const router = useRouter()
   
   return(
-    <div className="fixed bottom-6 right-6 flex flex-col items-end">
+    <div className="absolute top-4 right-4 md:top-auto md:right-6 md:bottom-6 flex flex-col items-end">
       <button
         onClick={() => router.push('/faq')}
         className="cursor-pointer bg-white hover:bg-[var(--pissa-green)] text-[var(--pissa-blue)] hover:text-white rounded-full p-4 shadow-lg transition-all"

@@ -217,6 +217,14 @@ export default function FormularioOlvide() {
             });
             break;
 
+            case "cambioContrasena":
+            setAlertaRecuperar({
+              type: "info",
+              mensaje:
+                "Ya tiene una solicitud en curso. Espere al administrador",
+            });
+            break;
+
           case "inhabilitado":
             setAlertaRecuperar({
               type: "denegado",

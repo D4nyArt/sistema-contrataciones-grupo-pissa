@@ -1,5 +1,5 @@
 import { getDatabase, ref, query, orderByChild, equalTo, get, runTransaction, set, update } from "firebase/database";
-import { addHistoryEntry } from "../history/history";
+//import { addHistoryEntry } from "../history/history";
 
 const MAX_ATTEMPTS = 3;
 

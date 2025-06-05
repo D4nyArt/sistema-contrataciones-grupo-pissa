@@ -49,14 +49,12 @@ const clickResolveRef = useRef<(() => void)>(null);
   };
 
   const handleUpload = async (isUpload: boolean) => {
-    console.log("Upload done—waiting for button press…");
     setGenerated(true);
     if (isUpload) await waitForClick();
     setGenerated(false);
 
     try {
         const nc_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}`:`contratos/corporativo/${id}/onb${id}`);
-        console.log("nc_ref: ", nc_ref);
         await update(nc_ref, {
             [onboarding_name]: {
               "nombre": onboarding_name,
@@ -68,13 +66,13 @@ const clickResolveRef = useRef<(() => void)>(null);
         const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[0]}`);
         const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[1]}`);
         
-        console.log(id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[0]}`);
-        console.log(id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/${things_to_del[1]}`);
-        console.log("ref 1: ", del_ref_1);
-        console.log("ref 2: ", del_ref_2)
-
         await remove(del_ref_1);
         await remove(del_ref_2);
+
+        if (!isUpload) {
+          alert(`El apartado de onboarding ${onboarding_name} fue creado con éxito.`);
+          window.location.reload();
+        }
 
 
     }
@@ -86,6 +84,9 @@ const clickResolveRef = useRef<(() => void)>(null);
   const handlePress = () => {
     clickResolveRef.current?.();
     clickResolveRef.current = null;
+
+    alert(`El apartado de onboarding ${onboarding_name} fue creado con éxito.`);
+    window.location.reload();
     
 
   };

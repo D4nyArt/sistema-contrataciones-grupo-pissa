@@ -48,7 +48,6 @@ const clickResolveRef = useRef<(() => void)>(null);
   };
 
   const handleUpload = async () => {
-    console.log("Upload done—waiting for button press…");
     setGenerated(true);
     await waitForClick();
     setGenerated(false);
@@ -69,7 +68,9 @@ const clickResolveRef = useRef<(() => void)>(null);
   const handlePress = () => {
     clickResolveRef.current?.();
     clickResolveRef.current = null;
-    
+
+    alert(`El contrato ${contract_name} fue creado con éxito.`);
+    window.location.reload();
 
   };
 

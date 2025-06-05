@@ -1,48 +1,70 @@
-import { NextRequest, NextResponse } from "next/server";
-import { ref, get, update } from "firebase/database";
-import { database } from "@/firebaseConfig";
+import {NextRequest, NextResponse} from "next/server";
+import {ref, get, update} from "firebase/database";
+import {database} from "@/firebaseConfig";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
+async function recalcExpedienteCompleto(expId: string) {
+  console.log("Recalculando expediente_completo");
+  
+  const expedienteRef = ref(database, `expedientes/expediente${expId}`);
+  const snap = await get(expedienteRef);
+  if (!snap.exists()) return;
+
+  const expediente = snap.val() as any;
+  const documentos = expediente.documentos || {};
+
+  // Revisar si todos los documentos tienen estadoGeneral === "aprobado"
+  const allDocuments = Object.values(documentos) as any[];
+  const expedienteCompleto = allDocuments.length > 0 && 
+    allDocuments.every(doc => doc.estadoGeneral === "aprobado");
+
+  // Actualizar el campo de expediente_completo
+  await update(expedienteRef, { expediente_completo: expedienteCompleto });
+  console.log("Expediente completo actualizado:", expedienteCompleto);
+}
+
 async function recalcEstadoGeneral(expId: string, docId: string) {
-  console.log("Recalculando estado general");
 
   const path = `expedientes/expediente${expId}/documentos/${docId}`;
   const nodeRef = ref(database, path);
+
+  // 1) Si no hay campos o está vacío → estadoCampos = "aprobado"
+  const camposRef = ref(database, `${path}/campos`);
+  const camposSnap = await get(camposRef);
+  if (!camposSnap.exists() || Object.keys(camposSnap.val() || {}).length === 0) {
+    await update(nodeRef, { estadoCampos: "aprobado" });
+  }
+
+  // 2) Recalcular estadoGeneral
   const snap = await get(nodeRef);
   if (!snap.exists()) return;
-
   const { estadoArchivo, estadoCampos } = snap.val() as any;
-  let nuevo = "no_subido";
 
-  // 1) rechazo lo tiene más peso
+  let nuevo: "aprobado" | "pendiente" | "rechazado" | "no_subido" = "no_subido";
   if (estadoArchivo === "rechazado" || estadoCampos === "rechazado") {
     nuevo = "rechazado";
-
-    // 2) cualquiera en pendiente
   } else if (estadoArchivo === "pendiente" || estadoCampos === "pendiente") {
     nuevo = "pendiente";
-
-    // 3) solo si ambos aprobados
   } else if (estadoArchivo === "aprobado" && estadoCampos === "aprobado") {
     nuevo = "aprobado";
   }
 
-  // Fix: update the specific node reference
   await update(nodeRef, { estadoGeneral: nuevo });
   console.log("Estado general actualizado:", nuevo);
+
+  // Recalcular expediente completo
+  await recalcExpedienteCompleto(expId);
 }
 
 export async function GET(request: NextRequest) {
   const p = request.nextUrl.searchParams;
   const expedienteId = p.get("expedienteId");
   const documentoId = p.get("documentoId");
-
   if (!expedienteId || !documentoId) {
-    return NextResponse.json({ error: "Faltan IDs" }, { status: 400 });
+    return NextResponse.json({error: "Faltan IDs"}, {status: 400});
   }
 
   await recalcEstadoGeneral(expedienteId, documentoId);
-
   const nodeRef = ref(
     database,
     `expedientes/expediente${expedienteId}/documentos/${documentoId}`
@@ -50,11 +72,10 @@ export async function GET(request: NextRequest) {
   const snap = await get(nodeRef);
   if (!snap.exists()) {
     return NextResponse.json(
-      { error: "No existe el documento" },
-      { status: 404 }
+      {error: "No existe el documento"},
+      {status: 404}
     );
   }
-
   const data = snap.val() as any;
   return NextResponse.json({
     nombre: data.nombre,
@@ -65,10 +86,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const { expedienteId, documentoId, estadoArchivo, estadoCampos } =
+  const {expedienteId, documentoId, estadoArchivo, estadoCampos} =
     await request.json();
   if (!expedienteId || !documentoId) {
-    return NextResponse.json({ error: "Faltan IDs" }, { status: 400 });
+    return NextResponse.json({error: "Faltan IDs"}, {status: 400});
   }
 
   const base = `expedientes/expediente${expedienteId}/documentos/${documentoId}`;
@@ -81,10 +102,9 @@ export async function PATCH(request: NextRequest) {
   if (Object.keys(updates).length) {
     await update(ref(database), updates);
 
-    // Notificaciones (ese si funciona)
+    // Notificación al candidato
     const timestamp = Date.now();
     const message = `Tu documento "${documentoId}" ha sido marcado como "${estadoArchivo}"`;
-
     await update(
       ref(database, `notificaciones/notificaciones${expedienteId}`),
       {
@@ -96,8 +116,6 @@ export async function PATCH(request: NextRequest) {
         },
       }
     );
-
-    // Notificaciones por email
     await sendEmailNotification(
       expedienteId,
       `Estado de documento actualizado - ${documentoId}`,
@@ -105,7 +123,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  // recalcula siempre
+  // Siempre recalcular estadoGeneral
   await recalcEstadoGeneral(expedienteId, documentoId);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ok: true});
 }

@@ -76,7 +76,7 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-8 hover:text-[#08b177] text-[#495057]">
         <BotonRegresar />
       </div>
       <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
