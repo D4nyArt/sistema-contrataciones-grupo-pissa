@@ -33,7 +33,7 @@ export default function FAQPage() {
         <div className="h-2/3 w-full bg-white flex items-start justify-center">
             <div className="mt-10 text-center">
             <h1 className={`text-[#001e2b] text-3xl md:text-4xl pb-2 ${urbanist.className}`}><strong>Preguntas frecuentes</strong></h1>
-            <Questions />
+            <Questions searchTerm={searchTerm}/>
             </div>
         </div>
       </div>
