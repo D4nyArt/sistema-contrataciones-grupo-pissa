@@ -174,7 +174,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
                 <div className="flex space-x-1">
                   <button
                     onClick={() => handleFieldReview(key, true)}
-                    className={`p-1.5 rounded transition-colors ${
+                    className={`cursor-pointer p-1.5 rounded transition-colors ${
                       estado === FIELD_STATES.APROBADO
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-700"
@@ -185,7 +185,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
                   </button>
                   <button
                     onClick={() => handleFieldReview(key, false)}
-                    className={`p-1.5 rounded transition-colors ${
+                    className={`cursor-pointer p-1.5 rounded transition-colors ${
                       estado === FIELD_STATES.RECHAZADO
                         ? "bg-red-100 text-red-700"
                         : "bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-700"
@@ -245,7 +245,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleSaveFields}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
             >
               Guardar Cambios
             </button>

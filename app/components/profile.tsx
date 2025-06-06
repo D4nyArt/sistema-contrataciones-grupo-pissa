@@ -187,7 +187,7 @@ export default function Profile() {
           <button
             onClick={changeProfile}
             disabled={loading}
-            className={`mt-8 w-full ${
+            className={`cursor-pointer mt-8 w-full ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-emerald-500 hover:bg-emerald-700"

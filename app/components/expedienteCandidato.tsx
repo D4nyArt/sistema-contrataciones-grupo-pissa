@@ -54,7 +54,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
             <li key={doc.id}>
               <button
                 onClick={() => setDocumentoId(doc.id)}
-                className={`w-full text-left px-4 py-2 rounded-md transition
+                className={`w-full text-left px-4 py-2 rounded-md transition cursor-pointer
                   ${
                     documentoId === doc.id
                       ? "bg-blue-100 text-blue-800 font-semibold"

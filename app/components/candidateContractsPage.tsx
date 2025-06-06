@@ -263,7 +263,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         </h2>
         {/*Aquí es donde se sube un archivo*/}
         <label className={isUploading ? "opacity-50 pointer-events-none" : ""}>
-          <div className="bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg mb-2">
+          <div className="cursor-pointer bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg mb-2">
             <Upload size={32} />
           </div>
           <input
