@@ -19,7 +19,15 @@ import { ref, set } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import { Briefcase, BriefcaseBusiness, Building, Mail, Phone, User, VenusAndMars } from "lucide-react";
+import {
+  Briefcase,
+  BriefcaseBusiness,
+  Building,
+  Mail,
+  Phone,
+  User,
+  VenusAndMars,
+} from "lucide-react";
 import { eventNames } from "process";
 import { urbanist } from "./fonts";
 //import crypto from "crypto";
@@ -66,7 +74,11 @@ export default function CreateCredentials() {
           apellidos: lastname,
           email: mail,
           email_corporativo: email_corporativo,
+          email_corporativo: email_corporativo,
           estadoUsuario: "previo",
+          genero: genero,
+          puesto: puesto,
+          area: area,
           genero: genero,
           puesto: puesto,
           area: area,
@@ -81,7 +93,11 @@ export default function CreateCredentials() {
           apellidos: lastname,
           email: mail,
           email_corporativo: email_corporativo,
+          email_corporativo: email_corporativo,
           estadoUsuario: "previo",
+          genero: genero,
+          puesto: puesto,
+          area: area,
           genero: genero,
           puesto: puesto,
           area: area,
@@ -110,17 +126,23 @@ export default function CreateCredentials() {
     }
   };
 
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const res = await fetch("/api/getCurrentUser");
+      const jason = await res.json();
+      setOwnRole(jason.rol);
+    };
+    checkAdmin();
+  }, [ownrole]);
 
   useEffect(() => {
     const checkAdmin = async () => {
-
-        const res = await fetch("/api/getCurrentUser");
-        const jason = await res.json();
-        setOwnRole(jason.rol);
-
-    }
+      const res = await fetch("/api/getCurrentUser");
+      const jason = await res.json();
+      setOwnRole(jason.rol);
+    };
     checkAdmin();
-  }, [ownrole])
+  }, [ownrole]);
 
   return (
     <>
@@ -171,7 +193,9 @@ export default function CreateCredentials() {
             </div>
           </div>
           <div>
-            <label className="text-[#495057] block mb-1">Correo Corporativo</label>
+            <label className="text-[#495057] block mb-1">
+              Correo Corporativo
+            </label>
             <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
               <input
                 type="email"
@@ -192,8 +216,8 @@ export default function CreateCredentials() {
                 onChange={(value) => setPhone(value || "")}
                 className="flex-1 outline-none w-1/2"
                 style={{
-                  '--PhoneInputCountryFlag-height': '1em',
-                  '--PhoneInput-color--focus': '#ffffff'
+                  "--PhoneInputCountryFlag-height": "1em",
+                  "--PhoneInput-color--focus": "#ffffff",
                 }}
               />
               <Phone className="ml-2 text-gray-400" />
@@ -239,37 +263,39 @@ export default function CreateCredentials() {
               <BriefcaseBusiness className="ml-2 text-gray-400" />
             </div>
           </div>
-          {ownrole === "admin" ?
-          <div>
-            <label className="text-[#495057] block mb-1">Rol</label>
-            <div className="flex space-x-2">
-              <div className="flex flex-row">
-                <input
-                  type="radio"
-                  value="candidato"
-                  onChange={(event) => {
-                    setRole(event.target.value);
-                  }}
-                  checked={role === "candidato"}
-                />
-                <p className="pl-2">Candidato</p>
-              </div>
-              <div className="flex flex-row">
-                <input
-                  type="radio"
-                  value="rh"
-                  onChange={(event) => {
-                    setRole(event.target.value);
-                  }}
-                  checked={role === "rh"}
-                />
-                <p className="pl-2">RH</p>
+          {ownrole === "admin" ? (
+            <div>
+              <label className="text-[#495057] block mb-1">Rol</label>
+              <div className="flex space-x-2">
+                <div className="flex flex-row">
+                  <input
+                    type="radio"
+                    value="candidato"
+                    onChange={(event) => {
+                      setRole(event.target.value);
+                    }}
+                    checked={role === "candidato"}
+                  />
+                  <p className="pl-2">Candidato</p>
+                </div>
+                <div className="flex flex-row">
+                  <input
+                    type="radio"
+                    value="rh"
+                    onChange={(event) => {
+                      setRole(event.target.value);
+                    }}
+                    checked={role === "rh"}
+                  />
+                  <p className="pl-2">RH</p>
+                </div>
               </div>
             </div>
-          </div> : <></>
-          }
+          ) : (
+            <></>
+          )}
           <div className="flex justify-center items-center md:block">
-            <button 
+            <button
               className="bg-[#2d4583] text-white py-2 px-6 text-center rounded-lg cursor-pointer hover:bg-[#08b177] transition text-lg"
               onClick={handlePress}
             >
