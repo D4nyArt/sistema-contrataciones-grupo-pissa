@@ -8,6 +8,7 @@ import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
 import { urbanist } from "./fonts";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
+import { addHistoryEntry } from "../api/history/history"; 
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -64,6 +65,9 @@ export default function ReviewContract({ uid }: { uid: string }) {
       estado: newState,
       notas: notes,
     });
+    
+    const historyNote = newState === "aprobado" ? "Aprobación del contrato" : "Rechazo del contrato";
+    await addHistoryEntry(uid, "contratos", new Date().toString(), undefined, historyNote)
 
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")

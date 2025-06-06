@@ -1,5 +1,5 @@
 import { getDatabase, ref, query, orderByChild, equalTo, get, runTransaction, set, update } from "firebase/database";
-//import { addHistoryEntry } from "../history/history";
+import { addHistoryEntry } from "../history/history";
 
 const MAX_ATTEMPTS = 3;
 
@@ -61,8 +61,7 @@ async function checkAndBlockUser(uid: string) {
 
       if (total >= MAX_ATTEMPTS && status !== "bloqueado") {
         await update(userRef, { estadoUsuario: "bloqueado" });
-       // Todavía no funciona
-       // await addHistoryEntry(uid, 'contrasenas', new Date().toISOString(), undefined, 'Bloqueo de cuenta');
+        await addHistoryEntry(uid, 'contrasenas', new Date().toISOString(), undefined, 'Bloqueo de cuenta por múltiples intentos fallidos de inicio de sesión');
       }
     }
   } catch {
