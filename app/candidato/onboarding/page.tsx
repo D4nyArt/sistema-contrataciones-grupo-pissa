@@ -1,11 +1,13 @@
 import { urbanist } from "@/app/components/fonts";
 import OnboardingPage from "@/app/components/onboarding";
 
-export default function Onboarding () {
-  return(
+export default function Onboarding() {
+  return (
     <>
-      <h1 className={`${urbanist.className} font-bold text-4xl text-[#212529]`}>Onboarding</h1>
-      <OnboardingPage/>
+      <h1 className={`${urbanist.className} font-bold text-4xl text-[#212529]`}>
+        Onboarding
+      </h1>
+      <OnboardingPage />
     </>
-  )
+  );
 }

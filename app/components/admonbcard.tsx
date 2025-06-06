@@ -6,15 +6,15 @@ import { PlusIcon } from 'lucide-react'
 import PopUp from './pop-up'
 import GenerateOnboardingCard from './generateonboarding'
 
-type OnbCard = { nombre: string; url: string, type: string}
+type OnbCard = { nombre: string; url: string, type: string, accepted: boolean}
 
 async function getListOnbCards(contractid: string): Promise<Record<string, OnbCard>> {
   if (contractid.startsWith("concorp")) {
-    const snap = await get(ref(database, `contratos/corporativo/${contractid}/onb${contractid}`))
+    const snap = await get(ref(database, `contratos/corporativo/${contractid}/onb${contractid}/cards/`))
     if (snap.exists()) return snap.val() as Record<string, OnbCard>
   }
   if (contractid.startsWith("conproy")) {
-    const snap = await get(ref(database, `contratos/proyectos/${contractid}/onb${contractid}`))
+    const snap = await get(ref(database, `contratos/proyectos/${contractid}/onb${contractid}/cards/`))
     if (snap.exists()) return snap.val() as Record<string, OnbCard>
   }
   return {}
@@ -26,7 +26,7 @@ export default function AdminOnboardingPage({ contractid }: { contractid: string
 
   useEffect(() => {
     getListOnbCards(contractid).then(setOnbCards)
-  }, [contractid])
+  }, [contractid, onbCards])
 
   return (
     <main className="relative">
@@ -39,7 +39,7 @@ export default function AdminOnboardingPage({ contractid }: { contractid: string
       </button>
       <div className="parent grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-x-4 gap-y-10 content-center">
         {Object.entries(onbCards).map(([key, card]) => (
-          <OnboardingCard key={key} nombre={card.nombre} url={card.url} type = {card.type} />
+          <OnboardingCard key={key} nombre={card.nombre} url={card.url} type = {card.type} accepted = {card.accepted} />
         ))}
       </div>
       <PopUp show = {showConfirm} onClose={() => setShowConfirm(false)}>
