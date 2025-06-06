@@ -13,12 +13,15 @@ Estados de los usuarios:
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { database, auth } from "../../firebaseConfig";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { Briefcase, BriefcaseBusiness, Building, Mail, Phone, User, VenusAndMars } from "lucide-react";
+import { eventNames } from "process";
+import { urbanist } from "./fonts";
 //import crypto from "crypto";
 
 const generatePassword = () => {
@@ -34,7 +37,8 @@ export default function CreateCredentials() {
   const [lastname, setLastname] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("candidato");
+  const [ownrole, setOwnRole] = useState("");
   const [email_corporativo, setEmailCorporativo] = useState("");
   const [genero, setGenero] = useState("");
   const [puesto, setPuesto] = useState("");
@@ -106,116 +110,172 @@ export default function CreateCredentials() {
     }
   };
 
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+
+        const res = await fetch("/api/getCurrentUser");
+        const jason = await res.json();
+        setOwnRole(jason.rol);
+
+    }
+    checkAdmin();
+  }, [ownrole])
+
   return (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <div className=" flex items-center justify-center w-full h-full">
-        <div className="w-full max-w-sm flex flex-col p-8 bg-white rounded-xl shadow-md border border-gray-300">
-          <h1 className="text-black">Nombre</h1>
-          <input
-            type="text"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-
-          <div className="text-black mt-4">Apellidos</div>
-          <input
-            type="text"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={lastname}
-            onChange={(event) => setLastname(event.target.value)}
-          />
-
-          <div className="text-black mt-4">Correo</div>
-          <input
-            type="text"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={mail}
-            onChange={(event) => setMail(event.target.value)}
-          />
-
-          <div className="text-black mt-4">Correo Corporativo</div>
-          <input
-            type="email"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={email_corporativo}
-            onChange={(event) => setEmailCorporativo(event.target.value)}
-          />
-
-          <div className="text-black mt-4">Teléfono</div>
-          <PhoneInput
-            international
-            defaultCountry="MX"
-            value={"+52"}
-            onChange={(value) => setPhone(value || "")}
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            style={{
-              '--PhoneInputCountryFlag-height': '1em',
-              '--PhoneInput-color--focus': '#2d4583'
-            }}
-          />
-
-          <div className="text-black mt-4">Género</div>
-          <select
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={genero}
-            onChange={(event) => setGenero(event.target.value)}
+      <div className="bg-white rounded-xl p-4 shadow-md">
+        <div className="border-b pb-2 mb-6 border-gray-300 animate-fade-in-up">
+          <h2
+            className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
           >
-            <option value="">Seleccione un género</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-          </select>
-
-          <div className="text-black mt-4">Puesto</div>
-          <input
-            type="text"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={puesto}
-            onChange={(event) => setPuesto(event.target.value)}
-          />
-
-          <div className="text-black mt-4">Área</div>
-          <input
-            type="text"
-            className="text-black border border-gray-300 bg-[#fafbfc] rounded-lg p-2 w-full"
-            value={area}
-            onChange={(event) => setArea(event.target.value)}
-          />
-
-          {/*<div className="text-black mt-4">Tipo de Usuario</div>*/}
-          <div className="flex-row flex items-center pb-10 pt-4 justify-between">
-            <div className="flex-row flex">
+            Información Básica
+          </h2>
+        </div>
+        <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6 animate-fade-in-up">
+          <div>
+            <label className="text-[#495057] block mb-1">Nombre</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
               <input
-                type="radio"
-                value="candidato"
-                onChange={(event) => {
-                  setRole(event.target.value);
-                }}
-                checked={role === "candidato"}
+                type="text"
+                className="flex-1 outline-none w-1/2"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
               />
-              <p className="text-black pl-2">Candidato</p>
-            </div>
-            <div className="flex-row flex">
-              <input
-                type="radio"
-                value="rh"
-                onChange={(event) => {
-                  setRole(event.target.value);
-                }}
-                checked={role === "rh"}
-              />
-              <p className="text-black pl-2">RH</p>
+              <User className="ml-2 text-gray-400" />
             </div>
           </div>
-
-          <button
-            className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
-            onClick={handlePress}
-          >
-            Crear Credenciales
-          </button>
+          <div>
+            <label className="text-[#495057] block mb-1">Apellidos</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <input
+                type="text"
+                className="flex-1 outline-none w-1/2"
+                value={lastname}
+                onChange={(event) => setLastname(event.target.value)}
+              />
+              <User className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Correo Personal</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <input
+                type="email"
+                className="flex-1 outline-none w-1/2"
+                value={mail}
+                onChange={(event) => setMail(event.target.value)}
+              />
+              <Mail className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Correo Corporativo</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <input
+                type="email"
+                className="flex-1 outline-none w-1/2"
+                value={email_corporativo}
+                onChange={(event) => setEmailCorporativo(event.target.value)}
+              />
+              <Building className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Teléfono</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <PhoneInput
+                international
+                defaultCountry="MX"
+                value={"+52"}
+                onChange={(value) => setPhone(value || "")}
+                className="flex-1 outline-none w-1/2"
+                style={{
+                  '--PhoneInputCountryFlag-height': '1em',
+                  '--PhoneInput-color--focus': '#ffffff'
+                }}
+              />
+              <Phone className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Género</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <select
+                className="flex-1 outline-none w-1/2"
+                value={genero}
+                onChange={(event) => setGenero(event.target.value)}
+              >
+                <option value=""></option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <VenusAndMars className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Puesto</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <input
+                type="text"
+                className="flex-1 outline-none w-1/2"
+                value={puesto}
+                onChange={(event) => setPuesto(event.target.value)}
+              />
+              <Briefcase className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[#495057] block mb-1">Área</label>
+            <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
+              <input
+                type="text"
+                className="flex-1 outline-none w-1/2"
+                value={area}
+                onChange={(event) => setArea(event.target.value)}
+              />
+              <BriefcaseBusiness className="ml-2 text-gray-400" />
+            </div>
+          </div>
+          {ownrole === "admin" ?
+          <div>
+            <label className="text-[#495057] block mb-1">Rol</label>
+            <div className="flex space-x-2">
+              <div className="flex flex-row">
+                <input
+                  type="radio"
+                  value="candidato"
+                  onChange={(event) => {
+                    setRole(event.target.value);
+                  }}
+                  checked={role === "candidato"}
+                />
+                <p className="pl-2">Candidato</p>
+              </div>
+              <div className="flex flex-row">
+                <input
+                  type="radio"
+                  value="rh"
+                  onChange={(event) => {
+                    setRole(event.target.value);
+                  }}
+                  checked={role === "rh"}
+                />
+                <p className="pl-2">RH</p>
+              </div>
+            </div>
+          </div> : <></>
+          }
+          <div className="flex justify-center items-center md:block">
+            <button 
+              className="bg-[#2d4583] text-white py-2 px-6 text-center rounded-lg cursor-pointer hover:bg-[#08b177] transition text-lg"
+              onClick={handlePress}
+            >
+              Crear Credenciales
+            </button>
+          </div>
         </div>
       </div>
     </>

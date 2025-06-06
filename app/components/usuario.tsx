@@ -9,7 +9,7 @@ import { database } from "../../firebaseConfig";
 import { ref, get, set } from "firebase/database";
 import ProfilePicture from "./profile-picture";
 
-import { handleBlock, handleUnblock } from "./block";
+import { handleBlock, handleRemoval, handleUnblock } from "./block";
 import {
   CircleCheck,
   Clock,
@@ -45,14 +45,6 @@ export default function Usuarios() {
     return () => unsub();
   }, []);
 
-  const handleRemoval = async () => {
-    await set(
-      ref(database, `usuarios/${id}/estadoUsuario`),
-      "baja"
-    ).then(() => {
-      setStatus("baja");
-    });
-  };
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))
 
@@ -154,7 +146,7 @@ export default function Usuarios() {
                 onClick={() =>
                   status === "bloqueado"
                     ? handleUnblock(id, status, setStatus, setAttempt, setTime)
-                    : handleBlock(id, setStatus, status)
+                    : handleBlock(id, setStatus, role, status)
                 }
               >
                 {status === "bloqueado" ? (
@@ -171,7 +163,7 @@ export default function Usuarios() {
 
           <button
             className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
-            onClick={handleRemoval}
+            onClick={() => handleRemoval(id, setStatus, role)}
           >
             <UserMinus className="pr-2" /> Dar de baja
           </button>

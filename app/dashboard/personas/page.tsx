@@ -57,7 +57,7 @@ export default function VistaUsuarios() {
       </div>
 
       {activo === "recursos humanos" && <ListRecursos />}
-      {activo === "empleados" && <ListEmpleados/>}
+      {activo === "empleados" && <ListEmpleados />}
     </div>
   );
 }

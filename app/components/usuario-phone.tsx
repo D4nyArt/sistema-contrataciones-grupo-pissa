@@ -102,7 +102,7 @@ export default function PhoneUsuarios() {
           height={"h-25"}
           textSize={"text-5xl"}
         />
-        <div className="flex flex-row items-center pt-8">
+        <div className="flex flex-row items-center pt-8 pb-8">
           <h2 className={`${urbanist.className} text-3xl text-[#212529]`}>
             <strong>
               {name} {lastname}
@@ -118,21 +118,6 @@ export default function PhoneUsuarios() {
               )}
             </div>
           </div>
-        </div>
-        <p className="text-[#2975a0] text-xl">{role}</p>
-        <div className="items-center flex justify-center flex-col text-sm">
-          <p className="inline-flex gap-2 px-2 py-0.5 bg-gray-200 rounded mt-4">
-            <CircleUser className="size-4" />
-            {id}
-          </p>
-          <p className="inline-flex gap-2 px-2 py-0.5 bg-gray-200 rounded mt-2">
-            <Mail className="size-4" />
-            {mail}
-          </p>
-          <p className="inline-flex gap-2 px-2 py-0.5 bg-gray-200 rounded mt-2">
-            <Phone className="size-4" />
-            {phone}
-          </p>
         </div>
       </div>
     </div>
