@@ -6,6 +6,7 @@ import { Mail, Phone } from "lucide-react";
 import { urbanist } from "./fonts";
 
 import type { User } from "@/app/types/user";
+import EtiquetaEstado from "./etiquetaEstado";
 
 export default function UserCard({ user }: { user: User }) {
   const router = useRouter();
@@ -34,30 +35,40 @@ export default function UserCard({ user }: { user: User }) {
       }
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
-      <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="flex-none pr-2">
-          <ProfilePicture
-            nombre={`${user.nombre || ""}`}
-            width="w-8"
-            height="h-8"
-            textSize="text-xl"
-          />
+      <div className="flex flex-col border-b border-gray-200 mb-4">
+        <div className="flex items-center">
+          <div className="flex-none">
+            <ProfilePicture
+              nombre={`${user.nombre || ""}`}
+              width="w-11"
+              height="h-11"
+              textSize="text-2xl"
+            />
+          </div>
+          <div className="ml-4">
+            <p
+              className={`${urbanist.className} text-lg font-semibold text-black flex-auto`}
+            >
+              {user.nombre || "N/A"} {user.apellidos || ""}
+            </p>
+            <p className="text-sm text-[#2975a0] capitalize">
+              {userRole || "N/A"}
+            </p>            
+          </div>
         </div>
-        <div
-          className={`${urbanist.className} text-lg font-semibold text-black pb-4 flex-auto`}
-        >
-          {user.nombre || "N/A"} {user.apellidos || ""}
-        </div>
-        <div className="text-sm text-[#2975a0] flex-initial capitalize">
-          {userRole || "N/A"}
+        <div className="mt-4 mb-4 flex">
+          <EtiquetaEstado status={user.estadoUsuario ?? ""} />
         </div>
       </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Mail className="pr-2" /> {user.email || "N/A"}
-      </div>
-      <div className="text-sm text-[#495057] flex flex-row">
-        <Phone className="pr-2" />
-        {user.telefono || "N/A"}
+      <div>
+        <div className="text-xs text-[#495057] flex flex-row items-center">
+          <Mail className="pr-2" /> 
+          <p>{user.email || "N/A"}</p>
+        </div>
+        <div className="text-xs text-[#495057] flex flex-row items-center">
+           <Phone className="pr-2" />
+           <p>{user.telefono || "N/A"}</p>
+        </div>
       </div>
     </div>
   );
