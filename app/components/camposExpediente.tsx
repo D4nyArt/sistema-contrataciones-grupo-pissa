@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import { Check, X, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
+const rhID = auth.currentUser!.uid;
 
 interface CamposExpedienteProps {
   role: string;
@@ -112,7 +117,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     fieldKey: string,
     approved: boolean
   ): Promise<void> => {
-    if (!expedienteId || !documentoId) return;
+    if (!expedienteId || !documentoId || !rhID) return;
     const newState = approved ? FIELD_STATES.APROBADO : FIELD_STATES.RECHAZADO;
 
     // 1. Actualiza localmente
@@ -136,6 +141,9 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
       });
       if (!res.ok) throw await res.json();
       onChangeState();
+      const uidP = expedienteId;
+      const uid = uidP.replace("expediente", "");
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, `Actualización de campo ${newState}`);
     } catch (err) {
       console.error("Error al actualizar estado del campo:", err);
     }
