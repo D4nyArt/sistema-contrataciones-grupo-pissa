@@ -36,9 +36,9 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
         </div>
         <div className="mb-4">
           { contract.id?.startsWith("conproy")?
-          <p className="text-[#495057]">Proyecto</p>
+          <p className="text-[#2975a0]">Proyecto</p>
           :
-          <p className="text-[#495057]">Corporativo</p>
+          <p className="text-[#2975a0]">Corporativo</p>
           }
         </div>
       </div>

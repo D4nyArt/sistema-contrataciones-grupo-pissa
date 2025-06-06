@@ -161,15 +161,18 @@ export default function CreateCredentials() {
   return (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <div className="bg-white rounded-xl p-4 shadow-md">
-        <div className="border-b pb-2 mb-6 border-gray-300 animate-fade-in-up">
+      <div className="bg-white rounded-xl p-4 shadow-md animate-fade-in-up">
+        <div className="border-b pb-2 mb-6 border-gray-300">
           <h2
-            className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
+            className={`${urbanist.className} text-2xl font-semibold text-[#212529]`}
           >
-            Información Básica
+            Añadir Persona
           </h2>
+          <p className="mt-2 text-[#495057]">
+            Completa el formulario para añadir una nueva persona.
+          </p>
         </div>
-        <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6 animate-fade-in-up">
+        <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6">
           <div>
             <label className="text-[#495057] block mb-1">Nombre</label>
             <div
@@ -327,7 +330,7 @@ export default function CreateCredentials() {
                   }
                 }}
               >
-                <option value="">Seleccione un puesto</option>
+                <option value=""></option>
                 <option value="mantenimiento">Mantenimiento</option>
                 <option value="lider_de_proyecto">Líder de Proyecto</option>
                 <option value="auxiliar_administrativo">

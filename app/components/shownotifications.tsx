@@ -215,7 +215,7 @@ export default function ShowNotifications() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto h-100">
+            <div className="overflow-x-auto h-102">
               <table className="w-full text-left table-auto">
                 <tbody>
                   {paginated.map(({ id, message, read, path, pinned }) => (
@@ -256,7 +256,7 @@ export default function ShowNotifications() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex justify-center mt-4 space-x-2 p-6">
+            <div className="flex justify-center space-x-2 p-6 border-t border-gray-200">
               <button
                 disabled={currentPage <= 1}
                 onClick={() => handlePageChange(currentPage - 1)}
