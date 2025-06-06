@@ -67,7 +67,7 @@ export default function ReviewContract({ uid }: { uid: string }) {
     });
     
     const historyNote = newState === "aprobado" ? "Aprobación del contrato" : "Rechazo del contrato";
-    await addHistoryEntry(uid, "contratos", new Date().toString(), undefined, historyNote)
+    await addHistoryEntry(uid, "contratos", new Date().toISOString(), undefined, historyNote);
 
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")

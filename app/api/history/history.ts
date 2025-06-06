@@ -46,6 +46,13 @@ export async function initializeUserHistory(uid: string) {
     }
 }
 
+// Función utilitaria para obtener el email desde un UID
+async function getEmailFromUID(rhid: string): Promise<string | null> {
+  const db = getDatabase();
+  const userRef = ref(db, `usuarios/${rhid}/email`);
+  const snap = await get(userRef);
+  return snap.exists() ? snap.val() : null;
+}
 
 export async function addHistoryEntry(
     uid: string,
@@ -57,15 +64,18 @@ export async function addHistoryEntry(
     const db = getDatabase();
     const historyRef = ref(db, `historial/historial${uid}/${category}`);
   
+    let registeredByEmail: string | undefined = undefined;
+    if (rh) {
+      registeredByEmail = await getEmailFromUID(rh) || undefined;
+    }
+
     const newEntry = {
       date,
-      ...(rh && { registeredBy: rh }),
+      ...(registeredByEmail && { registeredBy: registeredByEmail }),
       ...(note && { note })
     };
   
     try {
       await push(historyRef, newEntry);
-    } catch (error) {
-      console.error("Error adding history entry:", error);
-    }
+    } catch {}
   }

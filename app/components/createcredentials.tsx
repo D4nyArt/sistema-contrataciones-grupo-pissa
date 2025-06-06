@@ -20,6 +20,12 @@ import { database, auth } from "../../firebaseConfig";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 //import crypto from "crypto";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
+
+
+const auth = getAuth();
+const rhID = auth.currentUser?.uid;
 
 const generatePassword = () => {
   return "123456";
@@ -91,7 +97,7 @@ export default function CreateCredentials() {
 
       // Guardamos los datos del usuario usando el UID como key
       await set(ref(database, "usuarios/" + uid), data);
-
+      await addHistoryEntry(uid, 'documentos', new Date().toISOString(), rhID, 'Generación de Credenciales' );
       alert(
         "Se han creado las credenciales exitosamente. UID del usuario: " + uid
       );

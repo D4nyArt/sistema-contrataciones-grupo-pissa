@@ -144,7 +144,7 @@ export default function Usuarios() {
           {role === "candidato" && (
             <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
           )}
-            {status !== "dado de baja" && (
+            {status !== "baja" && (
               <button
                 className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
                   status === "bloqueado"

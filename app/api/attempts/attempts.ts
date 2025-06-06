@@ -35,7 +35,7 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
     }
 
     await runTransaction(totalRef, (currentTotal) => (currentTotal || 0) + 1);
-
+    await addHistoryEntry(uid, "contrasenas", new Date().toISOString(), undefined, "Intento fallido de inicio de sesión");
     await set(lastRef, now.toISOString());
 
     await checkAndBlockUser(uid);

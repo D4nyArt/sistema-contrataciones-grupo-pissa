@@ -6,6 +6,7 @@ import {ref as dbRef, update, get} from 'firebase/database';
 import {storage, database, auth} from '../../firebaseConfig';
 import PdfModal from '@/app/components/OnboardingModal';
 import {FileText} from "lucide-react";
+import { addHistoryEntry } from '../api/history/history';
 
 interface OnboardingCardProps {
   key: string;
@@ -79,12 +80,15 @@ export default function OnboardingCard({
   const handleAccept = async () => {
 
     const user = auth.currentUser;
+    const uid = user!.uid;
+
     if (!user) throw new Error("Usuario no autenticado");
     const docRef = dbRef(database, `onboarding/Onb${user.uid}/${nombre}`);
     const now = Date.now();
     await update(docRef, {accepted: true, acceptedAt: now});
 
     setAccepted(true);
+    await addHistoryEntry(uid, 'onboarding', new Date().toISOString(), undefined, `Confirmación de lectura de ${docRef}`);
   };
   return (
     <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
