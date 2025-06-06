@@ -60,14 +60,14 @@ export default function UserCard({ user }: { user: User }) {
           <EtiquetaEstado status={user.estadoUsuario ?? ""} />
         </div>
       </div>
-      <div>
-        <div className="text-xs text-[#495057] flex flex-row items-center">
-          <Mail className="pr-2" /> 
-          <p>{user.email || "N/A"}</p>
+      <div className="">
+        <div className="text-xs text-[#495057] flex items-center">
+          <Mail className="pr-2 flex-none" /> 
+          <p className="flex-auto">{user.email || "N/A"}</p>
         </div>
-        <div className="text-xs text-[#495057] flex flex-row items-center">
-           <Phone className="pr-2" />
-           <p>{user.telefono || "N/A"}</p>
+        <div className="text-xs text-[#495057] flex items-center">
+           <Phone className="pr-2 flex-none" />
+           <p className="flex-auto">{user.telefono || "N/A"}</p>
         </div>
       </div>
     </div>
