@@ -40,7 +40,7 @@ export default function NavLinks({ roleView }: { roleView: string }) {
             className={`animate-fade-in-up flex h-[48px] md:grow p-3 ml-2 mr-2 items-center justify-center gap-4 md:ml-4 md:mr-4 md:mb-1 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3
               ${
                 isActive
-                  ? "bg-[#2975a0] text-white md:rounded-xl rounded-full shadow-md"
+                  ? "bg-gradient-to-r from-[#2975a0] to-[#ffffff00] text-white md:rounded-xl rounded-full shadow-md"
                   : "text-[#c2c3c4] hover:bg-[#2974a04b] hover:text-white rounded-xl"
               }`}
           >
