@@ -8,9 +8,6 @@
  
  
  PENDIENTES:
-
-  a) Parseo del UID del RH 
-  b) Parseo de la fecha 
   c) Generación de un PID (password ID) descriptivo
             *** No utilizar el que tiene firebase por defecto  
  
@@ -31,7 +28,7 @@ export async function initializeUserHistory(uid: string) {
         contrasenas: {
             init: {
               date: now,
-            note: "creación"
+            note: "Creación"
             }
         },
         documentos: {},
@@ -69,8 +66,24 @@ export async function addHistoryEntry(
       registeredByEmail = await getEmailFromUID(rh) || undefined;
     }
 
+    // Convertir la fecha a zona horaria TCM y formatear
+    const dateObj = new Date(date);
+    const tcmDate = dateObj.toLocaleString("es-MX", { 
+      timeZone: "America/Mexico_City",
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    // Formatear la fecha 
+    const [datePart, timePart] = tcmDate.split(', ');
+    const formattedDate = `${datePart} (${timePart})`;
+
     const newEntry = {
-      date,
+      date: formattedDate,
       ...(registeredByEmail && { registeredBy: registeredByEmail }),
       ...(note && { note })
     };

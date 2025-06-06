@@ -4,9 +4,6 @@ import { Check, X, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
 import { addHistoryEntry } from "../api/history/history";
 import { getAuth } from "firebase/auth";
 
-const auth = getAuth();
-const rhID = auth.currentUser!.uid;
-
 interface CamposExpedienteProps {
   role: string;
   expedienteId: string;
@@ -36,8 +33,22 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
   onChangeState,
 }) => {
   const [fields, setFields] = useState<Record<string, FieldData>>({});
+  const [rhID, setRhID] = useState<string | null>(null);
 
   const canEdit = role === "admin" || role === "rh";
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setRhID(user.uid);
+      } else {
+        setRhID(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -249,7 +260,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
           </div>
         ))}
 
-        {role === "candidato" && (
+        {canEdit && (
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleSaveFields}

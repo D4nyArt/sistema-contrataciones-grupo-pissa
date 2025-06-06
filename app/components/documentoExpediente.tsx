@@ -6,7 +6,7 @@ import { addHistoryEntry } from "../api/history/history";
 import { getAuth } from "firebase/auth";
 
 const auth = getAuth();
-const rhID = auth.currentUser!.uid;
+const rhID = auth.currentUser?.uid;
 
 interface DocProps {
   expedienteId: string;
@@ -77,7 +77,7 @@ export default function DocumentoExpediente({
   }, [expedienteId, documentoId]);
 
   const handleApproveAll = async (): Promise<void> => {
-    if (!expedienteId || !documentoId) return;
+    if (!expedienteId || !documentoId || !rhID) return;
     try {
       const res = await fetch("/api/docExpediente", {
         method: "PATCH",
@@ -102,7 +102,7 @@ export default function DocumentoExpediente({
   };
 
   const handleRejectAll = async (): Promise<void> => {
-    if (!expedienteId || !documentoId) return;
+    if (!expedienteId || !documentoId || !rhID) return;
     try {
       const res = await fetch("/api/docExpediente", {
         method: "PATCH",
