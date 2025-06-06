@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ref, update, get } from "firebase/database";
-import { verifyPasswordResetCode } from "firebase/auth";
+import { verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
 import { auth, database } from "../../firebaseConfig";
 
 import { CampoContrasena } from "./campoContrasena";
@@ -69,72 +69,6 @@ export default function EstablecerContrasenaLink() {
         setErrorConfirmacion(nuevaContrasena !== valor && valor.length > 0);
     };
 
-    /*const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (!tokenVerificado) {
-            setAlerta({
-                type: 'errorSist',
-                mensaje: 'No está permitido establecer una contraseña en este momento.'
-            });
-            return;
-        }
-
-        if (nuevaContrasena !== confirmarContrasena) {
-            setErrorConfirmacion(true);
-            setAlerta({
-                type: 'denegado',
-                mensaje: 'Las contraseñas no coinciden'
-            });
-            return;
-        }
-
-        try {
-            setCargando(true);
-            const usuarioActual = auth.currentUser;
-
-            if (!usuarioActual) {
-                throw new Error('Usuario no autenticado.');
-            }
-
-            await confirmPasswordReset(auth, oobCode!, nuevaContrasena);
-
-            const uid = usuarioActual.uid;
-            await update(ref(database, `usuarios/${uid}`), {
-                estadoUsuario: 'normal'
-            });
-
-            setAlerta({
-                type: 'aprobado',
-                mensaje: 'Tu contraseña ha sido actualizada correctamente'
-            });
-
-            setTimeout(() => {
-                router.push('/');
-            }, 3000);
-        } catch (error: unknown) {
-            let mensajeError = 'Ocurrió un error al actualizar la contraseña';
-
-            if (typeof error === 'object' && error !== null && 'code' in error) {
-                const code = (error as { code: string }).code;
-                if (code === 'auth/weak-password') {
-                    mensajeError = 'La contraseña es demasiado débil';
-                } else if (code === 'auth/requires-recent-login') {
-                    mensajeError = 'Por seguridad, vuelva a iniciar sesión para cambiar la contraseña';
-                }
-            }
-
-            console.error("Error al actualizar la contraseña:", error);
-
-            setAlerta({
-                type: 'errorSist',
-                mensaje: mensajeError
-            });
-        } finally {
-            setCargando(false);
-        }
-    };
-*/
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,6 +95,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         try {
             const email = await verifyPasswordResetCode(auth, oobCode!);
+            console.log("Email del usuario:", email);
             
             // Buscar el usuario por email en la base de datos
             const usuariosRef = ref(database, 'usuarios');
@@ -174,12 +109,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
                 if (usuarioEncontrado) {
                     const [uid] = usuarioEncontrado;
+                    console.log("UID encontrado:", uid);
                     
                     // Verificar el estado actual del usuario
                     const userStatusRef = ref(database, `usuarios/${uid}/estadoUsuario`);
                     const statusSnapshot = await get(userStatusRef);
                     
                     if (!statusSnapshot.exists()) {
+                        console.log("Estado de usuario no encontrado");
                         setAlerta({
                             type: "errorSist",
                             mensaje: "No se encontró el estado del usuario en la base de datos",
@@ -188,14 +125,18 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                     }
 
                     const estadoUsuario: string = statusSnapshot.val();
-                    console.debug("Estado del usuario:", estadoUsuario);
+                    console.log("Estado actual del usuario:", estadoUsuario);
 
-                    // Actualizar el estado del usuario a enProceso2
+                    await confirmPasswordReset(auth, oobCode!, nuevaContrasena);
+                    // Actualizar el estado del usuario a cambioContrasena
                     await update(ref(database, `usuarios/${uid}`), {
                         estadoUsuario: 'cambioContrasena'
                     });
+
                     
+                    console.log("Estado actualizado a cambioContrasena");
                 } else {
+                    console.log("Usuario no encontrado en la base de datos");
                     setAlerta({
                         type: 'errorSist',
                         mensaje: 'No se encontró el usuario en la base de datos'
@@ -203,6 +144,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                     return;
                 }
             } else {
+                console.log("No se encontraron usuarios en la base de datos");
                 setAlerta({
                     type: 'errorSist',
                     mensaje: 'No se encontraron usuarios en la base de datos'
@@ -217,7 +159,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             });
             return;
         }
-
+        
         setAlerta({
             type: 'aprobado',
             mensaje: 'Tu contraseña ha sido actualizada correctamente y tu cuenta ha sido procesada'
