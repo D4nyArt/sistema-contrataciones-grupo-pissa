@@ -116,22 +116,16 @@ export default function Profile() {
       )}
       
       {/* Contenedor principal centrado */}
-      <div className="flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            Perfil de Usuario
-          </h2>
-
-          <div className="flex justify-center mb-6">
+      <div className="items-start justify-start">
+      <h1 className={"text-4xl text-[#212529] pl-4 font-bold mb-4 animate-fade-in-up"}>Perfil de Usuario</h1>
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full">
+          <div className="flex row mb-6 space-x-10 items-center">
             <ProfilePicture
               nombre={name}
-              width={"w-15"}
-              height={"h-15"}
+              width={"w-20"}
+              height={"h-20"}
               textSize={"text-3xl"}
             />
-          </div>
-
-          <div className="space-y-4">
             <div>
               <label className="text-gray-600 text-sm">Nombre</label>
               <p className="text-lg font-medium">{name}</p>
@@ -141,12 +135,16 @@ export default function Profile() {
               <label className="text-gray-600 text-sm">Apellidos</label>
               <p className="text-lg font-medium">{lastname}</p>
             </div>
+          </div>
 
+          <div className="space-y-4">
+            <p className="text-xl font-semibold text-[#212529]">Mi información</p>
             <div>
               <label className="text-gray-600 text-sm">Rol</label>
               <p className="text-lg font-medium">{role}</p>
             </div>
 
+            <div className="flex row mb-6 space-x-20">
             <div>
               <label className="text-gray-600 text-sm">Correo Corporativo</label>
               <p className="text-lg font-medium">{mail}</p>
@@ -166,6 +164,7 @@ export default function Profile() {
               ) : (
                 <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
               )}
+            </div>
             </div>
 
             <div>
