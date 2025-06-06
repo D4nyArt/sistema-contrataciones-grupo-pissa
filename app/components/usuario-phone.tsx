@@ -1,19 +1,13 @@
 "use client";
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "varsIgnorePattern": "^_" }] */
+
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
 import { ref, get } from "firebase/database";
 import ProfilePicture from "./profile-picture";
 import Link from "next/link";
-import {
-  CircleCheck,
-  Ellipsis,
-  MoveLeft,
-  Lock,
-  CircleUser,
-  Mail,
-  Phone,
-} from "lucide-react";
+import { CircleCheck, Ellipsis, MoveLeft, Lock } from "lucide-react";
 import { urbanist } from "./fonts";
 
 export default function PhoneUsuarios() {
@@ -22,9 +16,9 @@ export default function PhoneUsuarios() {
   // const searchparams = useSearchParams();
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
-  const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
+  const [_mail, setMail] = useState("");
+  const [_phone, setPhone] = useState("");
+  const [_role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const id = pathname.split("/")[2];
 

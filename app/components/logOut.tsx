@@ -6,8 +6,8 @@ import { LogOut } from "lucide-react";
 export default function ForLogOut() {
   const router = useRouter();
 
-  localStorage.clear();
-  sessionStorage.clear();
+  //localStorage.clear();
+  //sessionStorage.clear();
 
   const onLogout = async () => {
     await fetch("/api/deleteCookie?name=candidateId", {

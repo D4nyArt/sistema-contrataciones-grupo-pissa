@@ -1,4 +1,6 @@
 "use client";
+/* eslint @typescript-eslint/no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
+
 //Firebase
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -6,7 +8,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { getDatabase, ref, get } from "firebase/database";
 import { useEffect } from "react";
-
 import { incrementLoginAttempt, resetAttempts } from "../api/attempts/attempts";
 import { estilosClasificacion } from "./alertaEstilos";
 import { Alerta } from "./alertaPantalla";
@@ -18,10 +19,8 @@ interface Usuario {
 }
 
 export default function Formulario() {
-
   try {
-
-   useEffect(() => {
+    useEffect(() => {
       async function deleteCookie() {
         await fetch("/api/deleteCookie?name=candidateId", {
           method: "DELETE",
@@ -31,13 +30,8 @@ export default function Formulario() {
       }
       deleteCookie();
     }, []);
-
-  }
-
-  catch {
-
+  } catch {
     console.log("No se detecto un usario loggeado.");
-
   }
 
   const [email, setEmail] = useState("");
@@ -70,29 +64,29 @@ export default function Formulario() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     try {
       // PRIMERO: Verificar el estado del usuario en la base de datos ANTES del login
       const db = getDatabase();
       const usuariosRef = ref(db, `usuarios`);
       const snapshot = await get(usuariosRef);
-      
+
       let userData = null;
-     // let userUID = null;
-      
+      // let userUID = null;
+
       if (snapshot.exists()) {
         const data = snapshot.val();
         // Buscar el usuario por email
         const userEntry = Object.entries(data).find(
-          ([uid, usuario]) => (usuario as Usuario).email === email
+          ([_uid, usuario]) => (usuario as Usuario).email === email
         );
-        
+
         if (userEntry) {
           //userUID = userEntry[0];
           userData = userEntry[1] as any;
         }
       }
-      
+
       // Si no existe el usuario
       if (!userData) {
         setAlertaAcceso({
@@ -101,41 +95,44 @@ export default function Formulario() {
         });
         return;
       }
-      
+
       // Verificar el estado del usuario ANTES de hacer login
       const estado = userData.estadoUsuario;
-      
+
       switch (estado) {
         case "bloqueado":
           setAlertaAcceso({
             type: "denegado",
-            mensaje: "Su cuenta fue bloqueada por múltiples intentos fallidos de inicio de sesión. Recupere su contraseña.",
+            mensaje:
+              "Su cuenta fue bloqueada por múltiples intentos fallidos de inicio de sesión. Recupere su contraseña.",
           });
           return; // Salir sin intentar login
-          
+
         case "inhabilitada":
           setAlertaAcceso({
             type: "denegado",
-            mensaje: "Su cuenta fue inhabilitada de forma temporal. Contacte al administrador.",
+            mensaje:
+              "Su cuenta fue inhabilitada de forma temporal. Contacte al administrador.",
           });
           return;
-          
+
         case "baja":
           setAlertaAcceso({
             type: "denegado",
             mensaje: "Su cuenta fue inhabilitada de forma permanente.",
           });
           return;
-          
+
         case "enProceso":
         case "cambioContrasena":
           setAlertaAcceso({
             type: "info",
-            mensaje: "Su cuenta está en proceso de recuperación. Le llegará una notificación cuando esté lista.",
+            mensaje:
+              "Su cuenta está en proceso de recuperación. Le llegará una notificación cuando esté lista.",
           });
           return;
       }
-      
+
       // AHORA SÍ: Intentar el login con Firebase Auth
       const userCredentials = await signInWithEmailAndPassword(
         auth,
@@ -178,13 +175,13 @@ export default function Formulario() {
       } else {
         setAlertaAcceso({
           type: "errorSist",
-          mensaje: "Su cuenta tiene un estado desconocido. Contacte al administrador.",
+          mensaje:
+            "Su cuenta tiene un estado desconocido. Contacte al administrador.",
         });
       }
-
     } catch (err: unknown) {
       console.error("Error during login:", err);
-      
+
       // Manejar errores de contraseña incorrecta
       const db = getDatabase();
       const usuariosRef = ref(db, `usuarios`);
@@ -205,9 +202,13 @@ export default function Formulario() {
         console.log("El correo existe, incrementando intentos...");
         const remainingAttempts = await incrementLoginAttempt(email);
         console.log("Intentos restantes:", remainingAttempts);
-        
+
         if (remainingAttempts > 0 && remainingAttempts <= 3) {
-          msg += ` Queda${remainingAttempts !== 1 ? "n " : " "} ${remainingAttempts} intento${remainingAttempts !== 1 ? "s" : ""} antes de que la cuenta sea bloqueada.`;
+          msg += ` Queda${
+            remainingAttempts !== 1 ? "n " : " "
+          } ${remainingAttempts} intento${
+            remainingAttempts !== 1 ? "s" : ""
+          } antes de que la cuenta sea bloqueada.`;
         }
       }
 
@@ -234,7 +235,7 @@ export default function Formulario() {
             type="email"
             className={`w-full p-2 border rounded-lg mt-1 bg-[#fafbfc] ${
               alertaAcceso
-                ? estilosClasificacion[alertaAcceso.type].input 
+                ? estilosClasificacion[alertaAcceso.type].input
                 : "border-gray-300 text-black"
             }`}
             placeholder="Correo electrónico"
@@ -248,7 +249,9 @@ export default function Formulario() {
           value={password}
           onChange={cambioContrasena}
           error={!!alertaAcceso}
-          className= {alertaAcceso ? estilosClasificacion[alertaAcceso.type].input : ""}
+          className={
+            alertaAcceso ? estilosClasificacion[alertaAcceso.type].input : ""
+          }
         />
         <div>
           <button
