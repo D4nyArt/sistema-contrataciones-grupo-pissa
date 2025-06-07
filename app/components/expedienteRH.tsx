@@ -41,9 +41,9 @@ export default function ExpedienteRH({ userId }: ExpedienteRHProps) {
   }, [userId]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 min-h-screen mb-6">
+    <div className="flex flex-col lg:flex-row gap-4">
       {/* Lado izquierdo */}
-      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4 hidden md:block">
+      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4 hidden md:block max-h-100 overflow-y-auto">
         <div className="flex items-center justify-between mb-4 space-x-3">
           <h2 className="text-lg font-semibold text-gray-800">Documentos</h2>
           <DownloadBatchFilesButton expedienteId={userId} />
@@ -81,7 +81,7 @@ export default function ExpedienteRH({ userId }: ExpedienteRHProps) {
       </div>
 
       {/* Lado derecho */}
-      <div className="flex-1 bg-white rounded-xl shadow p-4">
+      <div className="flex-1 bg-white rounded-xl shadow p-4 md:max-h-100 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">
             {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}
