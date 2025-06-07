@@ -63,6 +63,7 @@ export default function Profile() {
           targetEmail: string;
           telefono?: string;
           emailSecundario?: string | null;
+          genero?: string;
         } = {
           targetEmail: originalEmail,
         };
@@ -74,6 +75,7 @@ export default function Profile() {
 
         // Incluir email secundario (puede ser vacío o null)
         updateData.emailSecundario = emailSecundario || null;
+        updateData.genero = genero;
 
         const res = await fetch("/api/updateUser", {
           method: "PATCH",
@@ -125,11 +127,11 @@ export default function Profile() {
       <div className="items-start justify-start">
       <h1 className={"text-4xl text-[#212529] pl-4 font-bold mb-4 animate-fade-in-up"}>Perfil de Usuario</h1>
         <div className="bg-white rounded-2xl shadow-lg p-8 w-full">
-          <div className="flex row mb-6 space-x-10 items-center">
+          <div className="flex space-x-5 md:space-x-10 items-center mb-7">
             <ProfilePicture
               nombre={name}
-              width={"w-20"}
-              height={"h-20"}
+              width={"w-10 md:w-20"}
+              height={"h-10 md:h-20"}
               textSize={"text-3xl"}
             />
             <div>
@@ -141,14 +143,16 @@ export default function Profile() {
               <label className="text-gray-600 text-sm">Apellidos</label>
               <p className="text-lg font-medium">{lastname}</p>
             </div>
+
+            <div className="ml-30 hidden md:block">
+              <label className="text-gray-600 text-sm">Rol</label>
+              <p className="text-lg font-medium">{role}</p>
+            </div>
           </div>
 
           <div className="space-y-4">
             <p className="text-xl font-semibold text-[#212529]">Mi información</p>
-            <div>
-              <label className="text-gray-600 text-sm">Rol</label>
-              <p className="text-lg font-medium">{role}</p>
-            </div>
+            <div className="flex flex-col justify-center md:grid md:grid-cols-2 gap-6">
 
             <div>
               <label className="text-gray-600 text-sm">Área</label>
@@ -160,7 +164,6 @@ export default function Profile() {
               <p className="text-lg font-medium">{puesto}</p>
             </div>
 
-            <div className="flex row mb-6 space-x-20">
             <div>
               <label className="text-gray-600 text-sm">Correo Corporativo</label>
               <p className="text-lg font-medium">{mail}</p>
@@ -181,11 +184,23 @@ export default function Profile() {
                 <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
               )}
             </div>
-            </div>
 
             <div>
               <label className="text-gray-600 text-sm">Género</label>
-              <p className="text-lg font-medium">{genero}</p>
+              {edit ? (
+                <select
+                  className="w-full mt-1 p-2 border rounded"
+                  value={genero}
+                  onChange={(event) => setGenero(event.target.value)}
+                >
+                  <option value=""></option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              ) : (
+                <p className="text-lg font-medium">{genero}</p>
+              )}
             </div>
 
             <div>
@@ -201,6 +216,7 @@ export default function Profile() {
               ) : (
                 <p className="text-lg font-medium">{tel || "No configurado"}</p>
               )}
+            </div>
             </div>
           </div>
 
