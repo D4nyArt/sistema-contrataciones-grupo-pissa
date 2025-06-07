@@ -66,7 +66,7 @@ export default function SeguimientoToggle({ rhUID, candidateUID }: Props) {
   return (
     <button
       onClick={realizarSeguimiento}
-      className="border-2 border-gray-500 text-[#212529] rounded-lg cursor-pointer mr-2 py-2 px-4 w-40 hover:text-[#08b177] hover:border-[#08b177]"
+      className="border-2 border-gray-500 text-[#212529] rounded-lg cursor-pointer mr-2 py-2 px-4 w-40 hover:text-[#2d4583] hover:border-[#2d4583] hover:bg-blue-50"
     >
       Seguir
     </button>
