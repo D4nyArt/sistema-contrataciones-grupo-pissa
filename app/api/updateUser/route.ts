@@ -8,7 +8,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     // Parsear el body
     const body = await request.json();
     
-    const { telefono, emailSecundario, targetEmail } = body;
+    const { telefono, emailSecundario, targetEmail, genero } = body;
 
     // Validaciones mejoradas
     if (!targetEmail) {
@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { 
           message: "El campo targetEmail es requerido para identificar al usuario.",
-          received: { telefono, emailSecundario, targetEmail }
+          received: { telefono, emailSecundario, targetEmail, genero }
         },
         { status: 400 }
       );
@@ -28,7 +28,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { 
           message: "Se requiere al menos un campo para actualizar (telefono o emailSecundario).",
-          received: { telefono, emailSecundario, targetEmail }
+          received: { telefono, emailSecundario, targetEmail, genero }
         },
         { status: 400 }
       );
@@ -115,6 +115,11 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
           updates[`${path}/emailSecundario`] = emailSecundario;
           updatedCount++;
         }
+      }
+
+      if (genero !== undefined && genero !== userData.telefono) {
+        updates[`${path}/genero`] = genero;
+        updatedCount++;
       }
     });
 
