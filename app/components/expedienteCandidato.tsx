@@ -26,7 +26,6 @@ const DOCUMENTOS = [
   {id: "EstadoCuenta", nombre: "Estado de Cuenta"},
 ];
 
-
 export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) {
   const [documentoId, setDocumentoId] = useState(DOCUMENTOS[0].id);
 
@@ -57,7 +56,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
                 className={`w-full text-left px-4 py-2 rounded-md transition cursor-pointer
                   ${
                     documentoId === doc.id
-                      ? "bg-blue-100 text-blue-800 font-semibold"
+                      ? "bg-blue-100 text-[#2d4583] font-semibold"
                       : "hover:bg-gray-200 text-gray-700"
                   }`}
               >

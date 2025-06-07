@@ -10,6 +10,9 @@ export default function Profile() {
   const [role, setrole] = useState("");
   const [tel, setTel] = useState("");
   const [emailSecundario, setEmailSecundario] = useState("");
+  const [genero, setGenero] = useState("");
+  const [puesto, setPuesto] = useState("");
+  const [area, setArea] = useState("");
   const [edit, setEdit] = useState(false);
   const [originalEmail, setOriginalEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -33,6 +36,9 @@ export default function Profile() {
         setrole(jason.rol);
         setTel(jason.telefono || "");
         setEmailSecundario(jason.emailSecundario || "");
+        setGenero(jason.genero);
+        setPuesto(jason.puesto);
+        setArea(jason.area);
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
         setAlerta({
@@ -144,6 +150,16 @@ export default function Profile() {
               <p className="text-lg font-medium">{role}</p>
             </div>
 
+            <div>
+              <label className="text-gray-600 text-sm">Área</label>
+              <p className="text-lg font-medium">{area}</p>
+            </div>
+
+            <div>
+              <label className="text-gray-600 text-sm">Puesto</label>
+              <p className="text-lg font-medium">{puesto}</p>
+            </div>
+
             <div className="flex row mb-6 space-x-20">
             <div>
               <label className="text-gray-600 text-sm">Correo Corporativo</label>
@@ -165,6 +181,11 @@ export default function Profile() {
                 <p className="text-lg font-medium">{emailSecundario || "No configurado"}</p>
               )}
             </div>
+            </div>
+
+            <div>
+              <label className="text-gray-600 text-sm">Género</label>
+              <p className="text-lg font-medium">{genero}</p>
             </div>
 
             <div>
