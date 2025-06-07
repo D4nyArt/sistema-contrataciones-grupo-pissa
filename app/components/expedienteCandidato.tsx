@@ -44,7 +44,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
   return (
     <div className="flex flex-col lg:flex-row gap-4 min-h-screen">
       {/* Lado izquierdo */}
-      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4">
+      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4 hidden md:block">
         <div className="flex items-center justify-between mb-4 space-x-3">
           <h2 className="text-lg font-semibold text-gray-800">Documentos</h2>
           <DownloadBatchFilesButton expedienteId={userId} />
@@ -68,6 +68,19 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
         </ul>
       </div>
 
+      <div className="md:hidden">
+        <select 
+          value={documentoId} 
+          onChange={(e) => setDocumentoId(e.target.value)} 
+          className="w-full px-3 py-2 bg-white shadow rounded-md">
+          {DOCUMENTOS.map((doc) => (
+            <option key= {doc.id} value={doc.id}>
+              {doc.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Lado derecho */}
       <div className="flex-1 bg-white rounded-xl shadow p-4">
         <div className="flex justify-between items-center mb-4">
@@ -75,12 +88,14 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
             {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}
           </h3>
         </div>
-
+        
+        {documentoId && (
         <DocumentoExpediente
           expedienteId={userId}
           documentoId={documentoId}
           rol="candidato"
         />
+        )}
       </div>
     </div>
   );
