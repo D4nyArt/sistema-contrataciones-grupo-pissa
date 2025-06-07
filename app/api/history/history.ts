@@ -26,6 +26,7 @@ export async function initializeUserHistory(uid: string) {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
       hour12: true
     });
     
@@ -89,6 +90,7 @@ export async function addHistoryEntry(
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
       hour12: true
     });
     
