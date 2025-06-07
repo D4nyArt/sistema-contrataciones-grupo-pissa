@@ -18,16 +18,30 @@ export async function initializeUserHistory(uid: string) {
     const db = getDatabase();
     const historyRef = ref(db, `historial/historial${uid}`);
 
+    const dateObj = new Date();
+    const tcmDate = dateObj.toLocaleString("es-MX", { 
+      timeZone: "America/Mexico_City",
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    // Formatear la fecha 
+    const [datePart, timePart] = tcmDate.split(', ');
+    const formattedDate = `${datePart} (${timePart})`;
+
     try {
     const snapshot = await get(historyRef);
 
     if (!snapshot.exists()) {
-        const now = new Date().toISOString();
 
         const initialStructure = {
         contrasenas: {
             init: {
-              date: now,
+              date: formattedDate,
             note: "Creación"
             }
         },
