@@ -26,7 +26,6 @@ const DOCUMENTOS = [
   {id: "EstadoCuenta", nombre: "Estado de Cuenta"},
 ];
 
-
 export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) {
   const [documentoId, setDocumentoId] = useState(DOCUMENTOS[0].id);
 
@@ -44,7 +43,7 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
   return (
     <div className="flex flex-col lg:flex-row gap-4 min-h-screen">
       {/* Lado izquierdo */}
-      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4">
+      <div className="lg:w-1/4 w-full bg-white rounded-xl shadow p-4 hidden md:block">
         <div className="flex items-center justify-between mb-4 space-x-3">
           <h2 className="text-lg font-semibold text-gray-800">Documentos</h2>
           <DownloadBatchFilesButton expedienteId={userId} />
@@ -54,10 +53,10 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
             <li key={doc.id}>
               <button
                 onClick={() => setDocumentoId(doc.id)}
-                className={`w-full text-left px-4 py-2 rounded-md transition
+                className={`w-full text-left px-4 py-2 rounded-md transition cursor-pointer
                   ${
                     documentoId === doc.id
-                      ? "bg-blue-100 text-blue-800 font-semibold"
+                      ? "bg-blue-100 text-[#2d4583] font-semibold"
                       : "hover:bg-gray-200 text-gray-700"
                   }`}
               >
@@ -68,6 +67,19 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
         </ul>
       </div>
 
+      <div className="md:hidden">
+        <select 
+          value={documentoId} 
+          onChange={(e) => setDocumentoId(e.target.value)} 
+          className="w-full px-3 py-2 bg-white shadow rounded-md">
+          {DOCUMENTOS.map((doc) => (
+            <option key= {doc.id} value={doc.id}>
+              {doc.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Lado derecho */}
       <div className="flex-1 bg-white rounded-xl shadow p-4">
         <div className="flex justify-between items-center mb-4">
@@ -75,12 +87,14 @@ export default function ExpedienteCandidato({userId}: ExpedienteCandidatoProps) 
             {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}
           </h3>
         </div>
-
+        
+        {documentoId && (
         <DocumentoExpediente
           expedienteId={userId}
           documentoId={documentoId}
           rol="candidato"
         />
+        )}
       </div>
     </div>
   );

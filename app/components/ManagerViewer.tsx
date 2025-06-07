@@ -92,7 +92,7 @@ export default function ManagerViewer({
     <div className="flex items-center justify-center space-x-2">
       <button
         onClick={handleView}
-        className="bg-blue-900 text-white p-4 rounded-lg"
+        className="bg-blue-900 text-white p-4 rounded-lg cursor-pointer"
         disabled={loading || !!error}
       >
         <Eye size={32} />

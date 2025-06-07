@@ -197,7 +197,7 @@ export default function ArchivoExpediente({
               <div className="flex space-x-3">
                 <button
                   onClick={() => handleFileReview(true)}
-                  className={`flex items-center px-3 py-2 rounded transition-colors ${
+                  className={`cursor-pointer flex items-center px-3 py-2 rounded transition-colors ${
                     fileData?.estadoArchivo === FILE_STATES.APPROVED
                       ? "bg-green-200 text-green-800"
                       : "bg-green-600 text-white hover:bg-green-700"
@@ -211,7 +211,7 @@ export default function ArchivoExpediente({
 
                 <button
                   onClick={() => handleFileReview(false)}
-                  className={`flex items-center px-3 py-2 rounded transition-colors ${
+                  className={`cursor-pointer flex items-center px-3 py-2 rounded transition-colors ${
                     fileData?.estadoArchivo === FILE_STATES.REJECTED
                       ? "bg-red-200 text-red-800"
                       : "bg-red-600 text-white hover:bg-red-700"
