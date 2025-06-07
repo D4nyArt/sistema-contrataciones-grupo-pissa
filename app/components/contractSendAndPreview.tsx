@@ -1,52 +1,100 @@
-import { useState } from "react";
-import SelectProjectContracts, {
-  Contract as ProjectContract,
-} from "./selectProjectContracts";
-import SelectCorporateContracts, {
-  Contract as CorpContract,
-} from "./selectCorporateContracts";
+import {useState} from "react";
+
+import {ChangeEvent, FormEvent} from "react";
+
+import {PDFDocument} from 'pdf-lib';
+
+import {getStorage, ref as storageRef, getDownloadURL, uploadBytes} from "firebase/storage";
+
+
+import SelectCompany from "./selectCompany";
+import SelectProjectClient from "./selectProjectClient";
+
 import DirectViewer from "./directFileView";
 import PopUp from "./pop-up";
-import { ref, update } from "firebase/database";
-import { database } from "@/firebaseConfig";
-import { urbanist } from "./fonts";
-import { Building, FolderOpenDot, File } from "lucide-react";
+import {ref, set, update} from "firebase/database";
+import {database} from "@/firebaseConfig";
+import {urbanist} from "./fonts";
+import {Building, FolderOpenDot, File} from "lucide-react";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
-export default function ContractSendAndPreview({ uid }: { uid: string }) {
-  const [selectedProject, setSelectedProject] =
-    useState<ProjectContract | null>(null);
-  const [selectedCorporate, setSelectedCorporate] =
-    useState<CorpContract | null>(null);
+export default function ContractSendAndPreview({uid}: {uid: string}) {
+  const [contract, setContract] = useState(false);
   const [duration, setDuration] = useState<number>(6); // Duración del contrato en meses
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleProjectSelect = (c: ProjectContract | null) => {
-    setSelectedProject(c);
-    setSelectedCorporate(null);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
+
+  const [showForm, setShowForm] = useState(false);
+
+  const [formValues, setFormValues] = useState({
+    empresa: "",
+    representante_legal: "",
+    nombre: ""
+  });
+
+  const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormValues({...formValues, [e.target.name]: e.target.value});
   };
-  const handleCorporateSelect = (c: CorpContract | null) => {
-    setSelectedCorporate(c);
-    setSelectedProject(null);
+
+  const handleGenerateContract = async (e: FormEvent) => {
+    e.preventDefault();
+
+    // 1) Obtener plantilla desde Firebase Storage
+    const storage = getStorage();
+    const templateRef = storageRef(
+      storage,
+      "/pruebaInicial/contratos/proyectos/clientes/contratoVacioCliente.pdf"
+    );
+    const url = await getDownloadURL(templateRef);
+    const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
+
+    // 2) Cargar y rellenar campos
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const formPdf = pdfDoc.getForm();
+    formPdf.getTextField("EMPRESA").setText(formValues.empresa);
+    formPdf.getTextField("REPRESENTANTE_LEGAL").setText(formValues.representante_legal);
+    formPdf.getTextField("NOMBRE").setText(formValues.nombre);
+    formPdf.flatten();
+
+    // 3) Generar bytes del nuevo PDF
+    const pdfBytes = await pdfDoc.save();
+
+    // 4) Subir el PDF generado a Storage
+    const outRef = storageRef(
+      storage,
+      `pruebaInicial/contratos/proyectos/clientes/contratoLleno.pdf`
+    );
+    await uploadBytes(outRef, pdfBytes, {contentType: "application/pdf"});
+    console.log("Contrato generado y subido exitosamente");
+    // 5) Cerrar el formulario
+    setContract(true);
+    setShowForm(false);
   };
 
-  const contract = selectedProject || selectedCorporate;
-  const folder = selectedProject
-    ? "pruebaInicial/contratos/proyectos"
-    : selectedCorporate
-    ? "pruebaInicial/contratos/corporativo"
-    : "";
 
-    const [selected, setSelected] = useState("pro");
+  const handleCompanySelect = (companyId: string | null) => {
+    setSelectedCompany(companyId);
+    //console.log("Empresa seleccionada:", selectedCompany);
+  };
 
-    const options = [
-      { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-      { id: "cor", label: "Corporativo", icon: Building },
-    ];
+  const handleClientSelect = (clientId: string | null) => {
+    setSelectedClient(clientId);
+    //console.log("Cliente seleccionado:", selectedClient);
+  };
+
+
+  const [selected, setSelected] = useState("pro");
+
+  const options = [
+    {id: "pro", label: "Proyecto", icon: FolderOpenDot},
+    {id: "cor", label: "Corporativo", icon: Building},
+  ];
 
 
   // Acción al confirmar el envío
-  const handleSend = async () => {
+  {/*const handleSend = async () => {
     if (!contract) return;
     try {
       // Actualiza contrato_activo en usuarios/{uid}
@@ -62,13 +110,13 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         estado: "no_firmado",
         duracion: duration,
       });
-      
-      
-      await update(ref(database, selected=="pro"?`contratos/proyectos/${contract.id}`:`contratos/corporativo/${contract.id}`), {
+
+
+      await update(ref(database, selected == "pro" ? `contratos/proyectos/${contract.id}` : `contratos/corporativo/${contract.id}`), {
         duration: duration,
         assignation: uid
       })
-      
+
 
       // Notificaciones
       const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
@@ -92,10 +140,27 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
       console.error("Error enviando contrato:", err);
     }
     setShowConfirm(false);
-  };
+  };*/}
 
   const handleClick = () => {
     setShowConfirm(true);
+  };
+
+  const disableButton = () => {
+    if (selected === "pro") {
+      if (selectedCompany === null || selectedClient === null) {
+        return true; // Deshabilita el boton si no se ha seleccionado empresa o  cliente
+      } else {
+        return false;
+      }
+    } else if (selected === "cor") {
+      if (selectedCompany === null) {
+        return true; // Deshabilita el boton si no se ha seleccionado empresa o  cliente
+      } else {
+        return false;
+      }
+    }
+    return true;
   };
 
 
@@ -118,15 +183,14 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
                 key={option.id}
                 onClick={() => {
                   setSelected(option.id);
-                  setSelectedProject(null);
-                  setSelectedCorporate(null);
+                  setSelectedCompany(null);
+                  setSelectedClient(null);
                 }}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
-                ${
-                  selected === option.id
+                ${selected === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
                     : "border-gray-300 text-gray-400 hover:border-[#08b177] hover:text-[#08b177]"
-                }`}
+                  }`}
               >
                 <LinkIcon />
                 {option.label}
@@ -136,42 +200,21 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         </div>
 
         {selected === "pro" && (
-          <SelectProjectContracts
-            uid={uid}
-            onSelect={handleProjectSelect}
-            disabled={!!selectedCorporate}
-          />
+          <>
+            <SelectCompany uid={uid} onSelect={handleCompanySelect} />
+            <SelectProjectClient uid={uid} onSelect={handleClientSelect} />
+          </>
         )}
         {selected === "cor" && (
-          <SelectCorporateContracts
-            uid={uid}
-            onSelect={handleCorporateSelect}
-            disabled={!!selectedProject}
-          />
+          <SelectCompany uid={uid} onSelect={handleCompanySelect} />
         )}
-        {/*Seleccionar duración del contrato*/}
-        <h2
-          className={`${urbanist.className} text-xl font-semibold text-[#212529]`}
-        >
-          Duración del contrato
-        </h2>
-        <select
-          value={duration}
-          onChange={(e) => setDuration(Number(e.target.value))}
-          className="border p-1 rounded-lg mt-2 border-gray-300"
-        >
-          <option value="6">6 meses</option>
-          <option value="12">1 año</option>
-          <option value="24">2 años</option>
-          <option value="36">3 años</option>
-          <option value="60">5 años</option>
-        </select>
+
         <button
-          disabled={!contract}
-          onClick={handleClick}
+          disabled={disableButton()}
+          onClick={() => setShowForm(true)}
           className="cursor-pointer mt-10 px-4 py-2 bg-[#2d4583] text-white rounded-lg hover:bg-[#08b177] disabled:opacity-50"
         >
-          Enviar contrato
+          Aceptar
         </button>
       </div>
 
@@ -195,24 +238,64 @@ export default function ContractSendAndPreview({ uid }: { uid: string }) {
         )}
       </div>
       {/* y botón de enviar  */}
-      <PopUp show={showConfirm} onClose={() => setShowConfirm(false)}>
-        <p className="mb-4">
-          ¿Confirmas enviar el contrato “{contract?.name}” al candidato?
-        </p>
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={handleSend}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Confirmar
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="px-4 py-2 bg-gray-300 rounded"
-          >
-            Cancelar
-          </button>
-        </div>
+      <PopUp show={showForm} onClose={() => setShowForm(false)}>
+        <form onSubmit={handleGenerateContract} className="space-y-4">
+          <h3 className="text-lg font-semibold">Detalles del contrato</h3>
+
+          <div>
+            <label className="block">Empresa</label>
+            <input
+              type="text"
+              name="empresa"
+              value={formValues.empresa}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Representante</label>
+            <input
+              type="text"
+              name="representante_legal"
+              value={formValues.representante_legal}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Nombre</label>
+            <input
+              type="text"
+              name="nombre"
+              value={formValues.nombre}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+
+          <div className="flex justify-end space-x-2">
+            <button
+              type="submit"
+              onClick={handleGenerateContract}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Generar
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="px-4 py-2 bg-gray-300 rounded"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
       </PopUp>
     </div>
   );
