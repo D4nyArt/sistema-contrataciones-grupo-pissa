@@ -10,8 +10,8 @@ async function sendEmailNotification(addressee: string, subject: string, text: s
     // Para dominios de la UE, especifica el endpoint: url: "https://api.eu.mailgun.net"
   });
 
-  const data = await mg.messages.create("grupo-pissa.space", {
-    from: "Notificaciones pissa <notificaciones@grupo-pissa.space>",
+  const data = await mg.messages.create("www.grupo-pissa.space", {
+    from: "Notificaciones pissa <notificaciones@www.grupo-pissa.space>",
     to: [addressee],       // Se usa el parámetro recibido
     subject: subject,      // Se usa el parámetro recibido
     text: text,            // Se usa el parámetro recibido

@@ -173,7 +173,7 @@ export default function FormularioOlvide() {
               await sendPasswordResetEmail(auth, email, {
                 url: process.env.NODE_ENV === 'development'
                 ? "http://localhost:3000/olvidaste/link"
-                : "https://sistema-contrataciones-grupo-pissa-b8fo.vercel.app/olvidaste/link",
+                : "https://www.grupo-pissa.space/olvidaste/link",
                 handleCodeInApp: true
               });
 
