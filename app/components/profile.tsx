@@ -193,9 +193,9 @@ export default function Profile() {
                   value={genero}
                   onChange={(event) => setGenero(event.target.value)}
                 >
-                  <option value=""></option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Femenino">Femenino</option>
+                  <option value="" disabled></option>
+                  <option value="Hombre">Hombre</option>
+                  <option value="Mujer">Mujer</option>
                   <option value="Otro">Otro</option>
                 </select>
               ) : (
