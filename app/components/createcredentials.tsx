@@ -163,11 +163,6 @@ export default function CreateCredentials() {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <div className="bg-white rounded-xl p-4 shadow-md animate-fade-in-up">
         <div className="border-b pb-2 mb-6 border-gray-300">
-          <h2
-            className={`${urbanist.className} text-2xl font-semibold text-[#212529]`}
-          >
-            Añadir Persona
-          </h2>
           <p className="mt-2 text-[#495057]">
             Completa el formulario para añadir una nueva persona.
           </p>
@@ -305,9 +300,9 @@ export default function CreateCredentials() {
                   }
                 }}
               >
-                <option value=""></option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
+                <option value="" disabled></option>
+                <option value="Hombre">Hombre</option>
+                <option value="Mujer">Mujer</option>
                 <option value="Otro">Otro</option>
               </select>
               <VenusAndMars className="ml-2 text-gray-400" />
@@ -330,7 +325,7 @@ export default function CreateCredentials() {
                   }
                 }}
               >
-                <option value=""></option>
+                <option value="" disabled></option>
                 <option value="mantenimiento">Mantenimiento</option>
                 <option value="lider_de_proyecto">Líder de Proyecto</option>
                 <option value="auxiliar_administrativo">
