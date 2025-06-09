@@ -11,6 +11,7 @@ import SelectCompany from "./selectCompany";
 import SelectProjectClient from "./selectProjectClient";
 
 import DirectViewer from "./directFileView";
+import BetterDirectFileViewer from "./betterDirectFileViewer";
 import PopUp from "./pop-up";
 import {ref, set, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
@@ -19,7 +20,7 @@ import {Building, FolderOpenDot, File} from "lucide-react";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 export default function ContractSendAndPreview({uid}: {uid: string}) {
-  const [contract, setContract] = useState(false);
+  const [contractPreview, setContractPreview] = useState(false);
   const [duration, setDuration] = useState<number>(6); // Duración del contrato en meses
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -64,12 +65,12 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
     // 4) Subir el PDF generado a Storage
     const outRef = storageRef(
       storage,
-      `pruebaInicial/contratos/proyectos/clientes/contratoLleno.pdf`
+      `pruebaInicial/expedientes/expediente${uid}/contratos/preview/contratoPreview${uid}.pdf`
     );
     await uploadBytes(outRef, pdfBytes, {contentType: "application/pdf"});
-    console.log("Contrato generado y subido exitosamente");
+    alert("Preview del contrato generado exitosamente");
     // 5) Cerrar el formulario
-    setContract(true);
+    setContractPreview(true);
     setShowForm(false);
   };
 
@@ -94,32 +95,36 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
 
 
   // Acción al confirmar el envío
-  {/*const handleSend = async () => {
-    if (!contract) return;
+  const handleSendContract = async () => {
+    if (!contractPreview) return;
     try {
       // Actualiza contrato_activo en usuarios/{uid}
       await update(ref(database, `usuarios/${uid}`), {
-        contrato_activo: contract.name,
+        contrato_activo: "contratoPreview" + uid + ".pdf",
         rol: "candidato",
       });
 
       // Actualiza contrato_activo en expedientes/expediente{uid}/contratos
       await update(ref(database, `expedientes/expediente${uid}/contratos`), {
-        contrato_activo: contract.name,
-        id: contract.id,
+        contrato_activo: "contratoPreview" + uid + ".pdf",
+        id: `con${selected}${uid}`,
         estado: "no_firmado",
         duracion: duration,
       });
 
+      await update(ref(database, `expedientes/expediente${uid}/contratos/preview`), {
+        url: `pruebaInicial/expedientes/expediente${uid}/contratos/preview/contratoPreview${uid}.pdf`,
+      });
 
-      await update(ref(database, selected == "pro" ? `contratos/proyectos/${contract.id}` : `contratos/corporativo/${contract.id}`), {
+
+      await update(ref(database, selected == "pro" ? `contratos/proyectos/con${selected}${uid}` : `contratos/corporativo/con${selected}${uid}`), {
         duration: duration,
         assignation: uid
       })
 
 
       // Notificaciones
-      const message = `Se te ha enviado un nuevo contrato: "${contract.name}"`;
+      const message = `Se te ha asignado un nuevo contrato"`;
       const timestamp = Date.now();
       await update(ref(database, `notificaciones/notificaciones${uid}`), {
         [timestamp]: {
@@ -136,29 +141,24 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
         `Nuevo contrato asignado`,
         `Hola,\n\n${message}\n\nPuedes revisar tus contratos ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
       );
+      alert("Contrato enviado exitosamente!");
     } catch (err) {
       console.error("Error enviando contrato:", err);
     }
     setShowConfirm(false);
-  };*/}
+  };
 
   const handleClick = () => {
     setShowConfirm(true);
   };
 
   const disableButton = () => {
+    
     if (selected === "pro") {
-      if (selectedCompany === null || selectedClient === null) {
-        return true; // Deshabilita el boton si no se ha seleccionado empresa o  cliente
-      } else {
-        return false;
-      }
-    } else if (selected === "cor") {
-      if (selectedCompany === null) {
-        return true; // Deshabilita el boton si no se ha seleccionado empresa o  cliente
-      } else {
-        return false;
-      }
+      return !(selectedCompany && selectedClient);
+    }
+    if (selected === "cor") {
+      return !selectedCompany;
     }
     return true;
   };
@@ -185,10 +185,11 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
                   setSelected(option.id);
                   setSelectedCompany(null);
                   setSelectedClient(null);
+                  setContractPreview(false);
                 }}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
                 ${selected === option.id
-                    ? "border-[#2975a0] text-[#2975a0]"
+                    ? "borderContract-[#2975a0] text-[#2975a0]"
                     : "border-gray-300 text-gray-400 hover:border-[#08b177] hover:text-[#08b177]"
                   }`}
               >
@@ -211,23 +212,19 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
 
         <button
           disabled={disableButton()}
-          onClick={() => setShowForm(true)}
+          onClick={contractPreview ? handleSendContract : () => setShowForm(true)}
           className="cursor-pointer mt-10 px-4 py-2 bg-[#2d4583] text-white rounded-lg hover:bg-[#08b177] disabled:opacity-50"
         >
-          Aceptar
+          {contractPreview ? "Enviar Contrato" : "Generación de contrato"}
         </button>
       </div>
 
       {/* Vista previa*/}
       <div className="flex-1">
-        {contract ? (
+        {contractPreview ? (
           <>
-            <DirectViewer
-              expedienteId={`expediente${uid}`}
-              fileName={contract.name + ".pdf"}
-              folder={folder}
-              userRole="rh"
-              contrato={false}
+            <BetterDirectFileViewer
+              urlDb={`pruebaInicial/expedientes/expediente${uid}/contratos/preview/contratoPreview${uid}.pdf`}
             />
           </>
         ) : (
