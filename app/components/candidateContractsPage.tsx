@@ -96,13 +96,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     }
 
     // 3) set dbPath based on contract id (STATIC: candidate always sees the contract template)
-    setDbPath(
-      contract.id.startsWith("conproy")
-        ? `contratos/proyectos/${contract.id}`
-        : contract.id.startsWith("concorp")
-        ? `contratos/corporativo/${contract.id}`
-        : ""
-    );
+    setDbPath(`expedientes/expediente${uid}/contratos/preview`);
   }, [contract]);
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +111,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     try {
       const fileReference = storageRef(
         storage,
-        `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`
+        `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}`
       );
       const snapshot = await uploadBytes(fileReference, file);
     } finally {
@@ -139,7 +133,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       estado: "revisando",
       fecha_firmado: signedDate,
       fecha_vencimiento: expirationDate,
-      url: `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`,
+      url: `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}`,
     });
 
     setContract((prev) =>
@@ -249,7 +243,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         </h2>
       </div>
       <div>
-        <ManagerViewer dbPath={dbPath} />
+        <ManagerViewer userRole="rh" dbPath={dbPath} />
       </div>
       <div>
         <h2
