@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
-import { ref, get, set } from "firebase/database";
+import { ref, get } from "firebase/database";
 import ProfilePicture from "./profile-picture";
 
 import { handleBlock, handleRemoval, handleUnblock } from "./block";
@@ -47,7 +47,7 @@ export default function Usuarios() {
   } else if (role === "admin") {
     userRole = "ADMIN";
   } else if (role === "candidato") {
-    userRole = "Candidato"
+    userRole = "Candidato";
   }
 
   useEffect(() => {
@@ -147,32 +147,32 @@ export default function Usuarios() {
         </span>
         <div className="md:ml-auto flex">
           {role === "candidato" && (
-            <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
+            <SeguimientoToggle rhUID={rhUID!} candidateUID={id} />
           )}
-            {status !== "dado de baja" && (
-              <button
-                className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
-                  status === "bloqueado"
-                    ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
-                    : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
-                }`}
-                onClick={() =>
-                  status === "bloqueado"
-                    ? handleUnblock(id, status, setStatus, setAttempt, setTime)
-                    : handleBlock(id, setStatus, role, status)
-                }
-              >
-                {status === "bloqueado" ? (
-                  <>
-                    <LockOpen className="pr-2" /> Desbloquear
-                  </>
-                ) : (
-                  <>
-                    <Lock className="pr-2" /> Bloquear
-                  </>
-                )}
-              </button>
-            )}
+          {status !== "dado de baja" && (
+            <button
+              className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
+                status === "bloqueado"
+                  ? "border-gray-500 text-[#212529] hover:border-green-500 hover:text-green-700 hover:bg-green-100 w-40"
+                  : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
+              }`}
+              onClick={() =>
+                status === "bloqueado"
+                  ? handleUnblock(id, status, setStatus, setAttempt, setTime)
+                  : handleBlock(id, setStatus, role, status)
+              }
+            >
+              {status === "bloqueado" ? (
+                <>
+                  <LockOpen className="pr-2" /> Desbloquear
+                </>
+              ) : (
+                <>
+                  <Lock className="pr-2" /> Bloquear
+                </>
+              )}
+            </button>
+          )}
 
           <button
             className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"

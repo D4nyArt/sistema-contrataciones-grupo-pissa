@@ -215,17 +215,17 @@ export default function DocumentoExpediente({
       <NotasExpediente role={rol} expedienteId={expedienteId} />
 
       {(rol === "rh" || rol === "admin") && (
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 justify-center mt-5">
           <button
             onClick={handleApproveAll}
-            className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+            className="cursor-pointer px-3 py-1 bg-green-600 text-white text-md rounded hover:bg-green-700 transition-colors"
             title="Aprueba el documento y todos sus campos"
           >
             Aprobar Todo
           </button>
           <button
             onClick={handleRejectAll}
-            className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+            className="cursor-pointer px-3 py-1 bg-red-600 text-white text-md rounded hover:bg-red-700 transition-colors"
             title="Rechaza el documento y todos sus campos"
           >
             Rechazar Todo
