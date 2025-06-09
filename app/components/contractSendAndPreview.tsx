@@ -10,7 +10,7 @@ import {getStorage, ref as storageRef, getDownloadURL, uploadBytes} from "fireba
 import SelectCompany from "./selectCompany";
 import SelectProjectClient from "./selectProjectClient";
 
-import BetterDirectFileViewer from "./betterDirectFileViewer";
+import DirectViewer from "./directFileView";
 import PopUp from "./pop-up";
 import {ref, set, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
@@ -19,8 +19,8 @@ import {Building, FolderOpenDot, File, Hourglass} from "lucide-react";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 export default function ContractSendAndPreview({uid}: {uid: string}) {
-  const [contractPreview, setContractPreview] = useState(false);
-  const [duration, setDuration] = useState<number>(6);
+  const [contract, setContract] = useState(false);
+  const [duration, setDuration] = useState<number>(6); // Duración del contrato en meses
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
@@ -262,6 +262,7 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
   };
 
   const disableButton = () => {
+    
     if (selected === "pro") {
       return !(selectedCompany && selectedClient);
     }
