@@ -17,10 +17,13 @@ export default function UserTable({ users }: { users: User[] }) {
             Rol
           </th>
           <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-            Correo
+            Teléfono
           </th>
           <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-            Teléfono
+            Área
+          </th>
+          <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
+            Puesto
           </th>
           <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
             Estado
@@ -40,22 +43,26 @@ export default function UserTable({ users }: { users: User[] }) {
         ) : (
           users.map((user) => (
             <tr key={user.id}>
-              <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
+              <td className="px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
                 <ProfilePicture
                   nombre={`${user.nombre || ""}`}
-                  width="w-8"
-                  height="h-8"
+                  width="w-10"
+                  height="h-10"
                   textSize="text-xl"
                 />
-                {user.nombre || "N/A"} {user.apellidos || "N/A"}
+                <div>
+                  <p className="font-semibold">{user.nombre || "N/A"} {user.apellidos || "N/A"}</p>
+                  <p className="text-xs text-[#495057]">{user.email_corporativo || "N/A"}</p>
+                </div>
               </td>
               <td className="px-4 py-4 bg-white">
                 <div className="bg-blue-100 text-blue-800 rounded-lg text-center capitalize">
                   {user.rol || "N/A"}
                 </div>
               </td>
-              <td className="px-4 py-4 bg-white">{user.email || "N/A"}</td>
               <td className="px-4 py-4 bg-white">{user.telefono || "N/A"}</td>
+              <td className="px-4 py-4 bg-white">{user.area || "N/A"}</td>
+              <td className="px-4 py-4 bg-white">{user.puesto || "N/A"}</td>
               <td className="px-4 py-4 bg-white rounded-r-xl capitalize">
                 {/* Cambiar esto si afecta con la lógica, cambiar "" a algún valor default */}
                 <EtiquetaEstado status={user.estadoUsuario ?? ""} />

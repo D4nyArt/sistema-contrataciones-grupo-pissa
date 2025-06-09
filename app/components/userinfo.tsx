@@ -11,6 +11,7 @@ import ExpedienteRH from "@/app/components/expedienteRH";
 import ContractsPage from "@/app/components/contractsPage";
 import InfoPerfil from "./informacionPerfil";
 import History from "./history/history";
+import SkeletonUserInfo from "./skeletonUserInfo";
 
 type Tab = "información" | "expediente" | "contratos" | "histórico";
 
@@ -61,10 +62,10 @@ export default function UserInfo({ id }: { id: string }) {
     setActive(tab);
   };
 
-  if (role === null) return <div>Cargando perfil…</div>;
+  if (role === null) return <div><div className="hidden md:block"><SkeletonUserInfo/></div></div>;
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <div className="hidden md:block">
         <Usuarios />
       </div>
@@ -72,7 +73,8 @@ export default function UserInfo({ id }: { id: string }) {
         <ListInformation />
       </div>
 
-      <div className="space-x-6 border-b border-gray-300 mb-6">
+      {/* Tabs */}
+      <div className="flex space-x-6 border-b border-gray-300 mb-4 overflow-x-auto">
         <button
           onClick={() => handleTabChange("información")}
           className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
@@ -120,7 +122,7 @@ export default function UserInfo({ id }: { id: string }) {
         )}
       </div>
 
-      <div>
+      <div className="flex-1 overflow-y-auto">
         {active === "información" && <InfoPerfil />}
         {active === "expediente" && role !== "rh" && <ExpedienteRH userId={id} />}
         {active === "contratos" && role !== "rh" && <ContractsPage uid={id} />}
