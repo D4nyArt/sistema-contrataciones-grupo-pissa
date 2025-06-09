@@ -1,4 +1,8 @@
-export default function Questions(){
+interface QuestionsProps {
+  searchTerm: string;
+}
+
+export default function Questions({ searchTerm }: QuestionsProps){
     const faqs = [
         {
           pregunta: "¿Cómo ingreso por primera vez?",
@@ -13,11 +17,19 @@ export default function Questions(){
           respuesta: "Sí, dentro de tu perfil encontrarás una opción para editar tus datos."
         },
       ]
+
+    const filteredFaqs = faqs.filter((faq) => {
+      const lowerSearch = searchTerm.toLowerCase();
+      return (
+        faq.pregunta.toLowerCase().includes(lowerSearch) ||
+        faq.respuesta.toLowerCase().includes(lowerSearch)
+      );
+    });
     
     return(
         <div className="w-full px-6 py-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {faqs.map((faq, i) => (
+                {filteredFaqs.map((faq, i) => (
                 <div key={i} className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
                     <h3 className="text-lg font-semibold text-[#001e2b]">{faq.pregunta}</h3>
                     <p className="text-sm text-gray-600 mt-2">{faq.respuesta}</p>

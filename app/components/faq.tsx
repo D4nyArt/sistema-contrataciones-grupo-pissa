@@ -8,7 +8,7 @@ export default function FAQ() {
 
   return (
       <button
-        onClick={() => router.push('/faq')}
+        onClick={() => router.push('faq')}
         className="cursor-pointer"
         title="Preguntas frecuentes"
       >

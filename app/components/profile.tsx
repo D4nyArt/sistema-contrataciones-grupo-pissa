@@ -10,6 +10,9 @@ export default function Profile() {
   const [role, setrole] = useState("");
   const [tel, setTel] = useState("");
   const [emailSecundario, setEmailSecundario] = useState("");
+  const [genero, setGenero] = useState("");
+  const [puesto, setPuesto] = useState("");
+  const [area, setArea] = useState("");
   const [edit, setEdit] = useState(false);
   const [originalEmail, setOriginalEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -33,6 +36,9 @@ export default function Profile() {
         setrole(jason.rol);
         setTel(jason.telefono || "");
         setEmailSecundario(jason.emailSecundario || "");
+        setGenero(jason.genero);
+        setPuesto(jason.puesto);
+        setArea(jason.area);
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
         setAlerta({
@@ -57,6 +63,7 @@ export default function Profile() {
           targetEmail: string;
           telefono?: string;
           emailSecundario?: string | null;
+          genero?: string;
         } = {
           targetEmail: originalEmail,
         };
@@ -68,6 +75,7 @@ export default function Profile() {
 
         // Incluir email secundario (puede ser vacío o null)
         updateData.emailSecundario = emailSecundario || null;
+        updateData.genero = genero;
 
         const res = await fetch("/api/updateUser", {
           method: "PATCH",
@@ -116,22 +124,16 @@ export default function Profile() {
       )}
       
       {/* Contenedor principal centrado */}
-      <div className="flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            Perfil de Usuario
-          </h2>
-
-          <div className="flex justify-center mb-6">
+      <div className="items-start justify-start">
+      <h1 className={"text-4xl text-[#212529] pl-4 font-bold mb-4 animate-fade-in-up"}>Perfil de Usuario</h1>
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full">
+          <div className="flex space-x-5 md:space-x-10 items-center mb-7">
             <ProfilePicture
               nombre={name}
-              width={"w-15"}
-              height={"h-15"}
+              width={"w-10 md:w-20"}
+              height={"h-10 md:h-20"}
               textSize={"text-3xl"}
             />
-          </div>
-
-          <div className="space-y-4">
             <div>
               <label className="text-gray-600 text-sm">Nombre</label>
               <p className="text-lg font-medium">{name}</p>
@@ -142,9 +144,24 @@ export default function Profile() {
               <p className="text-lg font-medium">{lastname}</p>
             </div>
 
-            <div>
+            <div className="ml-30 hidden md:block">
               <label className="text-gray-600 text-sm">Rol</label>
               <p className="text-lg font-medium">{role}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xl font-semibold text-[#212529]">Mi información</p>
+            <div className="flex flex-col justify-center md:grid md:grid-cols-2 gap-6">
+
+            <div>
+              <label className="text-gray-600 text-sm">Área</label>
+              <p className="text-lg font-medium">{area}</p>
+            </div>
+
+            <div>
+              <label className="text-gray-600 text-sm">Puesto</label>
+              <p className="text-lg font-medium">{puesto}</p>
             </div>
 
             <div>
@@ -169,6 +186,24 @@ export default function Profile() {
             </div>
 
             <div>
+              <label className="text-gray-600 text-sm">Género</label>
+              {edit ? (
+                <select
+                  className="w-full mt-1 p-2 border rounded"
+                  value={genero}
+                  onChange={(event) => setGenero(event.target.value)}
+                >
+                  <option value=""></option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              ) : (
+                <p className="text-lg font-medium">{genero}</p>
+              )}
+            </div>
+
+            <div>
               <label className="text-gray-600 text-sm">Teléfono</label>
               {edit ? (
                 <input
@@ -182,12 +217,13 @@ export default function Profile() {
                 <p className="text-lg font-medium">{tel || "No configurado"}</p>
               )}
             </div>
+            </div>
           </div>
 
           <button
             onClick={changeProfile}
             disabled={loading}
-            className={`mt-8 w-full ${
+            className={`cursor-pointer mt-8 w-full ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-emerald-500 hover:bg-emerald-700"
