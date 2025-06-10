@@ -32,7 +32,7 @@ export default function ListUsers() {
 
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
-    const esRecursos = user.rol?.toUpperCase() === "RH" ||  user.rol?.toUpperCase() === "ADMIN";
+    const esRecursos = user.rol?.toUpperCase() === "RH";
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""
     }`.toLowerCase();
