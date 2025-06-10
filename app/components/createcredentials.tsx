@@ -169,7 +169,7 @@ export default function CreateCredentials() {
             Añadir Persona
           </h2>
           <p className="mt-2 text-[#495057]">
-            Completa el formulario para añadir una nueva persona.
+            Completa el formulario para crear nuevas credenciales.
           </p>
         </div>
         <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6">
