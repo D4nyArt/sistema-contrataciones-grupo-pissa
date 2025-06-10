@@ -13,7 +13,7 @@ export default function InfoPerfil() {
   const [phone, setPhone] = useState("");
   const id = pathname.split("/")[2];
   const [email_corporativo, setEmailCorporativo] = useState("");
-  const [genero, setGenero] = useState("");
+  const [sexo, setSexo] = useState("");
   const [puesto, setPuesto] = useState("");
   const [area, setArea] = useState("");
 
@@ -39,7 +39,7 @@ export default function InfoPerfil() {
         setMail(data.email || "");
         setPhone(data.telefono || "");
         setEmailCorporativo(data.email_corporativo || "");
-        setGenero(data.genero || "");
+        setSexo(data.sexo || "");
         setPuesto(data.puesto || "");
         setArea(data.area || "");
       } catch (e) {
@@ -130,13 +130,13 @@ export default function InfoPerfil() {
           </div>
         </div>
         <div>
-          <label className="text-[#495057] block mb-1">Género</label>
+          <label className="text-[#495057] block mb-1">Sexo</label>
           <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
             <input
               type="text"
-              name="genero"
+              name="sexo"
               disabled
-              value={genero}
+              value={sexo}
               onChange={handleLastnameChange}
               className="flex-1 outline-none w-1/2"
             ></input>
@@ -148,7 +148,7 @@ export default function InfoPerfil() {
           <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
             <input
               type="text"
-              name="genero"
+              name="puesto"
               disabled
               value={puesto}
               onChange={handleLastnameChange}
@@ -162,7 +162,7 @@ export default function InfoPerfil() {
           <div className="flex items-center p-2 border border-gray-300 rounded-lg bg-white md:w-md">
             <input
               type="text"
-              name="genero"
+              name="area"
               disabled
               value={area}
               onChange={handleLastnameChange}

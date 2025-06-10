@@ -10,7 +10,7 @@ export default function Profile() {
   const [role, setrole] = useState("");
   const [tel, setTel] = useState("");
   const [emailSecundario, setEmailSecundario] = useState("");
-  const [genero, setGenero] = useState("");
+  const [sexo, setSexo] = useState("");
   const [puesto, setPuesto] = useState("");
   const [area, setArea] = useState("");
   const [edit, setEdit] = useState(false);
@@ -36,7 +36,7 @@ export default function Profile() {
         setrole(jason.rol);
         setTel(jason.telefono || "");
         setEmailSecundario(jason.emailSecundario || "");
-        setGenero(jason.genero);
+        setSexo(jason.sexo);
         setPuesto(jason.puesto);
         setArea(jason.area);
       } catch (error) {
@@ -63,7 +63,7 @@ export default function Profile() {
           targetEmail: string;
           telefono?: string;
           emailSecundario?: string | null;
-          genero?: string;
+          sexo?: string;
         } = {
           targetEmail: originalEmail,
         };
@@ -75,7 +75,7 @@ export default function Profile() {
 
         // Incluir email secundario (puede ser vacío o null)
         updateData.emailSecundario = emailSecundario || null;
-        updateData.genero = genero;
+        updateData.sexo = sexo;
 
         const res = await fetch("/api/updateUser", {
           method: "PATCH",
@@ -186,12 +186,12 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="text-gray-600 text-sm">Género</label>
+              <label className="text-gray-600 text-sm">Sexo</label>
               {edit ? (
                 <select
                   className="w-full mt-1 p-2 border rounded"
-                  value={genero}
-                  onChange={(event) => setGenero(event.target.value)}
+                  value={sexo}
+                  onChange={(event) => setSexo(event.target.value)}
                 >
                   <option value="" disabled></option>
                   <option value="Hombre">Hombre</option>
@@ -199,7 +199,7 @@ export default function Profile() {
                   <option value="Otro">Otro</option>
                 </select>
               ) : (
-                <p className="text-lg font-medium">{genero}</p>
+                <p className="text-lg font-medium">{sexo}</p>
               )}
             </div>
 
