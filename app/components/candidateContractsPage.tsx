@@ -111,7 +111,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     try {
       const fileReference = storageRef(
         storage,
-        `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}`
+        `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}.pdf`
       );
       const snapshot = await uploadBytes(fileReference, file);
     } finally {
@@ -121,9 +121,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     // Expiracion
     const now = new Date();
     const signedDate = now.toISOString();
-    const expiration = new Date(now);
-    expiration.setMonth(expiration.getMonth() + contract.duration);
-    const expirationDate = expiration.toISOString();
+
 
     await update(dbRef(database, `usuarios/${uid}`), {
       contrato_activo: fileName,
@@ -132,8 +130,8 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       contrato_activo: fileName,
       estado: "revisando",
       fecha_firmado: signedDate,
-      fecha_vencimiento: expirationDate,
-      url: `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}`,
+      //fecha_vencimiento: expirationDate,
+      url: `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}.pdf`,
     });
 
     setContract((prev) =>
