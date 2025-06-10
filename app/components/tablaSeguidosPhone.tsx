@@ -2,6 +2,7 @@
 
 import React from "react";
 import ProfilePicture from "./profile-picture";
+//import EtiquetaEstado from "./etiquetaEstado";
 import { ArrowUpRight } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
