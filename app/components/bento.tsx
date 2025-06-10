@@ -13,7 +13,7 @@ export default function Bento() {
           <Users />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Empleados</h2>
+          <h2 className="text-[#495057]">Total de empleados</h2>
           <CountUsers />
         </div>
       </div>
@@ -22,7 +22,7 @@ export default function Bento() {
           <UserPlus />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Candidatos</h2>
+          <h2 className="text-[#495057]">Total de candidatos</h2>
           <CantCandidatos />
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function Bento() {
           <FolderOpenDot />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Proyecto</h2>
+          <h2 className="text-[#495057]">Total en proyecto</h2>
           <CantProyectos />
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function Bento() {
           <Building />
         </div>
         <div className="flex flex-col">
-          <h2 className="text-[#495057]">Corporativo</h2>
+          <h2 className="text-[#495057]">Total en corporativo</h2>
           <CantCorporativo />
         </div>
       </div>
