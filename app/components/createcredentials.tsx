@@ -47,7 +47,7 @@ export default function CreateCredentials() {
   const [role, setRole] = useState("candidato");
   const [ownrole, setOwnRole] = useState("");
   const [email_corporativo, setEmailCorporativo] = useState("");
-  const [genero, setGenero] = useState("");
+  const [sexo, setSexo] = useState("");
   const [puesto, setPuesto] = useState("");
   const [area, setArea] = useState("");
 
@@ -57,7 +57,7 @@ export default function CreateCredentials() {
     mail: false,
     phone: false,
     email_corporativo: false,
-    genero: false,
+    sexo: false,
     puesto: false,
     area: false,
   });
@@ -69,7 +69,7 @@ export default function CreateCredentials() {
       mail: !mail.trim(),
       phone: !phone || phone === "+52",
       email_corporativo: !email_corporativo.trim(),
-      genero: !genero,
+      sexo: !sexo,
       puesto: !puesto,
       area: !area.trim(),
     };
@@ -106,7 +106,7 @@ export default function CreateCredentials() {
           email: mail,
           email_corporativo: email_corporativo,
           estadoUsuario: "previo",
-          genero: genero,
+          sexo: sexo,
           puesto: puesto,
           area: area,
           nombre: name,
@@ -121,7 +121,7 @@ export default function CreateCredentials() {
           email: mail,
           email_corporativo: email_corporativo,
           estadoUsuario: "previo",
-          genero: genero,
+          sexo: sexo,
           puesto: puesto,
           area: area,
           nombre: name,
@@ -284,19 +284,19 @@ export default function CreateCredentials() {
             </div>
           </div>
           <div>
-            <label className="text-[#495057] block mb-1">Género</label>
+            <label className="text-[#495057] block mb-1">Sexo</label>
             <div
               className={`flex items-center p-2 border ${
-                errors.genero ? "border-red-500" : "border-gray-300"
+                errors.sexo ? "border-red-500" : "border-gray-300"
               } rounded-lg bg-white md:w-md`}
             >
               <select
                 className="flex-1 outline-none w-1/2"
-                value={genero}
+                value={sexo}
                 onChange={(event) => {
-                  setGenero(event.target.value);
-                  if (errors.genero && event.target.value) {
-                    setErrors((prev) => ({ ...prev, genero: false }));
+                  setSexo(event.target.value);
+                  if (errors.sexo && event.target.value) {
+                    setErrors((prev) => ({ ...prev, sexo: false }));
                   }
                 }}
               >
