@@ -22,15 +22,8 @@ export async function GET(request: NextRequest) {
     const { id: contractId, contrato_activo: active_contract, estado: state, duracion: duration, notas: notes} = recSnap.val();
 
     // Determinar la carpeta y la ruta de datos según el ID del contrato
-    let folder = "";
-    let dataPath = "";
-    if (contractId.startsWith("conproy")) {
-      folder = "pruebaInicial/contratos/proyectos";
-      dataPath = `contratos/proyectos/${contractId}`;
-    } else if (contractId.startsWith("concorp")) {
-      folder = "pruebaInicial/contratos/corporativo";
-      dataPath = `contratos/corporativo/${contractId}`;
-    }
+    let folder = "pruebaInicial/expedientes/expediente" + uid + "/contratos/preview";
+    let dataPath = "expedientes/expediente" + uid + "/contratos/preview/url";
 
     // 4) obtener información del contrato
     const infoSnap = await get(ref(database, dataPath));

@@ -116,8 +116,8 @@ export default function ReviewContract({ uid }: { uid: string }) {
       {/* Vista previa del contrato subido por el candidato */}
       {info.contract ? (
         <DirectViewer
-          folder={`pruebaInicial/expedientes/expediente${uid}/Contratos`}
-          fileName={info.active_contract ?? "NaC"}
+          folder={`pruebaInicial/expedientes/expediente${uid}/contratos`}
+          fileName={`contratoFirmado${uid}.pdf`}  
         />
       ) : (
         <p className="text-gray-500">
