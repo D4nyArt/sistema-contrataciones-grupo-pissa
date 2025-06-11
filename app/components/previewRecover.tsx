@@ -2,7 +2,10 @@
 
 import ProfilePicture from "./profile-picture";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import UserSkeleton from "./userSkeleton";
+=======
+>>>>>>> 6df6a10 (UI Chamges: New component for a preview of the password changes requests)
 
 interface User {
   id: string;
@@ -76,8 +79,15 @@ export default function PreviewRecover () {
     
       if (loading) {
         return (
+<<<<<<< HEAD
           <main className="flex-1 mt-4 p-2 flex items-center">
             <UserSkeleton/>
+=======
+          <main className="flex-1 p-4 flex justify-center items-center">
+            <div className="text-center">
+              <p className="text-lg">Cargando usuarios...</p>
+            </div>
+>>>>>>> 6df6a10 (UI Chamges: New component for a preview of the password changes requests)
           </main>
         );
       }
@@ -115,6 +125,7 @@ export default function PreviewRecover () {
                         ) : (
                         sortedUsers.map((user) => (
                             <tr>
+<<<<<<< HEAD
                               <td className="flex flex-row items-center justify-center md:justify-normal gap-2 py-4  bg-white md:bg-gray-100 rounded-xl md:p-2">
                                 <ProfilePicture
                                   nombre={`${user.nombre || ""}`}
@@ -126,6 +137,19 @@ export default function PreviewRecover () {
                                   <p className="font-semibold">{user.nombre || "N/A"} {user.apellidos || "N/A"}</p>
                                   <p className="text-xs text-[#495057]">{user.email || "N/A"}</p>
                                 </div>
+=======
+                              <td className="font-semibold px-4 py-4 rounded-l-xl flex-col items-center gap-2">
+                                <div className="flex flex-row">
+                                    <ProfilePicture
+                                        nombre={`${user.nombre || ""}`}
+                                        width={"w-8"}
+                                        height={"h-8"}
+                                        textSize={"text-xl"}
+                                    />
+                                    {user.nombre || "N/A"} {user.apellidos || "N/A"}
+                                </div>
+                                {user.email || "N/A"}
+>>>>>>> 6df6a10 (UI Chamges: New component for a preview of the password changes requests)
                               </td>
                             </tr>
                           ))
