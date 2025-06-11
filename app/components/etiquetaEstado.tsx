@@ -18,7 +18,7 @@ const statusMap = {
     text: "text-red-800",
     label: "Bloqueado",
   },
-  "dado de baja": {
+  baja: {
     icon: <UserMinus className="size-4 text-red-800" />,
     bg: "bg-red-100",
     text: "text-red-800",
@@ -26,6 +26,12 @@ const statusMap = {
   },
   enProceso: {
     icon: <Clock className="size-4 text-gray-800" />,
+    bg: "bg-gray-200",
+    text: "text-gray-800",
+    label: "En proceso",
+  },
+  cambioContrasena: {
+    icon: <Lock className="size-4 text-gray-800" />,
     bg: "bg-gray-200",
     text: "text-gray-800",
     label: "En proceso",

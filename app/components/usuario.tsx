@@ -13,6 +13,7 @@ import { handleBlock, handleRemoval, handleUnblock } from "./block";
 import {
   CircleCheck,
   Clock,
+  Key,
   Lock,
   LockOpen,
   Undo,
@@ -132,6 +133,14 @@ export default function Usuarios() {
                     </p>
                   </div>
                 )}
+                {status === "cambioContrasena" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
+                    <Key className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
+                      Cambio de Contraseña
+                    </p>
+                  </div>
+                )}
                 {status === "previo" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Undo className="size-4 text-gray-800" />
@@ -149,7 +158,7 @@ export default function Usuarios() {
           {role === "candidato" && (
             <SeguimientoToggle rhUID={rhUID!} candidateUID={id} />
           )}
-          {status !== "dado de baja" && (
+          {status !== "baja" && (
             <button
               className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
                 status === "bloqueado"
