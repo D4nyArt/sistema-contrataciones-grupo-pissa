@@ -1,8 +1,34 @@
+/**
+ * route.ts
+ * 
+ * Proporciona endpoints API para gestionar documentos de expedientes y su estado.
+ *
+ * Este módulo maneja la obtención y actualización del estado de documentos individuales
+ * dentro de expedientes de candidatos. Incluye funcionalidad para recalcular automáticamente
+ * el estado general de documentos y determinar si un expediente está completo. También
+ * gestiona notificaciones a candidatos cuando cambia el estado de sus documentos.
+ */
+
 import {NextRequest, NextResponse} from "next/server";
 import {ref, get, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
+/**
+ * Recalcula si un expediente está completo basándose en el estado de todos sus documentos.
+ *
+ * Esta función verifica si todos los documentos de un expediente tienen estado "aprobado"
+ * y actualiza el campo expediente_completo accordingly. Un expediente se considera completo
+ * solo cuando todos sus documentos han sido aprobados.
+ *
+ * @param expId - El ID del expediente a verificar.
+ *
+ * @example
+ * ```ts
+ * await recalcExpedienteCompleto("abc123");
+ * // Actualiza expedientes/expedienteabc123/expediente_completo
+ * ```
+ */
 async function recalcExpedienteCompleto(expId: string) {
   console.log("Recalculando expediente_completo");
   
@@ -23,6 +49,22 @@ async function recalcExpedienteCompleto(expId: string) {
   console.log("Expediente completo actualizado:", expedienteCompleto);
 }
 
+/**
+ * Recalcula el estado general de un documento específico basándose en sus estados de archivo y campos.
+ *
+ * Esta función evalúa los estados de archivo y campos de un documento para determinar su estado
+ * general siguiendo reglas de prioridad: rechazado > pendiente > aprobado. También maneja
+ * documentos sin campos asignándoles automáticamente estado "aprobado" para campos.
+ *
+ * @param expId - El ID del expediente que contiene el documento.
+ * @param docId - El ID del documento a recalcular.
+ *
+ * @example
+ * ```ts
+ * await recalcEstadoGeneral("abc123", "cedula");
+ * // Recalcula el estadoGeneral del documento "cedula"
+ * ```
+ */
 async function recalcEstadoGeneral(expId: string, docId: string) {
 
   const path = `expedientes/expediente${expId}/documentos/${docId}`;
@@ -56,6 +98,28 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
   await recalcExpedienteCompleto(expId);
 }
 
+/**
+ * Obtiene la información actualizada de un documento específico de expediente.
+ *
+ * Este endpoint recalcula automáticamente el estado general del documento antes de
+ * devolver la información, asegurando que los datos estén siempre actualizados.
+ * Retorna el nombre del documento y todos sus estados relevantes.
+ *
+ * @param request - El objeto de request que contiene expedienteId y documentoId como parámetros de consulta.
+ * @returns Una respuesta JSON con la información del documento.
+ *
+ * @example
+ * ```ts
+ * // GET /api/docExpediente?expedienteId=abc123&documentoId=cedula
+ * // Respuesta:
+ * // {
+ * //   nombre: "Cédula de Identidad",
+ * //   estadoArchivo: "aprobado",
+ * //   estadoCampos: "pendiente",
+ * //   estadoGeneral: "pendiente"
+ * // }
+ * ```
+ */
 export async function GET(request: NextRequest) {
   const p = request.nextUrl.searchParams;
   const expedienteId = p.get("expedienteId");
@@ -85,6 +149,28 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * Actualiza el estado de archivo y/o campos de un documento específico.
+ *
+ * Este endpoint permite actualizar selectivamente los estados de un documento y
+ * envía notificaciones automáticas al candidato sobre los cambios. Siempre recalcula
+ * el estado general del documento después de las actualizaciones para mantener
+ * la consistencia de datos.
+ *
+ * @param request - El objeto de request que contiene expedienteId, documentoId y los nuevos estados.
+ * @returns Una respuesta JSON confirmando la actualización exitosa.
+ *
+ * @example
+ * ```ts
+ * // PATCH /api/docExpediente
+ * // Body: {
+ * //   expedienteId: "abc123",
+ * //   documentoId: "cedula", 
+ * //   estadoArchivo: "aprobado"
+ * // }
+ * // Respuesta: { ok: true }
+ * ```
+ */
 export async function PATCH(request: NextRequest) {
   const {expedienteId, documentoId, estadoArchivo, estadoCampos} =
     await request.json();
