@@ -26,10 +26,10 @@ import { NextResponse} from 'next/server'
  * @example
  * ```ts
  * // Request URL:
- * // DELETE /api/deleteCookie?name=authToken
+ * DELETE /api/deleteCookie?name=authToken
  * 
  * // Respuesta exitosa:
- * // { message: 'Cookie deleted successfully' }
+ * { message: 'Cookie deleted successfully' }
  * ```
  */
 export async function DELETE(req: Request) {

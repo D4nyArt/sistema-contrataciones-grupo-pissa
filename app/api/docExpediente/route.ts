@@ -110,14 +110,14 @@ async function recalcEstadoGeneral(expId: string, docId: string) {
  *
  * @example
  * ```ts
- * // GET /api/docExpediente?expedienteId=abc123&documentoId=cedula
+ * GET /api/docExpediente?expedienteId=abc123&documentoId=cedula
  * // Respuesta:
- * // {
- * //   nombre: "Cédula de Identidad",
- * //   estadoArchivo: "aprobado",
- * //   estadoCampos: "pendiente",
- * //   estadoGeneral: "pendiente"
- * // }
+ * {
+ *   nombre: "Cédula de Identidad",
+ *   estadoArchivo: "aprobado",
+ *   estadoCampos: "pendiente",
+ *   estadoGeneral: "pendiente"
+ * }
  * ```
  */
 export async function GET(request: NextRequest) {
@@ -162,13 +162,13 @@ export async function GET(request: NextRequest) {
  *
  * @example
  * ```ts
- * // PATCH /api/docExpediente
+ * PATCH /api/docExpediente
  * // Body: {
- * //   expedienteId: "abc123",
- * //   documentoId: "cedula", 
- * //   estadoArchivo: "aprobado"
- * // }
- * // Respuesta: { ok: true }
+ *    expedienteId: "abc123",
+ *    documentoId: "cedula", 
+ *    estadoArchivo: "aprobado"
+ *  }
+ * Respuesta: { ok: true }
  * ```
  */
 export async function PATCH(request: NextRequest) {

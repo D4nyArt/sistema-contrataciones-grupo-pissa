@@ -26,14 +26,14 @@ import { ref, get } from "firebase/database";
  *
  * @example
  * ```ts
- * // Headers del request:
- * // X-UserId: "abc123"
+ * //Headers del request:
+ * X-UserId: "abc123"
  * 
- * // Respuesta exitosa:
- * // { blocked: false, role: "candidato" }
+ * //Respuesta exitosa:
+ * { blocked: false, role: "candidato" }
  * 
  * // Respuesta de usuario bloqueado:
- * // { blocked: true, role: "candidato" }
+ * { blocked: true, role: "candidato" }
  * ```
  */
 export async function POST(request: NextRequest) {
