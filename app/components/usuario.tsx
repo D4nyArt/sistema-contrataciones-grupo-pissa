@@ -35,6 +35,7 @@ export default function Usuarios() {
   const [status, setStatus] = useState("");
   const [_attempt, setAttempt] = useState(0);
   const [_time, setTime] = useState("-");
+  const [ownid, setOwnid] = useState("");
   const id = pathname.split("/")[2];
 
   let userRole = "N/A";
@@ -63,6 +64,12 @@ export default function Usuarios() {
 
     const fetchUser = async () => {
       try {
+        const fetcher = await fetch("/api/getCurrentUserID");
+        const jason = await fetcher.json();
+
+        console.log("jason value", jason.value)
+        setOwnid(jason.value);
+
         const userRef = ref(database, `usuarios/${id}`);
         const snapshot = await get(userRef);
         const data = snapshot.val() || {};
@@ -146,10 +153,10 @@ export default function Usuarios() {
           </div>
         </span>
         <div className="md:ml-auto flex">
-          {role === "candidato" && (
+          {role === "candidato" && ownid !== id && (
             <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
           )}
-            {status !== "dado de baja" && (
+            {status !== "dado de baja" &&  ownid !== id && (
               <button
                 className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
                   status === "bloqueado"
@@ -157,7 +164,7 @@ export default function Usuarios() {
                     : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
                 }`}
                 onClick={() =>
-                  status === "bloqueado"
+                  status === "bloqueado" && ownid !== id
                     ? handleUnblock(id, status, setStatus, setAttempt, setTime)
                     : handleBlock(id, setStatus, role, status)
                 }
@@ -174,12 +181,13 @@ export default function Usuarios() {
               </button>
             )}
 
-          <button
+          {ownid !== id ?
+            <button
             className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
             onClick={() => handleRemoval(id, setStatus, role)}
           >
             <UserMinus className="pr-2" /> Dar de baja
-          </button>
+          </button> : null}
         </div>
       </div>
     </div>
