@@ -1,0 +1,1 @@
+export type OnbCard = { nombre: string; url: string, type: string, accepted: boolean}
