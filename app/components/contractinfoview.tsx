@@ -9,51 +9,47 @@ import { Building, FolderOpenDot, File } from "lucide-react";
 // type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
 export default function ContractInfoView({ id }: { id: string }) {
-  const [duration, setDuration] = useState(""); // Duración del contrato en meses
-  const [assigname, setAssigname] = useState("");
+  
+
+  //const [assignation, setAssignation] = useState("");
+  const [address, setAddress] = useState("");
+  const [name, setName] = useState("");
+  const [legalRepresentative,setLegalRepresentative] = useState("");
+  const [rfc, setRfc] = useState("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [contractType, setContractType] = useState("");
+  const [type, setType] = useState("");
+  const [fechaAdendum, setFechaAdendum] = useState("");
+  const [fechaContrato, setFechaContrato] = useState("");
+  const [fechaVigencia, setFechaVigencia] = useState("");
+  const [folioRepse, setFolioRepse] = useState("");
+  const [repse, setRepse] = useState("");
+  const [numcon, setNumcon] = useState("");
 
-  const getAssignationName = async (id: string) => {
-    let fullname = "";
-    const namesnap = await get(ref(database, `usuarios/${id}/nombre`));
-    const lastnamesnap = await get(ref(database, `usuarios/${id}/apellidos`));
-    if (namesnap.exists()) {
-     fullname += namesnap.val();
-     fullname += " ";
-     fullname += lastnamesnap.val();
-
-     return fullname;
-    }
-    
-    return "N/A";
-  }
-  
   useEffect(() => {
       const fetchUser = async () => {
         try {
-          const userRef = ref(database, `contratos/proyectos/${id}`);
-          const snapshot = await get(userRef);
-          let data = snapshot.val() || {};
           
-          //if the contract is not in "proyectos" search in "corporativo"
-          if (!Object.keys(data).length) {
-            const userRef = ref(database, `contratos/corporativo/${id}`);
+            const type = id.startsWith("empresa") ? "empresas" : "clientes";
+            const userRef = ref(database, `contratos/${type}/${id}`);
             const snapshot = await get(userRef);
-            data = snapshot.val() || {};
+            const data = snapshot.val() || {};
            
-            setContractType("cor");
-          } else {
-            setContractType("pro");
-          }
-  
-          setDuration(data.duration || "");
-          const newAssignation = data.assignation || "";
-          setUrl(data.url || "");
+            //setType("cor");
 
-          const assignName = await getAssignationName(newAssignation);
-          setAssigname(assignName);
+          setName(data.nombre || "");
+          setAddress(data.direccion || "");
+          setLegalRepresentative(data.representanteLegal || "");
+          setRfc(data.rfc || "");
+          setFechaAdendum(data.fechaAdendum || "");
+          setFechaContrato(data.fechaContrato || "");
+          setFechaVigencia(data.fechaVigencia || "");
+          setFolioRepse(data.folioRepse || "");
+          setNumcon(data.numeroContrato || "");
+          setRepse(data.repse || "");
+
+          
+          
         } catch (e) {
           console.error(e);
         }
@@ -68,38 +64,46 @@ export default function ContractInfoView({ id }: { id: string }) {
   //// Acción al confirmar el envío
 //
 
-  const options = [
-    { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-    { id: "cor", label: "Corporativo", icon: Building }
-  ];
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Selección de contrato */}
       <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md animate-fade-in-up">
+        {id.startsWith("empresa")?
+        <>
         <div className="border-b pb-6 border-gray-300">
-          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de contrato</h2>
+          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de plantilla</h2>
         </div>
-        <div className="flex space-x-2 mr-auto pt-2">
-          {options.map((option) => {
-            const LinkIcon = option.icon;
-            return (
-              <div key={option.id}
-                className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2
-                ${contractType === option.id
-                    ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500"}`}
-              >
-                <LinkIcon/>
-                {option.label}
-              </div>
-            );
-          })}
+        <p>Empresa</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Dirección</h2>
+        <p>{address || "N/A"}</p> 
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Nombre de la Empresa</h2>
+        <p>{name || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Representante Legal</h2>
+        <p>{legalRepresentative || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>RFC</h2>
+        <p>{rfc || "N/A"}</p>
+        </>
+        : 
+        <>
+        <div className="border-b pb-6 border-gray-300">
+          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de plantilla</h2>
         </div>
-        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Duración del Contrato</h2>
-        <p>{duration?`${duration} meses`:"N/A"}</p> 
-        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Asignación</h2>
-        <p>{assigname || "N/A"}</p>
+        <p>Clientes</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Adendum</h2>
+        <p>{fechaAdendum || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Contrato</h2>
+        <p>{fechaContrato || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Vigencia</h2>
+        <p>{fechaVigencia || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Folio Repse</h2>
+        <p>{folioRepse || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Repse</h2>
+        <p>{repse || "N/A"}</p> 
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Numero Contrato</h2>
+        <p>{numcon || "N/A"}</p> 
+        
+        </>}
       </div>
 
       {/* Vista previa*/}

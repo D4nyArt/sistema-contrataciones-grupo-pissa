@@ -6,14 +6,16 @@ import { urbanist } from "./fonts";
 import PopUp from './pop-up'
 import GenerateContract from "./generatecontract";
 
-interface Contract {
+interface Template {
   id?: string;
-  name?: string;
-  url?: string;
-
+  direccion?: string;
+  nombre?: string;
+  representanteLegal?: string;
+  rfc?: string;
+  tipo?: string;
 }
 
-const ContractCard = ({ contract }: { contract: Contract }) => {
+const ContractCard = ({ contract }: { contract: Template }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -21,7 +23,7 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/contratos/${contract.id}?from=${encodeURIComponent(fullPath)}`)}
+      onClick={() => router.push(`/dashboard/plantillas/${contract.id}?from=${encodeURIComponent(fullPath)}`)}
       className="cursor-pointer p-4 bg-white rounded-xl shadow-md transition-transform transform hover:scale-105 flex flex-col animate-fade-in-up"
     >
       <div className="flex flex-row">
@@ -32,14 +34,10 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
         <div
           className={`${urbanist.className} text-lg font-semibold text-black flex-auto mt-4 text-center`}
         >
-          {contract.name || "N/A"}
+          {contract.nombre || "N/A"}
         </div>
         <div className="mb-4">
-          { contract.id?.startsWith("conproy")?
-          <p className="text-[#2975a0]">Proyecto</p>
-          :
-          <p className="text-[#2975a0]">Corporativo</p>
-          }
+          { contract.tipo }
         </div>
       </div>
     </div>
@@ -47,7 +45,7 @@ const ContractCard = ({ contract }: { contract: Contract }) => {
 };
 
 export default function ListContracts() {
-  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [contracts, setContracts] = useState<Template[]>([]);
   const [sortOption, setSortOption] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [activo, setActivo] = useState<"grid" | "tabla">("grid");
@@ -55,8 +53,9 @@ export default function ListContracts() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/getContracts");
+        const res = await fetch("/api/getTemplates");
         const data = await res.json();
+        console.log(data);
         setContracts(data);
       } catch (err) {
         console.error("Error al cargar contratos", err);
@@ -69,13 +68,13 @@ export default function ListContracts() {
     const buscar = searchTerm.toLowerCase();
   
     return (
-        contract.name?.toLowerCase().includes(buscar)
+        contract.nombre?.toLowerCase().includes(buscar)
     );
   });
 
   const sortedContratos = sortOption
     ? [...filtrarContratos].sort((a, b) => {
-        const prop: keyof Contract = "name";
+        const prop: keyof Template = "nombre";
   
         const textA = (a[prop] || "").toLowerCase();
         const textB = (b[prop] || "").toLowerCase();
@@ -114,7 +113,7 @@ export default function ListContracts() {
           className="cursor-pointer border p-1 gap-2 rounded-lg bg-[#2d4583] text-white hover:bg-[#08b177] w-70 inline-flex justify-center items-center"
         >
           <Plus/>
-          Nuevo Contrato
+          Nueva Plantilla 
         </button>
         <div className="md:flex shadow-md bg-white rounded-l-lg rounded-r-lg hidden text-[#495057]">
           <button
@@ -143,7 +142,7 @@ export default function ListContracts() {
       {activo === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-5 gap-4 content-center">
           {sortedContratos.map((contract) => (
-            <ContractCard key={contract.name} contract={contract} />
+            <ContractCard key={contract.nombre} contract={contract} />
           ))}
         </div>
       )}
@@ -159,12 +158,6 @@ export default function ListContracts() {
                 <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
                   Tipo
                 </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white">
-                  Fecha de creación
-                </th>
-                <th className="px-4 py-4 text-start text-[#495057] font-normal bg-white rounded-r-xl">
-                  Tamaño
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -179,26 +172,18 @@ export default function ListContracts() {
                 </tr>
               ) : (
                 sortedContratos.map((contract) => (
-                  <tr key={contract.name}>
+                  <tr key={contract.nombre}>
                     <td className="font-semibold px-4 py-4 bg-white rounded-l-xl flex flex-row items-center gap-2">
                       <FileText className="text-[#2d4583]"/>
-                      {contract.name || "N/A"}
+                      {contract.nombre || "N/A"}
                     </td>
                     <td className="px-4 py-4 bg-white">
                       <div className="bg-blue-100 text-blue-800 rounded-lg text-center">
-                        { contract.id?.startsWith("conproy")?
-                        <p>Proyecto</p>
-                        :
-                        <p>Corporativo</p>
+                        { contract.tipo
                         }
                       </div>
                     </td>
-                    <td className="px-4 py-4 bg-white">
-                      10/05/2025 10:00 pm
-                    </td>
-                    <td className="px-4 py-4 bg-white rounded-r-xl">
-                      10 MB
-                    </td>
+                   
                   </tr>
                 ))
               )}
