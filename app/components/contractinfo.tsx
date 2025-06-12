@@ -49,24 +49,16 @@ export default function ContractInfo() {
             Información de Contrato
           </button> 
           
-          <button
-            onClick={() => handleTabChange("onboarding")}
-            className={`cursor-pointer pb-2 font-medium transition-colors duration-200 border-b-2 ${
-              active === "onboarding"
-                ? "border-[#2d4583] text-[#2d4583]"
-                : "border-transparent text-gray-500 hover:text-[#08b177] hover:border-[#08b177]"
-            }`}
-          >
-            Onboarding
-          </button>
 
           
         </div>
 
         { active === "contratos" && <AdminContractsPage uid={_id} /> }
-        { active === "onboarding" && (
+        {
+        //Maybe useful later
+        /*{ active === "onboarding" && (
           <AdminOnboardingPage contractid={_id}/>
-        ) }
+        ) }*/}
       </div>
     </div>
   );
