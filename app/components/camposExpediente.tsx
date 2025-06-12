@@ -1,22 +1,54 @@
-import React, { useState, useEffect } from "react";
+/**
+ * camposExpediente.tsx
+ *
+ * Proporciona un componente para gestionar campos de información adicional en documentos de expedientes.
+ *
+ * Este módulo permite a los candidatos llenar campos específicos requeridos para documentos
+ * de su expediente, y al personal de RH revisar, aprobar o rechazar esa información.
+ * Incluye validación automática de estados, actualización en tiempo real y notificaciones
+ * de cambios a través del sistema.
+ */
 
+import React, { useState, useEffect } from "react";
 import { Check, X, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
 
+/**
+ * Define las propiedades del componente CamposExpediente.
+ */
 interface CamposExpedienteProps {
+  /** El rol del usuario actual (determina los permisos de edición y revisión). */
   role: string;
+
+  /** El ID del expediente al que pertenecen los campos. */
   expedienteId: string;
+
+  /** El ID del documento específico dentro del expediente. */
   documentoId: string;
+
+  /** Función callback que se ejecuta cuando cambia el estado de los campos. */
   onChangeState: () => void;
 }
 
+/**
+ * Define la estructura de datos de un campo.
+ */
 interface FieldData {
+  /** El nombre descriptivo del campo. */
   nombre: string;
+
+  /** El estado actual del campo (aprobado, pendiente, rechazado, no_subido). */
   estado: string;
+
+  /** El valor ingresado por el candidato. */
   valor: string;
 }
 
+/**
+ * Define los posibles estados de un campo.
+ */
 type FieldState = "aprobado" | "pendiente" | "rechazado" | "no_subido";
 
+/** Mapeo de constantes para los estados de campo. */
 const FIELD_STATES: Record<string, FieldState> = {
   APROBADO: "aprobado",
   PENDIENTE: "pendiente",
@@ -24,17 +56,59 @@ const FIELD_STATES: Record<string, FieldState> = {
   NO_SUBIDO: "no_subido",
 };
 
+/**
+ * Renderiza un componente para gestionar campos de información adicional en expedientes.
+ *
+ * Este componente proporciona una interfaz diferenciada por rol: los candidatos pueden
+ * llenar y modificar valores de campos, mientras que el personal de RH puede revisar,
+ * aprobar o rechazar cada campo individualmente. Incluye validación automática de
+ * estados globales y persistencia de cambios en tiempo real.
+ *
+ * @param props - Las propiedades del componente.
+ * @param props.role - El rol del usuario actual que determina los permisos.
+ * @param props.expedienteId - El ID del expediente contenedor.
+ * @param props.documentoId - El ID específico del documento.
+ * @param props.onChangeState - Callback ejecutado cuando cambian los estados.
+ * @returns El elemento JSX que renderiza la gestión de campos.
+ *
+ * @example
+ * ```tsx
+ * // Para un candidato llenando información de su cédula
+ * <CamposExpediente
+ *   role="candidato"
+ *   expedienteId="user123"
+ *   documentoId="cedula"
+ *   onChangeState={() => refreshDocument()}
+ * />
+ *
+ * // Para personal de RH revisando campos
+ * <CamposExpediente
+ *   role="rh"
+ *   expedienteId="user123"
+ *   documentoId="diploma"
+ *   onChangeState={() => updateDocumentList()}
+ * />
+ * ```
+ */
 const CamposExpediente: React.FC<CamposExpedienteProps> = ({
   role,
   expedienteId,
   documentoId,
   onChangeState,
 }) => {
+  /** Estado que almacena todos los campos del documento con su información. */
   const [fields, setFields] = useState<Record<string, FieldData>>({});
 
+  /** Determina si el usuario actual puede editar/revisar campos. */
   const canEdit = role === "admin" || role === "rh";
 
   useEffect(() => {
+    /**
+     * Obtiene los campos del documento desde el servidor.
+     *
+     * Esta función consulta la API para recuperar todos los campos
+     * asociados al documento específico del expediente.
+     */
     const fetchFields = async () => {
       if (!expedienteId || !documentoId) return;
       try {
@@ -57,6 +131,13 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     fetchFields();
   }, [expedienteId, documentoId]);
 
+  /**
+   * Guarda todos los cambios realizados en los campos por el candidato.
+   *
+   * Esta función procesa todos los campos, calcula el estado global basado
+   * en los estados individuales, y persiste los cambios en la base de datos.
+   * También notifica al componente padre sobre los cambios realizados.
+   */
   const handleSaveFields = async (): Promise<void> => {
     if (!expedienteId || !documentoId) return;
 
@@ -108,6 +189,15 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     }
   };
 
+  /**
+   * Maneja la revisión individual de un campo por parte del personal de RH.
+   *
+   * Esta función permite aprobar o rechazar un campo específico, actualiza
+   * el estado local inmediatamente y persiste el cambio en la base de datos.
+   *
+   * @param fieldKey - La clave única del campo a revisar.
+   * @param approved - Indica si el campo fue aprobado (true) o rechazado (false).
+   */
   const handleFieldReview = async (
     fieldKey: string,
     approved: boolean
@@ -141,6 +231,15 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     }
   };
 
+  /**
+   * Maneja los cambios en el valor de un campo por parte del candidato.
+   *
+   * Esta función actualiza el valor del campo localmente y ajusta automáticamente
+   * su estado basándose en si tiene contenido o está vacío.
+   *
+   * @param fieldKey - La clave única del campo que se está modificando.
+   * @param value - El nuevo valor ingresado por el candidato.
+   */
   const handleFieldChange = async (
     fieldKey: string,
     value: string

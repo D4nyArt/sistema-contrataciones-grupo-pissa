@@ -28,7 +28,7 @@ import ContractInfoView from "./contractinfoview";
  * <AdminContractsPage uid="abc123" />
  * ```
  *
- * @see ContractInfoView - Componente que muestra la información detallada del contrato
+ * @see {@link ContractInfoView} - Componente que muestra la información detallada del contrato
  */
 export default function AdminContractsPage({ uid }: { uid: string }) {
   return (

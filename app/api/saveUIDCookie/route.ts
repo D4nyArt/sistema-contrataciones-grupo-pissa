@@ -47,11 +47,6 @@ import { NextResponse } from "next/server";
  * // candidateId=abc123xyz789; HttpOnly; Secure; SameSite=Strict; Max-Age=86400; Path=/
  * ```
  *
- * @todo Implementar validaciones de usuario en Firebase
- * @todo Verificar existencia del usuario en la base de datos
- * @todo Validar rol del usuario antes de establecer la cookie
- * @todo Agregar manejo de errores para UIDs inválidos
- *
  * @see {@link getCurrentUser} Para obtener información del usuario autenticado
  * @see {@link getCurrentUserID} Para recuperar solo el ID del usuario desde la cookie
  */
