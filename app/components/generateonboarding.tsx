@@ -1,44 +1,18 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { get, ref, remove, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
 
 
-export default function GenerateOnboardingCard({id}: {id: string}) { 
+export default function GenerateOnboardingCard() { 
   const [onboarding_name, setOnboarding_name] = useState("");
   const [folder, setFolder] = useState("");
   const [link_disabled, setLink_disabled] = useState(false);
   const [file_disabled, setFile_disabled] = useState(false);
   const [generated, setGenerated] = useState(false);
-  // const [proy_num, setProy_num] = useState(0);
-  // const [corp_num, setCorp_num] = useState(0);
   const [onb_link, setOnb_link] = useState("");
    
-/*  
-useEffect(()=>{
-
-  const getcontractnumber = async () => {
-
-  const project_ref = ref(database, "contratos/proyectos");
-  const corp_ref = ref(database, "contratos/corporativo");
-
-  try {
-    const p_snap = await get(project_ref);
-    const c_snap = await get(corp_ref);
-
-    setProy_num(p_snap.size);
-    setCorp_num(c_snap.size);
-
-  }
-  catch (e) {
-    console.error(e);
-  }
-
-}
-
-getcontractnumber();
-}, []) */
 
 const clickResolveRef = useRef<(() => void)>(null);
 
@@ -54,28 +28,21 @@ const clickResolveRef = useRef<(() => void)>(null);
     setGenerated(false);
 
     try {
-        const nc_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards`:`contratos/corporativo/${id}/onb${id}/cards`);
-        let num_onboarding = 0;
-        const num_onboarding_snap = await get(ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/number_of_onboarding`:`contratos/corporativo/${id}/onb${id}/number_of_onboarding`));
-        if (num_onboarding_snap.exists()) num_onboarding = num_onboarding_snap.val();
-        num_onboarding++; 
-
-        const num_onboarding_ref = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}`:`contratos/corporativo/${id}/onb${id}`);
-        await update(num_onboarding_ref, {"number_of_onboarding": num_onboarding})
+        const nc_ref = ref(database, "onboardingcard/");
         await update(nc_ref, {
             [onboarding_name]: {
               "nombre": onboarding_name,
               "type": folder,
-              "url": folder=="file"?`pruebaInicial/onboarding/${id}/${onboarding_name}.pdf`:onb_link,
+              "url": folder=="file"?`pruebaInicial/onboarding/${onboarding_name}/${onboarding_name}.pdf`:onb_link,
               "accepted": false,
             }
         })
-        const things_to_del = ["url", "estadoArchivo"];
-        const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[0]}`);
-        const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[1]}`);
-        
-        await remove(del_ref_1);
-        await remove(del_ref_2);
+        //const things_to_del = ["url", "estadoArchivo"];
+        //const del_ref_1 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[0]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[0]}`);
+        //const del_ref_2 = ref(database, id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/cards/${things_to_del[1]}`:`contratos/corporativo/${id}/onb${id}/cards/${things_to_del[1]}`);
+        //
+        //await remove(del_ref_1);
+        //await remove(del_ref_2);
 
         if (!isUpload) {
           alert(`El apartado de onboarding ${onboarding_name} fue creado con éxito.`);
@@ -150,10 +117,9 @@ const clickResolveRef = useRef<(() => void)>(null);
 
         <Uploader
           filename={onboarding_name}
-          storageUrl={`pruebaInicial/onboarding/${id}`}
+          storageUrl={`pruebaInicial/onboarding/${onboarding_name}`}
           onFileUploaded={async () => handleUpload(true)}
-          dbPath={id.startsWith("conproy")?`contratos/proyectos/${id}/onb${id}/${onboarding_name}`:`contratos/corporativo/${id}/onb${id}/${onboarding_name}`}
-        />
+          dbPath={`onboardingcard/${onboarding_name}`}/>
 
           {generated && (
             <div>
@@ -179,7 +145,7 @@ const clickResolveRef = useRef<(() => void)>(null);
           />
           <button
           className="bg-[#2d4583] text-white py-2 rounded-lg hover:bg-[#08b177] transition px-6 text-center text-lg inline-block m-1"
-          onClick={async() => handleUpload(false)}
+          onClick={async() => await handleUpload(false)}
         >
           Crear Apartado de Onboarding
         </button>

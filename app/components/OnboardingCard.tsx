@@ -6,14 +6,13 @@ import { ref, update, get } from "firebase/database";
 import { storage, database, auth } from "../../firebaseConfig";
 import PdfModal from "@/app/components/OnboardingModal";
 import { FileText } from "lucide-react";
-import { addHistoryEntry } from '../api/history/history';
+import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 interface OnboardingCardProps {
   key: string;
   url: string;
   nombre: string;
   type: string;
-  accepted: boolean;
   reference?: string;
 }
 
@@ -22,13 +21,13 @@ export default function OnboardingCard({
   url,
   nombre,
   type,
-  accepted,
   reference,
 }: OnboardingCardProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accepted, setAccepted] = useState(false);
 
   // Nuevo estado para aceptación
   //const [accepted, setAccepted] = useState<boolean>(false);
@@ -57,12 +56,23 @@ export default function OnboardingCard({
   // 2) Al montar, revisar si ya existe entrada de aceptación en RTDB
   useEffect(() => {
     const checkAccepted = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const docRef = ref(database, `onboarding/Onb${user.uid}/${nombre}`);
+      const fetcher = await fetch("/api/getCurrentUserID");
+      const jason = await fetcher.json();
+
+      const uid = jason.value;
+
+      const docRef = ref(database, `onboarding/Onb${uid}/${nombre}`);
+      const docRefacc = ref(
+        database,
+        `onboarding/Onb${uid}/${nombre}/accepted`
+      );
+      const docRefacc_snap = await get(docRefacc);
+      setAccepted(docRefacc_snap.val());
       const snap = await get(docRef);
 
-      if (snap.exists()) {
+      console.log(snap);
+
+      if (!snap.exists()) {
         //const data = snap.val() as {accepted: boolean; acceptedAt?: number};
         //setAccepted(!!data.accepted);
         //setAccepted(!!data.acceptedAt);
@@ -71,7 +81,114 @@ export default function OnboardingCard({
       }
     };
     checkAccepted();
-  }, [nombre, type, reference]);
+  }, [nombre, accepted]);
+
+  const recalcOnboarding = async (userId: string) => {
+    try {
+      // 1. Get all onboarding cards
+      const allCardsSnap = await get(ref(database, "onboardingcard"));
+      if (!allCardsSnap.exists()) return;
+
+      const allCards = allCardsSnap.val();
+      const totalCards = Object.keys(allCards).length;
+
+      // 2. Get user's completed cards
+      const userOnboardingSnap = await get(
+        ref(database, `onboarding/Onb${userId}`)
+      );
+      if (!userOnboardingSnap.exists()) return;
+
+      const userCards = userOnboardingSnap.val();
+      const completedCards = Object.values(userCards).filter(
+        (card: any) => card.accepted === true
+      ).length;
+
+      // 3. Check if all cards are completed
+      if (completedCards === totalCards) {
+        const timestamp = Date.now();
+
+        const revSnap = await get(ref(database, `usuarios/${userId}/revisor`));
+        const reviewer = revSnap.exists()
+          ? (revSnap.val() as string)
+          : "sin_revisor";
+
+        let nombre = "";
+        let apellido = "";
+        let fullName = userId;
+
+        try {
+          const userSnap = await get(ref(database, `usuarios/${userId}`));
+          if (userSnap.exists()) {
+            const userData = userSnap.val() as {
+              nombre?: string;
+              apellido?: string;
+            };
+            nombre = userData.nombre ?? "";
+            apellido = userData.apellido ?? "";
+            fullName = `${nombre} ${apellido}`.trim();
+          }
+        } catch (error) {
+          console.error("Error al obtener el nombre del candidato:", error);
+        }
+
+        const message = `El candidato ${fullName} ha finalizado su proceso de onboarding.`;
+
+        if (reviewer === "sin_revisor") {
+          // enviar a todos los RH
+          const usersSnap = await get(ref(database, "usuarios"));
+          if (usersSnap.exists()) {
+            const allUsers = usersSnap.val() as Record<
+              string,
+              { rol?: string }
+            >;
+            for (const [userId, userData] of Object.entries(allUsers)) {
+              if (userData.rol === "rh") {
+                await update(
+                  ref(database, `notificaciones/notificaciones${userId}`),
+                  {
+                    [timestamp]: {
+                      mensaje: message,
+                      leido: false,
+                      ruta: `dashboard/${userId}?tab=información`,
+                      fijado: false,
+                    },
+                  }
+                );
+
+                // Notificación por email a cada persona RH
+                await sendEmailNotification(
+                  userId,
+                  `${fullName} ha finalizado onboarding`,
+                  `Hola,\n\n${message}\n\nPuedes revisar su estado ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+                );
+              }
+            }
+          }
+        } else {
+          await update(
+            ref(database, `notificaciones/notificaciones${reviewer}`),
+            {
+              [timestamp]: {
+                mensaje: message,
+                leido: false,
+                ruta: `dashboard/${userId}?tab=información`,
+                fijado: false,
+              },
+            }
+          );
+
+          // Notificación por email al revisor
+          await sendEmailNotification(
+            reviewer,
+            `${fullName} ha finalizado onboarding`,
+            `Hola,\n\n${message}\n\nPuedes revisar su estado ingresando a tu cuenta.\n\nSaludos,\nEquipo Grupo Pissa`
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error checking onboarding completion:", error);
+    }
+  };
 
   const handleView = () => {
     if (pdfUrl) setShowPdf(true);
@@ -89,20 +206,14 @@ export default function OnboardingCard({
     //const docRef = ref(database, `usuarios/Onb${user.uid}/${nombre}`);
 
     if (reference) {
-      const onbRef = ref(database, `${reference}/cards/${nombre}`);
-      let num_accepted = (
-        await get(ref(database, `${reference}/accepted_onboarding`))
-      ).val();
-      num_accepted++;
-      await update(onbRef, { accepted: true });
-      await update(ref(database, reference), {
-        accepted_onboarding: num_accepted,
-      })
-      await addHistoryEntry(user.uid, 'onboarding', new Date().toISOString(), undefined, `Confirmación de lectura de ${onbRef}`);
+      const onbRef = ref(database, `${reference}/${nombre}`);
+      const now = Date.now();
+      await update(onbRef, { accepted: true, acceptedAt: now });
+      setAccepted(true);
     }
-    //const now = Date.now();
     //await update(docRef, {accepted: true, acceptedAt: now});
     //setAccepted(true);
+    await recalcOnboarding(user.uid);
   };
   return (
     <div className="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">

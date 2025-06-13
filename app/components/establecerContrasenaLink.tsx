@@ -124,7 +124,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         return;
                     }
 
-                    const estadoUsuario: string = statusSnapshot.val();
+                    //const estadoUsuario: string = statusSnapshot.val();
 
                     await confirmPasswordReset(auth, oobCode!, nuevaContrasena);
                     // Actualizar el estado del usuario a cambioContrasena

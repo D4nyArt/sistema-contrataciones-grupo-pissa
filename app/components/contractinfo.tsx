@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import AdminOnboardingPage from "./admonbcard";
+//import AdminOnboardingPage from "./admonbcard";
 
 export default function ContractInfo() {
   
@@ -54,11 +54,6 @@ export default function ContractInfo() {
         </div>
 
         { active === "contratos" && <AdminContractsPage uid={_id} /> }
-        {
-        //Maybe useful later
-        /*{ active === "onboarding" && (
-          <AdminOnboardingPage contractid={_id}/>
-        ) }*/}
       </div>
     </div>
   );

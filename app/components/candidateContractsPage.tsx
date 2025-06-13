@@ -97,7 +97,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
 
     // 3) set dbPath based on contract id (STATIC: candidate always sees the contract template)
     setDbPath(`expedientes/expediente${uid}/contratos/preview`);
-  }, [contract]);
+  }, [contract,uid]);
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -105,7 +105,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       return;
     }
 
-    // Subir archivo
     const fileName = file.name;
     setIsUploading(true);
     try {
@@ -113,7 +112,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         storage,
         `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}.pdf`
       );
-      const snapshot = await uploadBytes(fileReference, file);
+      await uploadBytes(fileReference, file); // Usar uploadBytes aquí
     } finally {
       setIsUploading(false);
     }

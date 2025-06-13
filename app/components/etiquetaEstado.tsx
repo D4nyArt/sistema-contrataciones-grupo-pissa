@@ -42,7 +42,7 @@ const statusMap = {
     text: "text-gray-800",
     label: "Previo",
   },
-  cambioContrasena: {
+  solicitudCambioContrasena: {
     icon: <RotateCcwIcon className="size-4 text-gray-800" />,
     bg: "bg-gray-200",
     text: "text-gray-800",

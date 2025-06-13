@@ -4,7 +4,7 @@ import DirectViewer from "./directFileView";
 import { get, ref } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
-import { Building, FolderOpenDot, File } from "lucide-react";
+import { File } from "lucide-react";
 
 // type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -16,9 +16,9 @@ export default function ContractInfoView({ id }: { id: string }) {
   const [name, setName] = useState("");
   const [legalRepresentative,setLegalRepresentative] = useState("");
   const [rfc, setRfc] = useState("");
-  const [url, setUrl] = useState("");
+  const [url] = useState("");
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState("");
+  //const [type, setType] = useState("");
   const [fechaAdendum, setFechaAdendum] = useState("");
   const [fechaContrato, setFechaContrato] = useState("");
   const [fechaVigencia, setFechaVigencia] = useState("");
