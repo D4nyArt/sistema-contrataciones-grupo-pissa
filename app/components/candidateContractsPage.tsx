@@ -247,7 +247,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         <h2
           className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}
         >
-          Subir nuevo contrato
+          Subir contrato firmado
         </h2>
         {/*Aquí es donde se sube un archivo*/}
         <label className={isUploading ? "opacity-50 pointer-events-none" : ""}>
