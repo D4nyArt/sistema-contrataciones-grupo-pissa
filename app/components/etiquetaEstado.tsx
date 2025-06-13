@@ -1,4 +1,3 @@
-// components/EtiquetaEstado.tsx
 import { CircleCheck, Lock, UserMinus, Clock, Undo } from "lucide-react";
 
 interface EtiquetaEstadoProps {
