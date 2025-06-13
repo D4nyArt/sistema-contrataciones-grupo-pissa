@@ -1,4 +1,5 @@
-import { CircleCheck, Lock, UserMinus, Clock, Undo } from "lucide-react";
+// components/EtiquetaEstado.tsx
+import { CircleCheck, Lock, UserMinus, Clock, Undo, RotateCcwIcon } from "lucide-react";
 
 interface EtiquetaEstadoProps {
   status: string;
@@ -41,6 +42,12 @@ const statusMap = {
     text: "text-gray-800",
     label: "Previo",
   },
+  cambioContrasena: {
+    icon: <RotateCcwIcon className="size-4 text-gray-800" />,
+    bg: "bg-gray-200",
+    text: "text-gray-800",
+    label: "Solicitud"
+  }
 } as const;
 
 export default function EtiquetaEstado({ status }: EtiquetaEstadoProps) {
