@@ -1,7 +1,17 @@
+/**
+ * form-login.tsx
+ *
+ * Proporciona un formulario completo de inicio de sesión con validación y manejo de estados de usuario.
+ *
+ * Este componente gestiona el flujo completo de autenticación de usuarios, incluyendo validación
+ * de credenciales, verificación de estados de cuenta, manejo de intentos fallidos de login,
+ * bloqueo automático de cuentas por seguridad y redirección según el rol del usuario. Integra
+ * Firebase Auth con lógica de negocio personalizada para el sistema de contrataciones.
+ */
+
 "use client";
 /* eslint @typescript-eslint/no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
 
-//Firebase
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -14,54 +24,132 @@ import { Alerta } from "./alertaPantalla";
 import { CampoContrasena } from "./campoContrasena";
 import { initializeUserHistory } from "../api/history/history";
 
+/**
+ * Define la estructura básica de un usuario en la base de datos.
+ */
 interface Usuario {
+  /** El correo electrónico del usuario registrado. */
   email: string;
 }
 
+/**
+ * Define los tipos de alerta disponibles en el formulario.
+ */
+type clasifAlerta = "aprobado" | "denegado" | "errorSist" | "info";
+
+/**
+ * Renderiza un formulario completo de inicio de sesión con validación de estados de usuario.
+ *
+ * Este componente maneja todo el flujo de autenticación del sistema, incluyendo verificación
+ * previa de estados de cuenta, validación de credenciales con Firebase Auth, manejo de
+ * intentos fallidos con bloqueo automático, inicialización de historial de usuario y
+ * redirección apropiada según el rol y estado del usuario autenticado.
+ *
+ * @returns El elemento JSX que renderiza el formulario de inicio de sesión completo.
+ *
+ * @example
+ * ```tsx
+ * // Uso en página de login
+ * <div className="login-container">
+ *   <h1>Iniciar Sesión</h1>
+ *   <Formulario />
+ * </div>
+ *
+ * // El componente automáticamente:
+ * // 1. Limpia cookies de sesiones anteriores
+ * // 2. Valida credenciales con Firebase Auth
+ * // 3. Verifica estados de cuenta (bloqueado, activo, etc.)
+ * // 4. Maneja intentos fallidos y bloqueos automáticos
+ * // 5. Redirige según rol del usuario
+ * ```
+ *
+ * @see {@link CampoContrasena} - Componente para entrada de contraseña con visibilidad toggle
+ * @see {@link Alerta} - Componente para mostrar mensajes de estado al usuario
+ * @see {@link incrementLoginAttempt} - Función para manejar intentos fallidos de login
+ * @see {@link initializeUserHistory} - Función para inicializar historial de usuario
+ */
 export default function Formulario() {
-  try {
-    useEffect(() => {
-      async function deleteCookie() {
+  /** Estado que almacena el correo electrónico ingresado. */
+  const [email, setEmail] = useState("");
+
+  /** Estado que almacena la contraseña ingresada. */
+  const [password, setPassword] = useState("");
+
+  /** Estado que almacena la alerta actual a mostrar al usuario. */
+  const [alertaAcceso, setAlertaAcceso] = useState<{
+    type: clasifAlerta;
+    mensaje: string;
+  } | null>(null);
+
+  /** Hook de Next.js para navegación programática. */
+  const router = useRouter();
+
+  useEffect(() => {
+    /**
+     * Limpia las cookies de sesión al cargar el componente.
+     *
+     * Esta función elimina cualquier cookie de sesión existente para asegurar
+     * un estado limpio antes del nuevo proceso de autenticación.
+     */
+    async function deleteCookie() {
+      try {
         await fetch("/api/deleteCookie?name=candidateId", {
           method: "DELETE",
         }).then((resp) => {
           console.log(resp);
         });
+      } catch {
+        console.log("No se detecto un usario loggeado.");
       }
-      deleteCookie();
-    }, []);
-  } catch {
-    console.log("No se detecto un usario loggeado.");
-  }
+    }
+    deleteCookie();
+  }, []);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  type clasifAlerta = "aprobado" | "denegado" | "errorSist" | "info";
-
-  /*Andy (04.04 9:28) Para las alertas durante el login*/
-  const [alertaAcceso, setAlertaAcceso] = useState<{
-    type: clasifAlerta;
-    mensaje: string;
-  } | null>(null);
-  const router = useRouter();
-  /*Andy (04.04 9:54) Esto es para que la alerta de error desaparezca solo cuando el usuario
-  ha cambiado por lo menos un valor en el campo del email o contraseña*/
+  /**
+   * Maneja los cambios en el campo de email y limpia alertas.
+   *
+   * Esta función actualiza el estado del email y elimina cualquier alerta
+   * de error cuando el usuario modifica el campo, proporcionando feedback
+   * visual inmediato de que está corrigiendo el error.
+   *
+   * @param e - El evento de cambio del input de email.
+   */
   const cambioEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value); // Cuando hay  un cambio en el input de correo...
+    setEmail(e.target.value);
     if (alertaAcceso) {
-      // si la alerta de acceso tiene algún valor, por ejemplo 'denegado'...
       setAlertaAcceso(null);
-    } // reestablece el valor a null (desaparece la alerta)
+    }
   };
 
+  /**
+   * Maneja los cambios en el campo de contraseña y limpia alertas.
+   *
+   * Esta función actualiza el estado de la contraseña y elimina cualquier
+   * alerta de error cuando el usuario modifica el campo.
+   *
+   * @param e - El evento de cambio del input de contraseña.
+   */
   const cambioContrasena = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     if (alertaAcceso) {
       setAlertaAcceso(null);
     }
   };
-  /********************************************************************/
 
+  /**
+   * Maneja el proceso completo de inicio de sesión.
+   *
+   * Esta función ejecuta la secuencia completa de autenticación:
+   * 1. Verifica el estado del usuario en la base de datos antes del login
+   * 2. Valida que la cuenta no esté bloqueada o inhabilitada
+   * 3. Intenta la autenticación con Firebase Auth
+   * 4. Inicializa el historial del usuario
+   * 5. Guarda la sesión en cookies
+   * 6. Redirige según el estado y rol del usuario
+   * 7. Maneja intentos fallidos y bloqueos automáticos
+   *
+   * @param e - El evento de envío del formulario.
+   */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -72,7 +160,6 @@ export default function Formulario() {
       const snapshot = await get(usuariosRef);
 
       let userData = null;
-      // let userUID = null;
 
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -82,7 +169,6 @@ export default function Formulario() {
         );
 
         if (userEntry) {
-          //userUID = userEntry[0];
           userData = userEntry[1] as any;
         }
       }
