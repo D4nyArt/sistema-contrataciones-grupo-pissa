@@ -2,6 +2,8 @@ import { Users } from "lucide-react";
 import CountUsers from "./countusers";
 import ContadoresPhoneScroll from "./contadoresScrollPhone";
 import RevisandoListPhone from "./candidatoSeguidosPhone";
+import PreviewRecover from "./previewRecover";
+import { urbanist } from "./fonts";
 
 export default function HomePage () {
     return(
@@ -15,11 +17,17 @@ export default function HomePage () {
                     <Users className="size-10"/>
                 </div>
             </div>
-            <div className="block md:hidden">
+            <div>
                 <ContadoresPhoneScroll/>
             </div>
-            <div className="mt-6 block md:hidden">
+            <div className="mt-6">
                 <RevisandoListPhone/>
+            </div>
+            <div className="mt-6">
+                <h2 className={`${urbanist.className} text-[#212529] font-bold text-2xl mb-4 animate-fade-in-up`}>
+                    Recuperación de contraseñas
+                </h2>
+                <PreviewRecover/>
             </div>
         </>
     )
