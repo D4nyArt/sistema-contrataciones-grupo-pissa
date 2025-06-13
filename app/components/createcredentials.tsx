@@ -29,16 +29,16 @@ import {
   VenusAndMars,
 } from "lucide-react";
 import { urbanist } from "./fonts";
-//import crypto from "crypto";
+import crypto from "crypto";
 
-const generatePassword = () => {
-  return "123456";
+const generatePassword = (length: number = 16) => {
+  return crypto
+    .randomBytes(length)
+    .toString("base64")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, length);
 };
 
-/*
-const generatePassword = (length: number = 16) => {
-  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
-};*/
 export default function CreateCredentials() {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
