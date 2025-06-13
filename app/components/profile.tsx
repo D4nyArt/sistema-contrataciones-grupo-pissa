@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import ProfilePicture from "@/app/components/profile-picture";
 import { Alerta } from "./alertaPantalla";
+import { addHistoryEntry } from '../api/history/history';
+import { getAuth } from "firebase/auth";
+
 
 export default function Profile() {
   const [name, setname] = useState("");
@@ -86,8 +89,12 @@ export default function Profile() {
         });
 
         const responseData = await res.json();
+        const auth = getAuth();
+        const uid = auth.currentUser!.uid;
+
 
         if (res.ok) {
+          await addHistoryEntry(uid, "documentos", new Date().toISOString(), undefined, "Actualización de la información de contacto");
           setAlerta({
             type: "aprobado",
             mensaje: "Perfil actualizado correctamente",
