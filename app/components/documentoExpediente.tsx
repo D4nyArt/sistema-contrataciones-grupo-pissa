@@ -1,7 +1,7 @@
 import NotasExpediente from "./notasExpediente";
 import CamposExpediente from "./camposExpediente";
 import ArchivoExpediente from "./archivoExpediente";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { addHistoryEntry } from "../api/history/history";
 import { getAuth } from "firebase/auth";
 
@@ -41,7 +41,7 @@ export default function DocumentoExpediente({
   const [docData, setDocData] = useState<DocData | undefined>();
   const [hasFields, setHasFields] = useState<boolean>(false);
 
-  const fetchDoc = async () => {
+  const fetchDoc = useCallback(async () => {
     if (!expedienteId || !documentoId) return;
     try {
       const res = await fetch(
@@ -59,9 +59,9 @@ export default function DocumentoExpediente({
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [expedienteId, documentoId]);
 
-  const fetchHasFields = async () => {
+  const fetchHasFields = useCallback(async () => {
     if (!expedienteId || !documentoId) return;
     try {
       const res = await fetch(
@@ -72,12 +72,12 @@ export default function DocumentoExpediente({
     } catch {
       setHasFields(false);
     }
-  };
+  }, [expedienteId, documentoId]);
 
   useEffect(() => {
     fetchDoc();
     fetchHasFields();
-  }, [expedienteId, documentoId]);
+  }, [fetchDoc, fetchHasFields]);
 
   const handleApproveAll = async (): Promise<void> => {
     if (!expedienteId || !documentoId) return;

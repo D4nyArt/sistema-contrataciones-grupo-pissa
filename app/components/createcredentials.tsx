@@ -28,7 +28,7 @@ import {
   User,
   VenusAndMars,
 } from "lucide-react";
-import { urbanist } from "./fonts";
+//import { urbanist } from "./fonts";
 import sendEmailNotification from "../components/sendEmailNotification";
 import crypto from "crypto";
 import { addHistoryEntry } from "../api/history/history";

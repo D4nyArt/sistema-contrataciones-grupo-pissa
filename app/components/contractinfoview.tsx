@@ -45,7 +45,6 @@ export default function ContractInfoView({ id }: { id: string }) {
           const snapshot = await get(userRef);
           let data = snapshot.val() || {};
           
-
           //if the contract is not in "proyectos" search in "corporativo"
           if (!Object.keys(data).length) {
             const userRef = ref(database, `contratos/corporativo/${id}`);
@@ -53,28 +52,24 @@ export default function ContractInfoView({ id }: { id: string }) {
             data = snapshot.val() || {};
            
             setType("cor");
-            //setIsproject(false);
-          }
-
-          else {
-             setType("pro");
-            //setIsproject(true);
+          } else {
+            setType("pro");
           }
   
           setDuration(data.duration || "");
-          setAssignation(data.assignation || "");
-          //setName(data.name || "");
+          const newAssignation = data.assignation || "";
+          setAssignation(newAssignation);
           setUrl(data.url || "");
 
-          setAssigname(await getAssignationName(assignation));
+          const assignName = await getAssignationName(newAssignation);
+          setAssigname(assignName);
         } catch (e) {
           console.error(e);
         }
-        setSelected(type);
         setLoading(true);
       };
       fetchUser();
-    }, [type]);
+    }, [id]);
 
 
   //const contract = selectedProject || selectedCorporate;
