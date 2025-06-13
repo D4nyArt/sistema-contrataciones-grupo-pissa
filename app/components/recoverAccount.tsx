@@ -33,6 +33,7 @@ export default  function ListUsers() {
   const [_attempt, setAttempt] = useState(0);
   const [_time, setTime] = useState("");
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+  const [userRol, setUserRol] = useState<string>("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -44,6 +45,15 @@ export default  function ListUsers() {
         }
         const data = await res.json();
         setUsers(data);
+        
+      // Para Ponce: Esto es para gestionar los privilegios 
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          const userData = data.find((user: User) => user.id === currentUser.uid);
+          if (userData) {
+            setUserRol(userData.rol || "");
+          }
+        }
       } catch (err) {
         console.error("Error al cargar usuarios", err);
         setError("Error al cargar los usuarios. Intente nuevamente.");
@@ -56,23 +66,33 @@ export default  function ListUsers() {
 
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
-   // const esCandidato = user.rol?.toLowerCase() === "candidato";
+    const esCandidato = user.rol?.toLowerCase() === "candidato";
     const enProceso = user.estadoUsuario?.toLowerCase() === "cambiocontrasena";
+    const esAdmin = userRol.toLowerCase() === "admin";
     
     const nombreCompleto = `${user.nombre || ""} ${
       user.apellidos || ""
     }`.toLowerCase();
 
-
-    return (
-     // esCandidato && 
-      enProceso &&
-      (user.id?.toLowerCase().includes(buscar) ||
-        user.nombre?.toLowerCase().includes(buscar) ||
-        user.apellidos?.toLowerCase().includes(buscar) ||
-        user.email?.toLowerCase().includes(buscar) ||
-        nombreCompleto.includes(buscar))
-    );
+    if (esAdmin) {
+      return (
+        enProceso &&
+        (user.id?.toLowerCase().includes(buscar) ||
+          user.nombre?.toLowerCase().includes(buscar) ||
+          user.apellidos?.toLowerCase().includes(buscar) ||
+          user.email?.toLowerCase().includes(buscar) ||
+          nombreCompleto.includes(buscar))
+      );
+    } else {
+      return (
+        esCandidato && enProceso &&
+        (user.id?.toLowerCase().includes(buscar) ||
+          user.nombre?.toLowerCase().includes(buscar) ||
+          user.apellidos?.toLowerCase().includes(buscar) ||
+          user.email?.toLowerCase().includes(buscar) ||
+          nombreCompleto.includes(buscar))
+      );
+    }
   });
 
   const sortedUsers = sortOption
