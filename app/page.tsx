@@ -1,10 +1,23 @@
-import Image from 'next/image';
+/**
+ * page.tsx
+ *
+ * Proporciona la página principal de inicio de sesión del sistema de contrataciones de Grupo Pissa.
+ *
+ * Esta página actúa como punto de entrada principal al sistema, presentando una interfaz
+ * de autenticación profesional con el branding corporativo de Grupo Pissa. Implementa
+ * un diseño responsivo que se adapta entre dispositivos móviles y de escritorio, con
+ * formulario de inicio de sesión, logotipo prominente, mensaje de bienvenida y acceso
+ * a preguntas frecuentes. Optimizada para proporcionar una primera impresión sólida
+ * y facilitar el acceso seguro al sistema de gestión de contrataciones.
+ */
+
+import Image from "next/image";
 import Formulario from "@/app/components/form-login";
-import { urbanist } from '@/app/components/fonts';
-import { LoginFAQ } from '@/app/components/faq';
+import { urbanist } from "@/app/components/fonts";
+import { LoginFAQ } from "@/app/components/faq";
 
 export default function Home() {
-  return(
+  return (
     <div className="h-screen flex flex-wrap md:flex-nowrap bg-[url(/fondo.jpg)] bg-cover bg-center md:bg-none">
       <div className="flex w-full items-center justify-around md:hidden h-2/5 rounded-b-4xl md:rounded-lg">
         <Image
@@ -16,8 +29,14 @@ export default function Home() {
       </div>
       <div className="block md:flex w-full md:w-1/2 items-center justify-center h-3/5 md:p-25 p-8 md:h-full bg-white rounded-t-4xl md:rounded-none">
         <div className="p-0 md:p-4 md:pl-0 md:pr-0">
-          <h1 className={`text-[#001e2b] text-3xl md:text-4xl pb-2 ${urbanist.className}`}><strong>Te damos la bienvenida a Grupo Pissa</strong></h1>
-          <h1 className="text-[#001e2b] pb-8 md:pb-15 antialiased">Inicia sesión para continuar.</h1>
+          <h1
+            className={`text-[#001e2b] text-3xl md:text-4xl pb-2 ${urbanist.className}`}
+          >
+            <strong>Te damos la bienvenida a Grupo Pissa</strong>
+          </h1>
+          <h1 className="text-[#001e2b] pb-8 md:pb-15 antialiased">
+            Inicia sesión para continuar.
+          </h1>
           <Formulario></Formulario>
         </div>
       </div>
@@ -33,5 +52,5 @@ export default function Home() {
       </div>
       <LoginFAQ />
     </div>
-  )
+  );
 }
