@@ -1,31 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import OnboardingCard from "@/app/components/OnboardingCard";
-import { ref, get } from "firebase/database";
-import { database } from "@/firebaseConfig";
-import { urbanist } from "@/app/components/fonts";
+import { useEffect, useState } from 'react'
+import OnboardingCard from '@/app/components/OnboardingCard'
+import { ref, get } from 'firebase/database'
+import { database } from '@/firebaseConfig'
+import { urbanist } from '@/app/components/fonts'
 
 type OnbCard = {
-  nombre: string;
-  url: string;
-  type: string;
-  accepted: boolean;
-};
+  nombre: string
+  url: string
+  type: string
+  accepted: boolean
+}
 
 export default function OnboardingPage() {
-  const [role, setRole] = useState<string | null>(null);
-  const [contractId, setContractId] = useState<string>("");
-  const [onbCards, setOnbCards] = useState<Record<string, OnbCard>>({});
+  const [role, setRole] = useState<string | null>(null)
+  const [contractId, setContractId] = useState<string>('')
+  const [onbCards, setOnbCards] = useState<Record<string, OnbCard>>({})
 
   useEffect(() => {
     async function fetchUserData() {
       try {
         const res = await fetch("/api/getCurrentUserID");
         const id = await res.json();
+      
 
         console.log(id);
         const uid = id.value;
+      
+
 
         // Fetch role
         const roleSnap = await get(ref(database, `usuarios/${uid}/rol`));
@@ -35,20 +38,20 @@ export default function OnboardingPage() {
         // Fetch contract ID
         const contractSnap = await get(
           ref(database, `expedientes/expediente${uid}/contratos/id`)
-        );
-        const cid = contractSnap.exists() ? (contractSnap.val() as string) : "";
-        setContractId(cid);
+        )
+        const cid = contractSnap.exists() ? (contractSnap.val() as string) : ''
+        setContractId(cid)
 
         // Fetch onboarding cards
         if (userRole && cid) {
-          const cardsRef =
-            userRole === "enCorporativo"
+          let cardsRef =
+            userRole === 'enCorporativo'
               ? `contratos/corporativo/${cid}/onb${cid}/cards`
-              : `contratos/proyectos/${cid}/onb${cid}/cards`;
+              : `contratos/proyectos/${cid}/onb${cid}/cards`
 
           const cardsSnap = await get(ref(database, cardsRef));
           if (cardsSnap.exists()) {
-            setOnbCards(cardsSnap.val() as Record<string, OnbCard>);
+            setOnbCards(cardsSnap.val() as Record<string, OnbCard>)
           }
         }
       } catch (error) {
@@ -56,8 +59,8 @@ export default function OnboardingPage() {
       }
     }
 
-    fetchUserData();
-  }, [onbCards]);
+    fetchUserData()
+  }, [onbCards])
 
   if (!role) {
     return (
@@ -81,9 +84,9 @@ export default function OnboardingPage() {
   }
 
   const reference =
-    role === "enCorporativo"
+    role === 'enCorporativo'
       ? `contratos/corporativo/${contractId}/onb${contractId}`
-      : `contratos/proyectos/${contractId}/onb${contractId}`;
+      : `contratos/proyectos/${contractId}/onb${contractId}`
 
   return (
     <main className="mb-10">
@@ -100,7 +103,6 @@ export default function OnboardingPage() {
             nombre={card.nombre}
             url={card.url}
             type={card.type}
-            accepted={card.accepted}
             reference={reference}
           />
         ))}

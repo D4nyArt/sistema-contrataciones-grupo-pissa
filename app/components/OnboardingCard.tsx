@@ -13,8 +13,8 @@ interface OnboardingCardProps {
   url: string;
   nombre: string;
   type: string;
-  accepted: boolean;
-  reference?: string;
+  accepted: boolean
+  reference?: string
 }
 
 export default function OnboardingCard({
@@ -23,12 +23,14 @@ export default function OnboardingCard({
   nombre,
   type,
   accepted,
-  reference,
+  reference
 }: OnboardingCardProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+
 
   // Nuevo estado para aceptación
   //const [accepted, setAccepted] = useState<boolean>(false);
@@ -57,21 +59,29 @@ export default function OnboardingCard({
   // 2) Al montar, revisar si ya existe entrada de aceptación en RTDB
   useEffect(() => {
     const checkAccepted = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const docRef = ref(database, `onboarding/Onb${user.uid}/${nombre}`);
-      const snap = await get(docRef);
+      const fetcher = await fetch('/api/getCurrentUserID')
+      const jason = await fetcher.json();
 
+      const uid = jason.value;
+
+      const docRef = ref(database, `onboarding/Onb${uid}/${nombre}`);
+      const docRefacc = ref(database, `onboarding/Onb${uid}/${nombre}/accepted`);
+      const docRefacc_snap = await get(docRefacc);
+      setAccepted(docRefacc_snap.val());
+      const snap = await get(docRef);
+      
+      
+      
       if (snap.exists()) {
-        //const data = snap.val() as {accepted: boolean; acceptedAt?: number};
+        const data = snap.val() as {accepted: boolean; acceptedAt?: number};
         //setAccepted(!!data.accepted);
         //setAccepted(!!data.acceptedAt);
         // inicializar nodo
-        await update(docRef, { accepted: false, acceptedAt: null });
+        await update(docRef, {accepted: false, acceptedAt: null});
       }
     };
     checkAccepted();
-  }, [nombre, type, reference]);
+  }, [nombre]);
 
   const handleView = () => {
     if (pdfUrl) setShowPdf(true);
@@ -88,19 +98,15 @@ export default function OnboardingCard({
     if (!user) throw new Error("Usuario no autenticado");
     //const docRef = ref(database, `usuarios/Onb${user.uid}/${nombre}`);
 
-    if (reference) {
+    if(reference) {
       const onbRef = ref(database, `${reference}/cards/${nombre}`);
-      let num_accepted = (
-        await get(ref(database, `${reference}/accepted_onboarding`))
-      ).val();
+      let num_accepted = (await get(ref(database, `${reference}/accepted_onboarding`))).val();
       num_accepted++;
-      await update(onbRef, { accepted: true });
-      await update(ref(database, reference), {
-        accepted_onboarding: num_accepted,
-      })
-      await addHistoryEntry(user.uid, 'onboarding', new Date().toISOString(), undefined, `Confirmación de lectura de ${onbRef}`);
-    }
-    //const now = Date.now();
+      await update(onbRef, {accepted: true}); 
+      await update(ref(database, reference), {accepted_onboarding: num_accepted});   
+
+      }
+    const now = Date.now();
     //await update(docRef, {accepted: true, acceptedAt: now});
     //setAccepted(true);
   };
