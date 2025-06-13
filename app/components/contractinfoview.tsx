@@ -9,20 +9,13 @@ import { Building, FolderOpenDot, File } from "lucide-react";
 // type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
 export default function ContractInfoView({ id }: { id: string }) {
-  
-
   const [duration, setDuration] = useState(""); // Duración del contrato en meses
-  const [selected, setSelected] = useState("");
-  const [assignation, setAssignation] = useState("");
   const [assigname, setAssigname] = useState("");
-  //const [isproject, setIsproject] = useState(false);
-  //const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState("");
+  const [contractType, setContractType] = useState("");
 
   const getAssignationName = async (id: string) => {
-
     let fullname = "";
     const namesnap = await get(ref(database, `usuarios/${id}/nombre`));
     const lastnamesnap = await get(ref(database, `usuarios/${id}/apellidos`));
@@ -35,7 +28,6 @@ export default function ContractInfoView({ id }: { id: string }) {
     }
     
     return "N/A";
-
   }
   
   useEffect(() => {
@@ -51,14 +43,13 @@ export default function ContractInfoView({ id }: { id: string }) {
             const snapshot = await get(userRef);
             data = snapshot.val() || {};
            
-            setType("cor");
+            setContractType("cor");
           } else {
-            setType("pro");
+            setContractType("pro");
           }
   
           setDuration(data.duration || "");
           const newAssignation = data.assignation || "";
-          setAssignation(newAssignation);
           setUrl(data.url || "");
 
           const assignName = await getAssignationName(newAssignation);
@@ -71,8 +62,6 @@ export default function ContractInfoView({ id }: { id: string }) {
       fetchUser();
     }, [id]);
 
-
-  //const contract = selectedProject || selectedCorporate;
   const folder = path.dirname(url);
   const fileName = path.basename(url);
 //
@@ -97,7 +86,7 @@ export default function ContractInfoView({ id }: { id: string }) {
             return (
               <div key={option.id}
                 className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2
-                ${selected === option.id
+                ${contractType === option.id
                     ? "border-[#2975a0] text-[#2975a0]"
                     : "border-gray-300 text-gray-500"}`}
               >
@@ -111,7 +100,6 @@ export default function ContractInfoView({ id }: { id: string }) {
         <p>{duration?`${duration} meses`:"N/A"}</p> 
         <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Asignación</h2>
         <p>{assigname || "N/A"}</p>
-      
       </div>
 
       {/* Vista previa*/}
@@ -130,7 +118,6 @@ export default function ContractInfoView({ id }: { id: string }) {
           </div>
         )}
         </div>
-      
     </div>
   );
 }
