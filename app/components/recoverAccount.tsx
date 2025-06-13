@@ -56,7 +56,7 @@ export default  function ListUsers() {
 
   const filtrarUsuarios = users.filter((user) => {
     const buscar = searchTerm.toLowerCase();
-    const esCandidato = user.rol?.toLowerCase() === "candidato";
+   // const esCandidato = user.rol?.toLowerCase() === "candidato";
     const enProceso = user.estadoUsuario?.toLowerCase() === "cambiocontrasena";
     
     const nombreCompleto = `${user.nombre || ""} ${
@@ -65,7 +65,8 @@ export default  function ListUsers() {
 
 
     return (
-      esCandidato && enProceso &&
+     // esCandidato && 
+      enProceso &&
       (user.id?.toLowerCase().includes(buscar) ||
         user.nombre?.toLowerCase().includes(buscar) ||
         user.apellidos?.toLowerCase().includes(buscar) ||
