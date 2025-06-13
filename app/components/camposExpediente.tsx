@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { Check, X, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
 
 interface CamposExpedienteProps {
   role: string;
@@ -31,8 +33,22 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
   onChangeState,
 }) => {
   const [fields, setFields] = useState<Record<string, FieldData>>({});
+  const [rhID, setRhID] = useState<string | null>(null);
 
   const canEdit = role === "admin" || role === "rh";
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setRhID(user.uid);
+      } else {
+        setRhID(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -112,7 +128,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     fieldKey: string,
     approved: boolean
   ): Promise<void> => {
-    if (!expedienteId || !documentoId) return;
+    if (!expedienteId || !documentoId || !rhID) return;
     const newState = approved ? FIELD_STATES.APROBADO : FIELD_STATES.RECHAZADO;
 
     // 1. Actualiza localmente
@@ -136,6 +152,9 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
       });
       if (!res.ok) throw await res.json();
       onChangeState();
+      const uidP = expedienteId;
+      const uid = uidP.replace("expediente", "");
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, `Actualización de campo ${newState}`);
     } catch (err) {
       console.error("Error al actualizar estado del campo:", err);
     }
@@ -174,7 +193,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
                 <div className="flex space-x-1">
                   <button
                     onClick={() => handleFieldReview(key, true)}
-                    className={`cursor-pointer p-1.5 rounded transition-colors ${
+                    className={`p-1.5 rounded transition-colors ${
                       estado === FIELD_STATES.APROBADO
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-700"
@@ -185,7 +204,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
                   </button>
                   <button
                     onClick={() => handleFieldReview(key, false)}
-                    className={`cursor-pointer p-1.5 rounded transition-colors ${
+                    className={`p-1.5 rounded transition-colors ${
                       estado === FIELD_STATES.RECHAZADO
                         ? "bg-red-100 text-red-700"
                         : "bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-700"
@@ -241,11 +260,11 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
           </div>
         ))}
 
-        {role === "candidato" && (
+        {canEdit && (
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleSaveFields}
-              className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
             >
               Guardar Cambios
             </button>
