@@ -10,7 +10,7 @@ export default function Bento() {
   return (
     <div className="md:grid md:grid-cols-4 md:grid-rows-5 gap-4 w-full h-full flex flex-col">
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8">
-        <div className="bg-[#f4a261] rounded-full p-4 text-white">
+        <div className="bg-[#f4a261] rounded-full p-4 text-white transition-transform transform hover:scale-110">
           <Users />
         </div>
         <div className="flex flex-col">
@@ -19,7 +19,7 @@ export default function Bento() {
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8">
-        <div className="bg-[#42b883] rounded-full p-4 text-white">
+        <div className="bg-[#42b883] rounded-full p-4 text-white transition-transform transform hover:scale-110">
           <UserPlus />
         </div>
         <div className="flex flex-col">
@@ -28,7 +28,7 @@ export default function Bento() {
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8">
-        <div className="bg-[#d55672] rounded-full p-4 text-white">
+        <div className="bg-[#d55672] rounded-full p-4 text-white transition-transform transform hover:scale-110">
           <FolderOpenDot />
         </div>
         <div className="flex flex-col">
@@ -37,7 +37,7 @@ export default function Bento() {
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 shadow-md flex flex-row justify-center items-center gap-8 col-start-4 row-start-1">
-        <div className="bg-[#aec5eb] rounded-full p-4 text-white">
+        <div className="bg-[#aec5eb] rounded-full p-4 text-white transition-transform transform hover:scale-110">
           <Building />
         </div>
         <div className="flex flex-col">
