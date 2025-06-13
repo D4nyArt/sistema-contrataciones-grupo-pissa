@@ -31,6 +31,12 @@ import {
 import { urbanist } from "./fonts";
 import sendEmailNotification from "../components/sendEmailNotification";
 import crypto from "crypto";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
+const rhID = auth.currentUser?.uid;
+
 
 
 const generatePassword = (length: number = 16) => {
@@ -137,7 +143,8 @@ export default function CreateCredentials() {
           `Se han generado tus credenciales`,
           `Hola,\n\nYa puedes acceder al sistema https://www.grupo-pissa.space/ ingresando las siguientes credenciales:\n\nCorreo electrónico: ${mail}\nContraseña: ${password}\n\nSaludos,\nEquipo Grupo Pissa`,
       );
-
+      
+      await addHistoryEntry(uid, 'documentos', new Date().toISOString(), rhID, 'Generación de Credenciales' );
       alert(
         "Se han creado las credenciales exitosamente. UID del usuario: " + uid
       );
