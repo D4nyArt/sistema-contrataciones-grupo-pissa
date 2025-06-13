@@ -1,3 +1,16 @@
+/**
+ * page.tsx
+ *
+ * Proporciona la página principal de recuperación de contraseña del sistema de contrataciones.
+ *
+ * Esta página del flujo de recuperación de contraseña presenta una interfaz inicial donde
+ * los usuarios pueden solicitar el cambio de su contraseña proporcionando su correo
+ * electrónico. Implementa el patrón de diseño responsivo estándar del sistema con layout
+ * dividido entre formulario funcional y panel visual corporativo, proporcionando títulos
+ * y descripciones diferenciadas entre versión móvil y de escritorio. Actúa como punto
+ * de entrada principal para el proceso de recuperación de acceso al sistema.
+ */
+
 import FormularioOlvide from "../components/olvideContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
