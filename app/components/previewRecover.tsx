@@ -2,10 +2,7 @@
 
 import ProfilePicture from "./profile-picture";
 import { useEffect, useState } from "react";
-<<<<<<< HEAD
 import UserSkeleton from "./userSkeleton";
-=======
->>>>>>> 6df6a10 (UI Chamges: New component for a preview of the password changes requests)
 
 interface User {
   id: string;
