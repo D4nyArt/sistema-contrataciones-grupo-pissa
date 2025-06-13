@@ -2,6 +2,14 @@ import NotasExpediente from "./notasExpediente";
 import CamposExpediente from "./camposExpediente";
 import ArchivoExpediente from "./archivoExpediente";
 import { useState, useEffect } from "react";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
+
+
+const auth = getAuth();
+const rhID = auth.currentUser?.uid;
+
+
 
 interface DocProps {
   expedienteId: string;
@@ -85,7 +93,10 @@ export default function DocumentoExpediente({
           estadoCampos: DOC_STATES.APROBADO,
         }),
       });
+      const uid = expedienteId.replace("expediente", "");
       if (!res.ok) throw await res.json();
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, "Documento aprobado completamente");
+
       fetchDoc();
       fetchHasFields();
     } catch (err) {
@@ -106,7 +117,10 @@ export default function DocumentoExpediente({
           estadoCampos: DOC_STATES.RECHAZADO,
         }),
       });
+      const uid = expedienteId.replace("expediente", "");
       if (!res.ok) throw await res.json();
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, "Documento aprobado completamente");
+
       fetchDoc();
       fetchHasFields();
     } catch (err) {
