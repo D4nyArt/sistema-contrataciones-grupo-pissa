@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Contratos from "./contrato";
 import AdminContractsPage from "./admincon";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import AdminOnboardingPage from "./admonbcard";
+//import AdminOnboardingPage from "./admonbcard";
 
 export default function ContractInfo() {
   

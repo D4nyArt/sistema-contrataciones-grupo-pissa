@@ -3,7 +3,7 @@ import {ref, get, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
-async function recalcExpedienteCompleto(expId: string) {
+{/*async function recalcExpedienteCompleto(expId: string) {
   console.log("Recalculando expediente_completo");
   
   const expedienteRef = ref(database, `expedientes/expediente${expId}`);
@@ -21,7 +21,7 @@ async function recalcExpedienteCompleto(expId: string) {
   // Actualizar el campo de expediente_completo
   await update(expedienteRef, { expediente_completo: expedienteCompleto });
   console.log("Expediente completo actualizado:", expedienteCompleto);
-}
+}*/}
 
 async function recalcEstadoGeneral(expId: string, docId: string) {
 

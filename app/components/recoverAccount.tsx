@@ -25,8 +25,8 @@ export default  function ListUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [sortOption, setSortOption] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption] = useState("");
+  const [searchTerm] = useState("");
   const [_estadoUsuario, setStatus] = useState("");
   const [_attempt, setAttempt] = useState(0);
   const [_time, setTime] = useState("");

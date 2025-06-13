@@ -10,7 +10,7 @@ import {getStorage, ref as storageRef, getDownloadURL, uploadBytes} from "fireba
 import SelectCompany from "./selectCompany";
 import SelectProjectClient from "./selectProjectClient";
 
-import DirectViewer from "./directFileView";
+//import DirectViewer from "./directFileView";
 import BetterDirectFileViewer from "./betterDirectFileViewer";
 import PopUp from "./pop-up";
 import {ref, update} from "firebase/database";

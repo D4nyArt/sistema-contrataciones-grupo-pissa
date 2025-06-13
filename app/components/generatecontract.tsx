@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { get, ref, update } from "firebase/database";
 import { database } from "../../firebaseConfig";
-import Uploader from "./Uploader";
+//import Uploader from "./Uploader";
 
 
 export default function GenerateContract() {
@@ -13,7 +13,7 @@ export default function GenerateContract() {
   const [folder, setFolder] = useState("");
   const [proy_disabled, setProy_disabled] = useState(false);
   const [corp_disabled, setCorp_disabled] = useState(false);
-  const [generated, setGenerated] = useState(false);
+  //const [generated, setGenerated] = useState(false);
   const [proy_num, setProy_num] = useState(0);
   const [corp_num, setCorp_num] = useState(0);
   const [fechaAdendum, setFechaAdendum] = useState("");
@@ -47,15 +47,6 @@ useEffect(()=>{
 
 getcontractnumber();
 }, [])
-
-
-const clickResolveRef = useRef<(() => void)>(null);
-
-  const waitForClick = () => {
-    return new Promise<void>((resolve) => {
-      clickResolveRef.current = resolve;
-    });
-  };
 
   const handleUpload = async () => {
     //setGenerated(true);
@@ -100,15 +91,6 @@ const clickResolveRef = useRef<(() => void)>(null);
     catch (e) {
         console.error(e);
     }
-  };
-
-  const handlePress = () => {
-    clickResolveRef.current?.();
-    clickResolveRef.current = null;
-    
-    alert(`La plantilla ${contract_name} fue creada con éxito.`);
-    window.location.reload();
-
   };
 
   return (
