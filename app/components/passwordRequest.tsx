@@ -5,7 +5,7 @@ import PreviewRecover from "./previewRecover";
 
 export default function PasswordRequest () {
     return(
-        <main className="p-8 bg-white shadow-md rounded-xl h-full w-full">
+        <main className="p-4 bg-white shadow-md rounded-xl h-full w-full">
             <div className="flex flex-row">
                 <h2 className={`${urbanist.className} text-[#212529] font-bold text-2xl mb-2 animate-fade-in-up`}>
                     Recuperación de contraseñas
