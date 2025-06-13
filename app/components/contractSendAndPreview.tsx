@@ -12,17 +12,14 @@ import SelectProjectClient from "./selectProjectClient";
 
 import BetterDirectFileViewer from "./betterDirectFileViewer";
 import PopUp from "./pop-up";
-import {ref, set, update} from "firebase/database";
+import {ref, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
 import {urbanist} from "./fonts";
-import {Building, FolderOpenDot, File, Hourglass} from "lucide-react";
+import {Building, FolderOpenDot, File} from "lucide-react";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 export default function ContractSendAndPreview({uid}: {uid: string}) {
   const [contractPreview, setContractPreview] = useState(false);
-  const [duration, setDuration] = useState<number>(6);
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
@@ -57,6 +54,8 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
         newFormValues.duracion_contrato = ""; // Resetear si las fechas no son válidas o fin < inicio
       }
     }
+
+    
     setFormValues(newFormValues);
   };
 
@@ -218,7 +217,7 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
         contrato_activo: "contratoPreview" + uid + ".pdf",
         id: `con${selected}${uid}`,
         estado: "no_firmado",
-        duracion: duration,
+        duracion: formValues.duracion_contrato,
       });
 
       await update(ref(database, `expedientes/expediente${uid}/contratos/preview`), {
@@ -227,7 +226,7 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
 
 
       await update(ref(database, selected == "pro" ? `contratos/proyectos/con${selected}${uid}` : `contratos/corporativo/con${selected}${uid}`), {
-        duration: duration,
+        duration: formValues.duracion_contrato,
         assignation: uid
       })
 
@@ -254,11 +253,6 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
     } catch (err) {
       console.error("Error enviando contrato:", err);
     }
-    setShowConfirm(false);
-  };
-
-  const handleClick = () => {
-    setShowConfirm(true);
   };
 
   const disableButton = () => {
