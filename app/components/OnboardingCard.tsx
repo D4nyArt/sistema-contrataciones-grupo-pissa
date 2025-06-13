@@ -6,6 +6,7 @@ import { ref, update, get } from "firebase/database";
 import { storage, database, auth } from "../../firebaseConfig";
 import PdfModal from "@/app/components/OnboardingModal";
 import { FileText } from "lucide-react";
+import { addHistoryEntry } from '../api/history/history';
 
 interface OnboardingCardProps {
   key: string;
@@ -96,7 +97,8 @@ export default function OnboardingCard({
       await update(onbRef, { accepted: true });
       await update(ref(database, reference), {
         accepted_onboarding: num_accepted,
-      });
+      })
+      await addHistoryEntry(user.uid, 'onboarding', new Date().toISOString(), undefined, `Confirmación de lectura de ${onbRef}`);
     }
     //const now = Date.now();
     //await update(docRef, {accepted: true, acceptedAt: now});
