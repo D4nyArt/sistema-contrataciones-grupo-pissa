@@ -33,7 +33,7 @@ const clickResolveRef = useRef<(() => void)>(null);
             [onboarding_name]: {
               "nombre": onboarding_name,
               "type": folder,
-              "url": folder=="file"?`pruebaInicial/onboarding/${onboarding_name}.pdf`:onb_link,
+              "url": folder=="file"?`pruebaInicial/onboarding/${onboarding_name}/${onboarding_name}.pdf`:onb_link,
               "accepted": false,
             }
         })

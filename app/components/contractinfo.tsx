@@ -54,11 +54,14 @@ export default function ContractInfo() {
         </div>
 
         { active === "contratos" && <AdminContractsPage uid={_id} /> }
+<<<<<<< HEAD
         {
         //Maybe useful later
         /*{ active === "onboarding" && (
           <AdminOnboardingPage contractid={_id}/>
         ) }*/}
+=======
+>>>>>>> onboarding
       </div>
     </div>
   );

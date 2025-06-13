@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import OnboardingCard from '@/app/components/OnboardingCard'
-import { ref, get } from 'firebase/database'
-import { database } from '@/firebaseConfig'
+import { ref, get, update } from 'firebase/database'
+import { auth, database } from '@/firebaseConfig'
 import { urbanist } from '@/app/components/fonts'
 
 type OnbCard = {
   nombre: string
   url: string
   type: string
-  accepted: boolean
 }
 
 export default function OnboardingPage() {
   const [role, setRole] = useState<string | null>(null)
   const [contractId, setContractId] = useState<string>('')
   const [onbCards, setOnbCards] = useState<Record<string, OnbCard>>({})
+  const [acceptedCards, setAcceptedCards] = useState<Record<string, OnbCard>>({});
+  const [userID, setUserID] = useState("");
+
 
   useEffect(() => {
     async function fetchUserData() {
@@ -26,32 +28,25 @@ export default function OnboardingPage() {
       
 
         console.log(id);
-        const uid = id.value;
+        const uid = id.value
+        setUserID(uid);
       
-
+        
 
         // Fetch role
         const roleSnap = await get(ref(database, `usuarios/${uid}/rol`));
         const userRole = roleSnap.exists() ? (roleSnap.val() as string) : null;
         setRole(userRole);
 
-        // Fetch contract ID
-        const contractSnap = await get(
-          ref(database, `expedientes/expediente${uid}/contratos/id`)
-        )
-        const cid = contractSnap.exists() ? (contractSnap.val() as string) : ''
-        setContractId(cid)
-
+      
         // Fetch onboarding cards
-        if (userRole && cid) {
-          let cardsRef =
-            userRole === 'enCorporativo'
-              ? `contratos/corporativo/${cid}/onb${cid}/cards`
-              : `contratos/proyectos/${cid}/onb${cid}/cards`
+        if (userRole) {
+          let cardsRef = "onboardingcard";
 
           const cardsSnap = await get(ref(database, cardsRef));
           if (cardsSnap.exists()) {
             setOnbCards(cardsSnap.val() as Record<string, OnbCard>)
+            console.log(onbCards);
           }
         }
       } catch (error) {
@@ -60,7 +55,7 @@ export default function OnboardingPage() {
     }
 
     fetchUserData()
-  }, [onbCards])
+  }, [userID])
 
   if (!role) {
     return (
@@ -83,10 +78,7 @@ export default function OnboardingPage() {
     );
   }
 
-  const reference =
-    role === 'enCorporativo'
-      ? `contratos/corporativo/${contractId}/onb${contractId}`
-      : `contratos/proyectos/${contractId}/onb${contractId}`
+  const reference = `onboarding/Onb${userID}`;
 
   return (
     <main className="mb-10">

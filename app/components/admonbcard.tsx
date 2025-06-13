@@ -8,7 +8,7 @@ import { PlusIcon } from 'lucide-react'
 import PopUp from './pop-up'
 import GenerateOnboardingCard from './generateonboarding'
 
-type OnbCard = { nombre: string; url: string, type: string, accepted: boolean}
+type OnbCard = { nombre: string; url: string, type: string}
 
 async function    getListOnbCards(): Promise<Record<string, OnbCard>> {
     const snap = await get(ref(database, `onboardingcard/`))
@@ -36,7 +36,7 @@ export default function AdminOnboardingPage() {
       </button>
       <div className="parent grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-x-4 gap-y-10 content-center">
         {Object.entries(onbCards).map(([key, card]) => (
-          <OnboardingCard key={key} nombre={card.nombre} url={card.url} type = {card.type} accepted = {card.accepted} />
+          <OnboardingCard key={key} nombre={card.nombre} url={card.url} type = {card.type} />
         ))}
       </div>
       <PopUp show = {showConfirm} onClose={() => setShowConfirm(false)}>
