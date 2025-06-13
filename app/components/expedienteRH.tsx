@@ -83,7 +83,7 @@ export default function ExpedienteRH({ userId }: ExpedienteRHProps) {
       </div>
 
       {/* Lado derecho */}
-      <div className="flex-1 bg-white rounded-xl shadow p-4 md:max-h-100 overflow-y-auto">
+      <div className="flex-1 bg-white rounded-xl shadow p-4 md:max-h-220 overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">
             {DOCUMENTOS.find((doc) => doc.id === documentoId)?.nombre}
