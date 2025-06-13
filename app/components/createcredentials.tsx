@@ -29,16 +29,14 @@ import {
   VenusAndMars,
 } from "lucide-react";
 import { urbanist } from "./fonts";
-//import crypto from "crypto";
+import sendEmailNotification from "../components/sendEmailNotification";
+import crypto from "crypto";
 
-const generatePassword = () => {
-  return "123456";
-};
 
-/*
 const generatePassword = (length: number = 16) => {
   return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
-};*/
+};
+
 export default function CreateCredentials() {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
@@ -134,6 +132,11 @@ export default function CreateCredentials() {
 
       // Guardamos los datos del usuario usando el UID como key
       await set(ref(database, "usuarios/" + uid), data);
+      await sendEmailNotification(
+          uid,
+          `Se han generado tus credenciales`,
+          `Hola,\n\nYa puedes acceder al sistema https://www.grupo-pissa.space/ ingresando las siguientes credenciales:\n\nCorreo electrónico: ${mail}\nContraseña: ${password}\n\nSaludos,\nEquipo Grupo Pissa`,
+      );
 
       alert(
         "Se han creado las credenciales exitosamente. UID del usuario: " + uid
