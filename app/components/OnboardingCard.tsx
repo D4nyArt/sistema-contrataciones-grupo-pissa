@@ -12,7 +12,6 @@ interface OnboardingCardProps {
   url: string;
   nombre: string;
   type: string;
-  accepted: boolean
   reference?: string
 }
 
@@ -21,13 +20,13 @@ export default function OnboardingCard({
   url,
   nombre,
   type,
-  accepted,
   reference
 }: OnboardingCardProps) {
   const [showPdf, setShowPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accepted, setAccepted] = useState(false);
 
 
 
@@ -55,23 +54,33 @@ export default function OnboardingCard({
   // 2) Al montar, revisar si ya existe entrada de aceptación en RTDB
   useEffect(() => {
     const checkAccepted = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const docRef = ref(database, `onboarding/Onb${user.uid}/${nombre}`);
+      const fetcher = await fetch('/api/getCurrentUserID')
+      const jason = await fetcher.json();
+
+      const uid = jason.value;
+
+      const docRef = ref(database, `onboarding/Onb${uid}/${nombre}`);
+      const docRefacc = ref(database, `onboarding/Onb${uid}/${nombre}/accepted`);
+      const docRefacc_snap = await get(docRefacc);
+      setAccepted(docRefacc_snap.val());
       const snap = await get(docRef);
+
+      console.log(snap);
+
       
       
       
-      if (snap.exists()) {
-        const data = snap.val() as {accepted: boolean; acceptedAt?: number};
+      if (!snap.exists()) {
+        //const data = snap.val() as {accepted: boolean; acceptedAt?: number};
         //setAccepted(!!data.accepted);
         //setAccepted(!!data.acceptedAt);
         // inicializar nodo
         await update(docRef, {accepted: false, acceptedAt: null});
-      }
+        }
+      
     };
     checkAccepted();
-  }, [nombre]);
+  }, [nombre, accepted]);
 
   const handleView = () => {
     if (pdfUrl) setShowPdf(true);
@@ -90,14 +99,12 @@ export default function OnboardingCard({
     //const docRef = ref(database, `usuarios/Onb${user.uid}/${nombre}`);
 
     if(reference) {
-      const onbRef = ref(database, `${reference}/cards/${nombre}`);
-      let num_accepted = (await get(ref(database, `${reference}/accepted_onboarding`))).val();
-      num_accepted++;
-      await update(onbRef, {accepted: true}); 
-      await update(ref(database, reference), {accepted_onboarding: num_accepted});   
+      const onbRef = ref(database, `${reference}/${nombre}`);
+      const now = Date.now();
+      await update(onbRef, {accepted: true, acceptedAt: now});
+      setAccepted(true); 
 
       }
-    const now = Date.now();
     //await update(docRef, {accepted: true, acceptedAt: now});
     //setAccepted(true);
   };

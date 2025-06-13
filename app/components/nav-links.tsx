@@ -10,6 +10,7 @@ const linksRH = [
   { name: 'Personas', href: '/dashboard/personas', icon: Users },
   { name: 'Candidatos', href: '/dashboard/candidatos', icon: UserPlus},
   { name: 'Plantillas', href: '/dashboard/contratos', icon: FileText },
+  {name: 'Onboarding', href: '/dashboard/onboarding', icon: Handshake},
   { name: 'Seguridad', href: '/dashboard/security/recover', icon: ShieldCheck},
   { name: 'Credenciales', href: '/dashboard/security/credenciales', icon: KeyRound },
   { name: 'Notificaciones', href: '/dashboard/notificaciones', icon: Bell },
