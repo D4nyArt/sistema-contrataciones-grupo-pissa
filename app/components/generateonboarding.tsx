@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { get, ref, remove, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import Uploader from "./Uploader";
 

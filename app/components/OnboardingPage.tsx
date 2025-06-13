@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import OnboardingCard from "@/app/components/OnboardingCard";
-import { ref, get, update } from "firebase/database";
-import { auth, database } from "@/firebaseConfig";
+import { ref, get} from "firebase/database";
+import { database } from "@/firebaseConfig";
 import { urbanist } from "@/app/components/fonts";
 
 type OnbCard = {
@@ -34,7 +34,7 @@ export default function OnboardingPage() {
 
         // Fetch onboarding cards
         if (userRole) {
-          let cardsRef = "onboardingcard";
+          const cardsRef = "onboardingcard";
 
           const cardsSnap = await get(ref(database, cardsRef));
           if (cardsSnap.exists()) {
