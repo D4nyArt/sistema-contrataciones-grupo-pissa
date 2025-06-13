@@ -52,7 +52,7 @@ export default function OnboardingCard({
       }
     };
     fetchPdfUrl();
-  }, [filePath]);
+  }, [filePath, type]);
 
   // 2) Al montar, revisar si ya existe entrada de aceptación en RTDB
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function OnboardingCard({
       }
     };
     checkAccepted();
-  }, [nombre]);
+  }, [nombre, type, reference]);
 
   const handleView = () => {
     if (pdfUrl) setShowPdf(true);
