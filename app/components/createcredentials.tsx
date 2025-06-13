@@ -34,8 +34,8 @@ import crypto from "crypto";
 import { addHistoryEntry } from "../api/history/history";
 import { getAuth } from "firebase/auth";
 
-const auth = getAuth();
-const rhID = auth.currentUser?.uid;
+const authV2 = getAuth();
+const rhID = authV2.currentUser?.uid;
 
 
 
