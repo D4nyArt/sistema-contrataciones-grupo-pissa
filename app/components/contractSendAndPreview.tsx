@@ -10,18 +10,17 @@ import {getStorage, ref as storageRef, getDownloadURL, uploadBytes} from "fireba
 import SelectCompany from "./selectCompany";
 import SelectProjectClient from "./selectProjectClient";
 
-import DirectViewer from "./directFileView";
 import BetterDirectFileViewer from "./betterDirectFileViewer";
 import PopUp from "./pop-up";
 import {ref, set, update} from "firebase/database";
 import {database} from "@/firebaseConfig";
 import {urbanist} from "./fonts";
-import {Building, FolderOpenDot, File} from "lucide-react";
+import {Building, FolderOpenDot, File, Hourglass} from "lucide-react";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
 
 export default function ContractSendAndPreview({uid}: {uid: string}) {
   const [contractPreview, setContractPreview] = useState(false);
-  const [duration, setDuration] = useState<number>(6); // Duración del contrato en meses
+  const [duration, setDuration] = useState<number>(6);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
@@ -30,34 +29,144 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
   const [showForm, setShowForm] = useState(false);
 
   const [formValues, setFormValues] = useState({
-    empresa: "",
-    representante_legal: "",
-    nombre: ""
+    duracion_contrato: "", // Se calculará automáticamente
+    fecha_inicio: "",
+    fecha_fin: "",
+    salario: "",
+    salario_escrito: "",
+    hora_entrada: "",
+    hora_salida: "",
+    dia_entrada: "",
+    dia_salida: "",
+    tiempo_comida: ""
   });
 
   const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormValues({...formValues, [e.target.name]: e.target.value});
+    const { name, value } = e.target;
+    const newFormValues = { ...formValues, [name]: value };
+
+    // Calcular duración si ambas fechas están presentes
+    if ((name === "fecha_inicio" || name === "fecha_fin") && newFormValues.fecha_inicio && newFormValues.fecha_fin) {
+      const startDate = new Date(newFormValues.fecha_inicio);
+      const endDate = new Date(newFormValues.fecha_fin);
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && endDate >= startDate) {
+        const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir ambos días
+        newFormValues.duracion_contrato = diffDays.toString();
+      } else {
+        newFormValues.duracion_contrato = ""; // Resetear si las fechas no son válidas o fin < inicio
+      }
+    }
+    setFormValues(newFormValues);
   };
 
   const handleGenerateContract = async (e: FormEvent) => {
     e.preventDefault();
 
-    // 1) Obtener plantilla desde Firebase Storage
+    // Determinar la ruta de la plantilla según el tipo de contrato seleccionado
+    let templatePath = "";
+    if (selected === "pro") {
+      templatePath = "/pruebaInicial/contratos/proyectos/clientes/contratoRellenableCliente.pdf";
+    } else if (selected === "cor") {
+      // Asegúrate de que esta ruta sea la correcta para tu contrato corporativo
+      templatePath = "/pruebaInicial/contratos/empresas/contratoRellenableEmpresa.pdf";
+    } else {
+      // Opcional: manejar un caso donde 'selected' no sea ni 'pro' ni 'cor'
+      console.error("Tipo de contrato no reconocido:", selected);
+      alert("Error: Tipo de contrato no reconocido.");
+      return;
+    }
+
+    // 1) Obtener campos del contrato desde la API
+    const params = new URLSearchParams({
+      uid: uid,
+      contractType: selected,
+      selectedCompany: selectedCompany || "",
+      ...(selected === "pro" && selectedClient && {selectedClient: selectedClient})
+    });
+
+    const response = await fetch(`/api/getContractFields?${params}`);
+    const data = await response.json();
+
+    if (!data.success) {
+      console.error("Error obteniendo campos del contrato:", data.error);
+      alert("Error al obtener los datos del contrato");
+      return;
+    }
+
+    const {contractFields} = data;
+
+    //  Obtener plantilla desde Firebase Storage
     const storage = getStorage();
     const templateRef = storageRef(
       storage,
-      "/pruebaInicial/contratos/proyectos/clientes/contratoVacioCliente.pdf"
+      templatePath // Usar la ruta dinámica aquí
     );
     const url = await getDownloadURL(templateRef);
     const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
 
-    // 2) Cargar y rellenar campos
+    // Cargar y rellenar campos
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const formPdf = pdfDoc.getForm();
-    formPdf.getTextField("EMPRESA").setText(formValues.empresa);
-    formPdf.getTextField("REPRESENTANTE_LEGAL").setText(formValues.representante_legal);
-    formPdf.getTextField("NOMBRE").setText(formValues.nombre);
+
+    const fields = formPdf.getFields();
+    const names = fields.map(field => field.getName());
+    console.log("Campos del PDF:", names);
+
+    // Datos de la empresa
+    formPdf.getTextField("EMPRESA").setText(contractFields.empresa || "");
+    formPdf.getTextField("REPRESENTANTE_LEGAL").setText(contractFields.representante_legal || "");
+
+    // 5) Campos específicos para contratos de proyecto
+    if (selected === "pro") {
+      formPdf.getTextField("CLIENTE").setText(contractFields.cliente);
+      formPdf.getTextField("NUMERO_CONTRATO").setText(contractFields.numero_contrato);
+      formPdf.getTextField("FECHA_CONTRATO").setText(contractFields.fecha_contrato);
+      formPdf.getTextField("FECHA_ADENDUM").setText(contractFields.fecha_adendum);
+      formPdf.getTextField("VIGENCIA_CONTRATO").setText(contractFields.vigencia_contrato);
+      formPdf.getTextField("REPSE").setText(contractFields.repse);
+      formPdf.getTextField("REPSE_FOLIO").setText(contractFields.repse_folio);
+    }
+
+    // Datos del candidato
+    formPdf.getTextField("NOMBRE").setText(contractFields.nombre || "");
+    formPdf.getTextField("PUESTO").setText(contractFields.puesto || "");
+    formPdf.getTextField("ESTADO_CIVIL").setText(contractFields.estado_civil || "");
+    formPdf.getTextField("SEXO").setText(contractFields.sexo || "");
+    formPdf.getTextField("EDAD").setText(contractFields.edad || "");
+    formPdf.getTextField("RFC").setText(contractFields.rfc || "");
+    formPdf.getTextField("CURP").setText(contractFields.curp || "");
+
+
+    // Form rellenable
+    formPdf.getTextField("DURACION_CONTRATO").setText(formValues.duracion_contrato); // Usar el valor calculado
+    formPdf.getTextField("FECHA_INICIO").setText(formValues.fecha_inicio ? new Date(formValues.fecha_inicio).toLocaleDateString('es-MX') : "");
+    formPdf.getTextField("FECHA_FIN").setText(formValues.fecha_fin ? new Date(formValues.fecha_fin).toLocaleDateString('es-MX') : "");
+
+    formPdf.getTextField("SALARIO").setText("$" + formValues.salario + "  " + formValues.salario_escrito);
+
+    formPdf.getTextField("HORA_ENTRADA").setText(formValues.hora_entrada);
+    formPdf.getTextField("HORA_SALIDA").setText(formValues.hora_salida);
+    formPdf.getTextField("DIA_ENTRADA").setText(formValues.dia_entrada);
+    formPdf.getTextField("DIA_SALIDA").setText(formValues.dia_salida);
+    formPdf.getTextField("TIEMPO_COMIDA").setText(formValues.tiempo_comida);
+
+    // Calcula el premio de asistencia como el 10% del salario ingresado
+    const salario = parseFloat(formValues.salario.replace(/[^0-9.]/g, "")) || 0;
+    const premioAsistencia = salario > 0 ? (salario * 0.10).toFixed(2) : "0.00";
+    formPdf.getTextField("PREMIO_ASISTENCIA").setText(premioAsistencia);
+    formPdf.getTextField("PREMIO_PUNTUALIDAD").setText(premioAsistencia);
+
+    //Obtener la fecha actual y formatearla
+    const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const hoy = new Date();
+    const fechaFormateada = `${hoy.getDate()} de ${meses[hoy.getMonth()]} del ${hoy.getFullYear()}`;
+    formPdf.getTextField("FECHA").setText(fechaFormateada);
+
+    //formPdf.getTextField("LOGO_EMPRESA").setText(formValues.nombre);
+
     formPdf.flatten();
+
 
     // 3) Generar bytes del nuevo PDF
     const pdfBytes = await pdfDoc.save();
@@ -153,7 +262,6 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
   };
 
   const disableButton = () => {
-    
     if (selected === "pro") {
       return !(selectedCompany && selectedClient);
     }
@@ -240,11 +348,11 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
           <h3 className="text-lg font-semibold">Detalles del contrato</h3>
 
           <div>
-            <label className="block">Empresa</label>
+            <label className="block">Fecha de inicio</label>
             <input
-              type="text"
-              name="empresa"
-              value={formValues.empresa}
+              type="date"
+              name="fecha_inicio"
+              value={formValues.fecha_inicio}
               onChange={handleFormChange}
               className="w-full border p-1 rounded"
               required
@@ -252,11 +360,11 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
           </div>
 
           <div>
-            <label className="block">Representante</label>
+            <label className="block">Fecha de fin</label>
             <input
-              type="text"
-              name="representante_legal"
-              value={formValues.representante_legal}
+              type="date"
+              name="fecha_fin"
+              value={formValues.fecha_fin}
               onChange={handleFormChange}
               className="w-full border p-1 rounded"
               required
@@ -264,17 +372,99 @@ export default function ContractSendAndPreview({uid}: {uid: string}) {
           </div>
 
           <div>
-            <label className="block">Nombre</label>
+            <label className="block">Duración del contrato en días</label>
             <input
               type="text"
-              name="nombre"
-              value={formValues.nombre}
+              name="duracion_contrato"
+              value={formValues.duracion_contrato}
+              readOnly // Hacer este campo de solo lectura
+              className="w-full border p-1 rounded bg-gray-100" // Estilo para indicar que es de solo lectura
+            />
+          </div>
+
+          <div>
+            <label className="block">Salario en Mxn (Número)</label>
+            <input
+              type="text"
+              name="salario"
+              value={formValues.salario}
               onChange={handleFormChange}
               className="w-full border p-1 rounded"
               required
             />
           </div>
 
+          <div>
+            <label className="block">Salario en Mxn (Escrito)</label>
+            <input
+              type="text"
+              name="salario_escrito"
+              value={formValues.salario_escrito}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Hora de entrada</label>
+            <input
+              type="text"
+              name="hora_entrada"
+              value={formValues.hora_entrada}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Hora de salida</label>
+            <input
+              type="text"
+              name="hora_salida"
+              value={formValues.hora_salida}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Dia de entrada</label>
+            <input
+              type="text"
+              name="dia_entrada"
+              value={formValues.dia_entrada}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Dia de salida</label>
+            <input
+              type="text"
+              name="dia_salida"
+              value={formValues.dia_salida}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block">Tiempo de comida en Hrs</label>
+            <input
+              type="text"
+              name="tiempo_comida"
+              value={formValues.tiempo_comida}
+              onChange={handleFormChange}
+              className="w-full border p-1 rounded"
+              required
+            />
+          </div>
 
           <div className="flex justify-end space-x-2">
             <button

@@ -25,7 +25,7 @@ export default function SelectProjectClient({
 
     useEffect(() => {
         async function fetchClients() {
-            const snap = await get(ref(database, "contratos/proyectos/clientes"));
+            const snap = await get(ref(database, "contratos/clientes"));
             if (snap.exists()) {
                 const data = snap.val();
                 setClients(
