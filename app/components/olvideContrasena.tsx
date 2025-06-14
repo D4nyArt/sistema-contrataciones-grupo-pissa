@@ -1,27 +1,18 @@
-/* Pantalla Inicial para recuperar la contraseña
-            Parte 1: Ingresar el correo y solicitar la recuperación
-                a) Verificar que el correo exista en Firebase Auth
-                b) Verificar el estado del usuario (previo, baja, enProceso...)
-                c) Ejecutar el caso correspondiente
-                    - previo: "Su cuenta aún no está activa, por favor,
-                                contacte al personal de RH"
-                    - normal: "Su solicitud se generó correctamente"
-                    - bloqueado: "Su solicitud se generó correctamente"
-                    - enProceso: "Ya tiene una solicitud en proceso, por favor,
-                                espere la respuesta del administrador"
-                    - inhabilitado "Su cuenta no puede ser recuperada,
-                                se encuentra inhabilitada. Contacte al personal de RH"
-                    - baja: "Su cuenta fue bloqueada de forma permanente. Es imposible recuperarla"
+/**
+ * olvideContrasena.tsx
+ *
+ * Proporciona un formulario para solicitar recuperación de contraseña por correo electrónico.
+ *
+ * Este componente maneja el flujo completo de solicitud de recuperación de contraseña,
+ * incluyendo validación de email, verificación del estado del usuario en la base de datos,
+ * actualización automática de estados según las reglas de negocio y envío del correo
+ * de recuperación. Implementa diferentes respuestas según el estado actual de la cuenta
+ * del usuario (activo, bloqueado, inhabilitado, etc.).
+ */
 
-
-                d) Solicitud generada correctamente: envío de correo electrónico
-                 con el link de recuperación
-
-*/
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
 import {
   fetchSignInMethodsForEmail,
   sendPasswordResetEmail,
@@ -31,16 +22,83 @@ import { auth, database } from "../../firebaseConfig";
 import Link from "next/link";
 import { Alerta } from "./alertaPantalla";
 
+/**
+ * Define los tipos de alerta disponibles en el formulario.
+ */
+type TipoAlerta = "aprobado" | "denegado" | "errorSist" | "info";
+
+/**
+ * Define la estructura de una alerta del sistema.
+ */
+interface AlertaData {
+  /** El tipo de alerta que determina el estilo visual. */
+  type: TipoAlerta;
+
+  /** El mensaje a mostrar al usuario. */
+  mensaje: string;
+}
+
+/**
+ * Renderiza un formulario para solicitar recuperación de contraseña.
+ *
+ * Este componente gestiona el proceso completo de recuperación de contraseña:
+ * 1. Valida el formato del email ingresado
+ * 2. Verifica la existencia del usuario en Firebase Auth y Database
+ * 3. Evalúa el estado actual del usuario según las reglas de negocio
+ * 4. Actualiza el estado a "enProceso" para usuarios elegibles
+ * 5. Envía el correo de recuperación con enlace personalizado
+ * 6. Proporciona feedback específico según cada caso de estado
+ *
+ * Estados de usuario y respuestas:
+ * - previo: Cuenta inactiva, contactar administrador
+ * - normal/bloqueado: Procesa solicitud y envía correo
+ * - enProceso/cambioContrasena: Ya hay solicitud en curso
+ * - inhabilitado: Cuenta temporalmente inactiva
+ * - baja: Cuenta permanentemente bloqueada
+ *
+ * @returns El elemento JSX que renderiza el formulario de recuperación de contraseña.
+ *
+ * @example
+ * ```tsx
+ * // Uso en página de recuperación de contraseña
+ * <div className="recovery-page">
+ *   <h1>Recuperar Contraseña</h1>
+ *   <FormularioOlvide />
+ * </div>
+ *
+ * // El componente automáticamente:
+ * // 1. Valida el email ingresado
+ * // 2. Verifica existencia en Auth y Database
+ * // 3. Evalúa estado del usuario
+ * // 4. Actualiza estado si es necesario
+ * // 5. Envía correo de recuperación
+ * // 6. Muestra feedback apropiado
+ * ```
+ *
+ * @see {@link sendPasswordResetEmail} - Función de Firebase Auth para enviar correo de recuperación
+ * @see {@link Alerta} - Componente para mostrar mensajes de estado al usuario
+ */
 export default function FormularioOlvide() {
+  /** Estado que almacena el email ingresado por el usuario. */
   const [email, setEmail] = useState<string>("");
+
+  /** Estado que indica si el formulario ha sido enviado. */
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-  const [alertaRecuperar, setAlertaRecuperar] = useState<{
-    type: "aprobado" | "denegado" | "errorSist" | "info";
-    mensaje: string;
-  } | null>(null);
 
-  // const router = useRouter();
+  /** Estado que almacena la alerta actual a mostrar al usuario. */
+  const [alertaRecuperar, setAlertaRecuperar] = useState<AlertaData | null>(
+    null
+  );
 
+  /**
+   * Maneja los cambios en el campo de email y limpia alertas.
+   *
+   * Esta función actualiza el estado del email y elimina cualquier alerta
+   * de error cuando el usuario modifica el campo, proporcionando feedback
+   * visual inmediato de que está corrigiendo el error.
+   *
+   * @param e - El evento de cambio del input de email.
+   */
   const cambioEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     if (alertaRecuperar) {
@@ -48,13 +106,28 @@ export default function FormularioOlvide() {
     }
   };
 
-  /**************************************************************************************** */
-
+  /**
+   * Maneja el envío del formulario y procesa la solicitud de recuperación.
+   *
+   * Esta función ejecuta el flujo completo de recuperación de contraseña:
+   * 1. Valida el formato del email
+   * 2. Verifica la existencia del usuario en Firebase Auth y Database
+   * 3. Obtiene y evalúa el estado actual del usuario
+   * 4. Aplica la lógica de negocio según el estado:
+   *    - previo: Cuenta inactiva, requiere contacto con administrador
+   *    - normal/bloqueado: Actualiza estado y envía correo de recuperación
+   *    - enProceso/cambioContrasena: Ya hay solicitud activa
+   *    - inhabilitado: Cuenta temporalmente inactiva
+   *    - baja: Cuenta permanentemente bloqueada
+   * 5. Proporciona feedback específico al usuario
+   *
+   * @param e - El evento de envío del formulario.
+   */
   const solicitarLink = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormSubmitted(true);
 
-    // Validar que se ingresó un email
+    // Validación de email obligatorio
     if (!email.trim()) {
       setAlertaRecuperar({
         type: "denegado",
@@ -63,7 +136,7 @@ export default function FormularioOlvide() {
       return;
     }
 
-    // Validar formato de correo antes de enviar
+    // Validación de formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setAlertaRecuperar({
@@ -73,24 +146,16 @@ export default function FormularioOlvide() {
       return;
     }
 
-    // Reset de error de formato
+    // Reset de alertas previas
     setAlertaRecuperar(null);
 
-    /***********************************************/
-
-    /*Esto es para checar si el email existe en la base de datos, antes de hacer la solicitud 
-            Primera verificación en el backend
-      */
     try {
       console.log("Verificando email:", email);
 
-      // Paso 1: Intentar verificar en Firebase Authentication
-      // let emailExisteEnAuth = false;
-
+      // Paso 1: Verificación opcional en Firebase Authentication
       try {
         const signInMethods = await fetchSignInMethodsForEmail(auth, email);
         if (signInMethods.length > 0) {
-          // emailExisteEnAuth = true;
           console.log("Email encontrado en Authentication");
         } else {
           console.log("Email no encontrado en Authentication");
@@ -100,7 +165,7 @@ export default function FormularioOlvide() {
         // Continuamos con la verificación en la base de datos de todos modos
       }
 
-      // Paso 2: Buscar el usuario en la base de datos
+      // Paso 2: Búsqueda del usuario en la base de datos
       let uid: string | null = null;
 
       try {
@@ -114,7 +179,7 @@ export default function FormularioOlvide() {
             Object.keys(usersData).length
           );
 
-          // Búsqueda case-insensitive
+          // Búsqueda case-insensitive del email
           const emailBuscado = email.toLowerCase();
 
           Object.keys(usersData).forEach((userId) => {
@@ -132,7 +197,7 @@ export default function FormularioOlvide() {
         throw new Error("Error al consultar la base de datos");
       }
 
-      // Si no se encontró el usuario en la base de datos
+      // Validación de existencia del usuario
       if (!uid) {
         console.log("Email no encontrado en la base de datos");
         setAlertaRecuperar({
@@ -142,9 +207,8 @@ export default function FormularioOlvide() {
         });
         return;
       }
-      /***************************************************************/
 
-      // Paso 3: Verificar el estado del usuario
+      // Paso 3: Verificación del estado del usuario
       console.log("Verificando estado del usuario");
       const userStatusRef = ref(database, `usuarios/${uid}/estadoUsuario`);
 
@@ -160,11 +224,11 @@ export default function FormularioOlvide() {
           return;
         }
 
-        // Obtener el valor real del snapshot
+        // Obtención del estado actual del usuario
         const estadoUsuario: string = snapshot.val();
         console.log("Estado del usuario:", estadoUsuario);
 
-        // Paso 4: Procesar según el estado del usuario
+        // Paso 4: Procesamiento según el estado del usuario
         switch (estadoUsuario) {
           case "previo":
             setAlertaRecuperar({
@@ -176,21 +240,22 @@ export default function FormularioOlvide() {
 
           case "normal":
           case "bloqueado":
-            // Actualizar el estado del usuario a "enProceso"
+            // Procesamiento para usuarios elegibles para recuperación
             try {
-              // Primero actualizamos el estado en la base de datos
+              // Actualización del estado del usuario a "enProceso"
               await update(ref(database, `usuarios/${uid}`), {
                 estadoUsuario: "enProceso",
               });
 
               console.log("Estado de usuario actualizado a 'enProceso'");
 
-              // Luego enviamos el correo de recuperación
+              // Envío del correo de recuperación con URL específica del entorno
               await sendPasswordResetEmail(auth, email, {
-                url: process.env.NODE_ENV === 'development'
-                ? "http://localhost:3000/olvidaste/link"
-                : "https://www.grupo-pissa.space/olvidaste/link",
-                handleCodeInApp: true
+                url:
+                  process.env.NODE_ENV === "development"
+                    ? "http://localhost:3000/olvidaste/link"
+                    : "https://www.grupo-pissa.space/olvidaste/link",
+                handleCodeInApp: true,
               });
               console.log("Correo de recuperación enviado");
 
@@ -217,7 +282,7 @@ export default function FormularioOlvide() {
             });
             break;
 
-            case "cambioContrasena":
+          case "cambioContrasena":
             setAlertaRecuperar({
               type: "info",
               mensaje:
@@ -258,16 +323,21 @@ export default function FormularioOlvide() {
     } catch (error: unknown) {
       console.error("Error general:", error);
 
+      // Manejo específico de errores de Firebase Auth
       let errorMessage = "Ocurrió un error. Intente de nuevo.";
       if ((error as { code: string }).code) {
         console.error("Código de error:", (error as { code: string }).code);
 
         if ((error as { code: string }).code === "auth/invalid-email") {
           errorMessage = "El formato del correo electrónico es inválido.";
-        } else if ((error as { code: string }).code === "auth/too-many-requests") {
+        } else if (
+          (error as { code: string }).code === "auth/too-many-requests"
+        ) {
           errorMessage = "Demasiados intentos. Intente de nuevo más tarde.";
         } else {
-          errorMessage = `Error: ${(error as { code: string }).code}. Intente de nuevo más tarde.`;
+          errorMessage = `Error: ${
+            (error as { code: string }).code
+          }. Intente de nuevo más tarde.`;
         }
       }
 
@@ -310,7 +380,7 @@ export default function FormularioOlvide() {
           />
         </div>
 
-        {/* Mostrar el botón solo cuando no hay una solicitud exitosa */}
+        {/* Botón de envío (oculto cuando la solicitud es exitosa) */}
         {(!alertaRecuperar || alertaRecuperar.type !== "aprobado") && (
           <div>
             <button

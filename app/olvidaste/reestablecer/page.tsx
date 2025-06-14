@@ -1,3 +1,16 @@
+/**
+ * olvidaste/reestablecer/page.tsx
+ *
+ * Proporciona la página de restablecimiento directo de contraseña sin enlace de verificación.
+ *
+ * Esta página del flujo de recuperación de contraseña presenta una interfaz alternativa
+ * para el restablecimiento de contraseña que no requiere enlace de verificación por
+ * correo electrónico. Implementa el mismo patrón de diseño responsivo que otras páginas
+ * del flujo de autenticación, con layout dividido entre formulario funcional y panel
+ * visual corporativo. Los títulos están configurados pero vacíos, sugiriendo que esta
+ * página está en desarrollo o utiliza títulos dinámicos generados por el componente.
+ */
+
 import EstablecerContrasena from "../../components/establecerContrasena";
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";

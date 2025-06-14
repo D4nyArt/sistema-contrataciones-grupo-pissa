@@ -1,34 +1,137 @@
-import {NextRequest, NextResponse} from 'next/server';
-import {ref, get, set} from 'firebase/database';
-import {database} from '@/firebaseConfig';
+/**
+ * expediente/route.ts
+ *
+ * Proporciona funcionalidad para gestionar expedientes de candidatos.
+ *
+ * Este módulo implementa endpoints API para obtener y crear expedientes
+ * de candidatos con una estructura predefinida de documentos requeridos
+ * para el proceso de contratación.
+ */
 
+import { NextRequest, NextResponse } from "next/server";
+import { ref, get, set } from "firebase/database";
+import { database } from "@/firebaseConfig";
 
-export async function GET(request: NextRequest) {
-    const {searchParams} = new URL(request.url)
-    const expedienteId = searchParams.get('expedienteId')
-    if (!expedienteId) {
-        return NextResponse.json({error: 'Se requiere expedienteId'}, {status: 400})
-    }
-
-    const path = `expedientes/expediente${expedienteId}`
-    const nodeRef = ref(database, path)
-    const snap = await get(nodeRef)
-
-    if (!snap.exists()) {
-        return NextResponse.json({error: 'Expediente no encontrado'}, {status: 404})
-    }
-
-    return NextResponse.json(snap.val())
+/**
+ * Interfaz que define la estructura de un campo de documento.
+ */
+interface CampoDocumento {
+  /** Nombre descriptivo del campo */
+  nombre: string;
+  /** Valor actual del campo */
+  valor: string;
+  /** Estado del campo: 'no_subido' | 'subido' | 'aprobado' | 'rechazado' */
+  estado: string;
 }
 
+/**
+ * Interfaz que define la estructura de un documento del expediente.
+ */
+interface DocumentoExpediente {
+  /** Campos específicos que debe contener el documento */
+  campos: Record<string, CampoDocumento>;
+  /** Estado del archivo: 'no_subido' | 'subido' | 'aprobado' | 'rechazado' */
+  estadoArchivo: string;
+  /** Estado de los campos: 'no_subido' | 'completo' | 'incompleto' */
+  estadoCampos: string;
+  /** Estado general del documento: 'no_subido' | 'completo' | 'incompleto' */
+  estadoGeneral: string;
+  /** Nombre descriptivo del documento */
+  nombre: string;
+  /** URL del archivo subido */
+  url: string;
+  /** Extensión permitida para el archivo */
+  extension: string;
+}
+
+/**
+ * Interfaz que define la estructura completa de un expediente.
+ */
+interface EstructuraExpediente {
+  /** ID del candidato propietario del expediente */
+  id_candidato: string;
+  /** Notas adicionales sobre el expediente */
+  notas: string;
+  /** Indica si el expediente está completo */
+  expediente_completo: boolean;
+  /** Colección de documentos del expediente */
+  documentos: Record<string, DocumentoExpediente>;
+}
+
+/**
+ * Maneja las peticiones GET para obtener un expediente específico.
+ *
+ * Busca y retorna la información completa de un expediente basado en el ID
+ * del candidato proporcionado como parámetro de consulta.
+ *
+ * @param request - El objeto NextRequest que contiene el expedienteId como query parameter
+ * @returns Una respuesta NextResponse con los datos del expediente o un error
+ * @throws Retorna error 400 si no se proporciona expedienteId
+ * @throws Retorna error 404 si el expediente no existe
+ *
+ * @example
+ * ```ts
+ * // GET /api/expediente?expedienteId=123
+ * // Retorna los datos completos del expediente del candidato 123
+ * ```
+ */
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const expedienteId = searchParams.get("expedienteId");
+
+  // Validación de parámetros requeridos
+  if (!expedienteId) {
+    return NextResponse.json(
+      { error: "Se requiere expedienteId" },
+      { status: 400 }
+    );
+  }
+
+  // Construye la ruta en la base de datos y obtiene los datos
+  const path = `expedientes/expediente${expedienteId}`;
+  const nodeRef = ref(database, path);
+  const snap = await get(nodeRef);
+
+  // Verifica si el expediente existe
+  if (!snap.exists()) {
+    return NextResponse.json(
+      { error: "Expediente no encontrado" },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json(snap.val());
+}
+
+/**
+ * Maneja las peticiones POST para crear o inicializar un expediente.
+ *
+ * Crea un nuevo expediente con una estructura predefinida de documentos
+ * si no existe. Si ya existe, simplemente confirma la operación.
+ * La estructura incluye todos los documentos requeridos para el proceso
+ * de contratación como INE, CURP, comprobantes, etc.
+ *
+ * @param request - El objeto NextRequest que contiene el expedienteId en el body
+ * @returns Una respuesta NextResponse confirmando la creación/existencia del expediente
+ * @throws Retorna error 400 si no se proporciona expedienteId
+ *
+ * @example
+ * ```ts
+ * // POST /api/expediente
+ * // Body: { "expedienteId": "123" }
+ * // Crea la estructura inicial del expediente para el candidato 123
+ * ```
+ */
 export async function POST(request: NextRequest) {
-    const {expedienteId} = await request.json();
-    if (!expedienteId) {
-        return NextResponse.json(
-            {error: 'Se requiere expedienteId'},
-            {status: 400}
-        );
-    }
+  const { expedienteId } = await request.json();
+
+  // Validación de parámetros requeridos
+  if (!expedienteId) {
+    return NextResponse.json(
+      { error: "Se requiere expedienteId" },
+      { status: 400 }
+    );
+  }
 
     const path = `expedientes/expediente${expedienteId}`;
     const nodeRef = ref(database, path);

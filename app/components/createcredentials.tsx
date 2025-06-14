@@ -1,15 +1,21 @@
-/* DOCUMENTACIÓN - Generación de credenciales
-
-Estados de los usuarios:
-
-* previo: cuando el candidato recién tiene credenciales y no ha generado su contraseña por primera vez
-* normal: usuario activo
-* bloqueado: cuando el usuario bloqueó su cuenta por 3 inicios de sesión incorrectos
-* enProceso: cuando se hizo la solicitud de recuperación de la cuenta
-* inhabilitado: cuando RH revoca los privilegios de acceso de la cuenta.
-* baja: Cuando el usuario fue bloqueado de manera permanente
-
-*/
+/**
+ * createcredentials.tsx
+ *
+ * Proporciona un formulario completo para crear credenciales de nuevos usuarios en el sistema.
+ *
+ * Este componente permite a administradores y personal de RH registrar nuevos usuarios con
+ * información personal, corporativa y de contacto. Maneja la creación automática de cuentas
+ * en Firebase Auth, validación de campos obligatorios y configuración inicial de perfiles
+ * de usuario en la base de datos con estados apropiados según el rol asignado.
+ *
+ * Estados de los usuarios:
+ * - previo: cuando el candidato recién tiene credenciales y no ha generado su contraseña por primera vez
+ * - normal: usuario activo
+ * - bloqueado: cuando el usuario bloqueó su cuenta por 3 inicios de sesión incorrectos
+ * - enProceso: cuando se hizo la solicitud de recuperación de la cuenta
+ * - inhabilitado: cuando RH revoca los privilegios de acceso de la cuenta
+ * - baja: Cuando el usuario fue bloqueado de manera permanente
+ */
 
 "use client";
 
@@ -37,24 +43,46 @@ import { getAuth } from "firebase/auth";
 const authV2 = getAuth();
 const rhID = authV2.currentUser?.uid;
 
-
-
 const generatePassword = (length: number = 16) => {
-  return crypto.randomBytes(length).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, length);
+  return crypto
+    .randomBytes(length)
+    .toString("base64")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, length);
 };
 
 export default function CreateCredentials() {
+  /** Estado para el nombre del usuario. */
   const [name, setName] = useState("");
+
+  /** Estado para los apellidos del usuario. */
   const [lastname, setLastname] = useState("");
+
+  /** Estado para el correo personal del usuario. */
   const [mail, setMail] = useState("");
+
+  /** Estado para el número de teléfono del usuario. */
   const [phone, setPhone] = useState("");
+
+  /** Estado para el rol del usuario (candidato por defecto). */
   const [role, setRole] = useState("candidato");
+
+  /** Estado para el rol del usuario actual (para validar permisos). */
   const [ownrole, setOwnRole] = useState("");
+
+  /** Estado para el correo corporativo del usuario. */
   const [email_corporativo, setEmailCorporativo] = useState("");
+
+  /** Estado para el género del usuario. */
   const [sexo, setSexo] = useState("");
+
+  /** Estado para el puesto de trabajo del usuario. */
   const [puesto, setPuesto] = useState("");
+
+  /** Estado para el área de trabajo del usuario. */
   const [area, setArea] = useState("");
 
+  /** Estado que maneja los errores de validación del formulario. */
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,
@@ -66,7 +94,15 @@ export default function CreateCredentials() {
     area: false,
   });
 
-  const validateFields = () => {
+  /**
+   * Valida todos los campos obligatorios del formulario.
+   *
+   * Esta función verifica que todos los campos requeridos estén completados
+   * y actualiza el estado de errores para mostrar indicadores visuales.
+   *
+   * @returns true si todos los campos son válidos, false en caso contrario.
+   */
+  const validateFields = (): boolean => {
     const newErrors = {
       name: !name.trim(),
       lastname: !lastname.trim(),
@@ -82,13 +118,19 @@ export default function CreateCredentials() {
     return !Object.values(newErrors).some((error) => error);
   };
 
-  const handlePress = async () => {
+  /**
+   * Maneja el proceso de creación de credenciales del usuario.
+   *
+   * Esta función valida el formulario, crea la cuenta en Firebase Auth,
+   * configura el perfil del usuario en la base de datos con los datos
+   * apropiados según el rol asignado, y muestra confirmación o errores.
+   */
+  const handlePress = async (): Promise<void> => {
     if (!validateFields()) {
       alert("Por favor, complete todos los campos obligatorios.");
       return;
     }
 
-    // Generamos una contraseña (opcional: podrías permitir que el usuario defina la suya)
     const password = generatePassword();
 
     try {
@@ -100,9 +142,8 @@ export default function CreateCredentials() {
       );
       const uid = userCredential.user.uid;
 
-      // Preparamos los datos para guardar en la Realtime Database.
-      // NOTA: No se almacena la contraseña en la base de datos, ya que Firebase Auth se encarga de ello.
-      let data = {};
+      // Preparar los datos del usuario según el rol
+      let data: {};
 
       if (role === "rh") {
         data = {
@@ -136,15 +177,21 @@ export default function CreateCredentials() {
         };
       }
 
-      // Guardamos los datos del usuario usando el UID como key
+      // Guardar los datos del usuario en la base de datos
       await set(ref(database, "usuarios/" + uid), data);
       await sendEmailNotification(
-          uid,
-          `Se han generado tus credenciales`,
-          `Hola,\n\nYa puedes acceder al sistema https://www.grupo-pissa.space/ ingresando las siguientes credenciales:\n\nCorreo electrónico: ${mail}\nContraseña: ${password}\n\nSaludos,\nEquipo Grupo Pissa`,
+        uid,
+        `Se han generado tus credenciales`,
+        `Hola,\n\nYa puedes acceder al sistema https://www.grupo-pissa.space/ ingresando las siguientes credenciales:\n\nCorreo electrónico: ${mail}\nContraseña: ${password}\n\nSaludos,\nEquipo Grupo Pissa`
       );
-      
-      await addHistoryEntry(uid, 'documentos', new Date().toISOString(), rhID, 'Generación de Credenciales' );
+
+      await addHistoryEntry(
+        uid,
+        "documentos",
+        new Date().toISOString(),
+        rhID,
+        "Generación de Credenciales"
+      );
       alert(
         "Se han creado las credenciales exitosamente. UID del usuario: " + uid
       );
@@ -160,7 +207,13 @@ export default function CreateCredentials() {
   };
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    /**
+     * Verifica el rol del usuario actual para mostrar opciones apropiadas.
+     *
+     * Esta función consulta la API para obtener el rol del usuario autenticado
+     * y determinar si tiene permisos para asignar roles específicos.
+     */
+    const checkAdmin = async (): Promise<void> => {
       const res = await fetch("/api/getCurrentUser");
       const jason = await res.json();
       setOwnRole(jason.rol);
@@ -178,6 +231,7 @@ export default function CreateCredentials() {
           </p>
         </div>
         <div className="flex flex-col justify-center md:grid lg:grid-cols-2 md:grid-cols-2 gap-6">
+          {/* Campo Nombre */}
           <div>
             <label className="text-[#495057] block mb-1">Nombre</label>
             <div
@@ -199,6 +253,8 @@ export default function CreateCredentials() {
               <User className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Apellidos */}
           <div>
             <label className="text-[#495057] block mb-1">Apellidos</label>
             <div
@@ -220,6 +276,8 @@ export default function CreateCredentials() {
               <User className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Correo Personal */}
           <div>
             <label className="text-[#495057] block mb-1">Correo Personal</label>
             <div
@@ -241,6 +299,8 @@ export default function CreateCredentials() {
               <Mail className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Correo Corporativo */}
           <div>
             <label className="text-[#495057] block mb-1">
               Correo Corporativo
@@ -267,6 +327,8 @@ export default function CreateCredentials() {
               <Building className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Teléfono */}
           <div>
             <label className="text-[#495057] block mb-1">Teléfono</label>
             <div
@@ -293,6 +355,8 @@ export default function CreateCredentials() {
               <Phone className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Género */}
           <div>
             <label className="text-[#495057] block mb-1">Sexo</label>
             <div
@@ -318,6 +382,8 @@ export default function CreateCredentials() {
               <VenusAndMars className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Puesto */}
           <div>
             <label className="text-[#495057] block mb-1">Puesto</label>
             <div
@@ -397,6 +463,8 @@ export default function CreateCredentials() {
               <Briefcase className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Campo Área */}
           <div>
             <label className="text-[#495057] block mb-1">Área</label>
             <div
@@ -418,6 +486,8 @@ export default function CreateCredentials() {
               <BriefcaseBusiness className="ml-2 text-gray-400" />
             </div>
           </div>
+
+          {/* Selector de Rol (solo para admin) */}
           {ownrole === "admin" ? (
             <div>
               <label className="text-[#495057] block mb-1">Rol</label>
@@ -449,6 +519,8 @@ export default function CreateCredentials() {
           ) : (
             <></>
           )}
+
+          {/* Botón de Crear Credenciales */}
           <div className="flex justify-center items-center md:block">
             <button
               className="bg-[#2d4583] text-white py-2 px-6 text-center rounded-lg cursor-pointer hover:bg-[#08b177] transition text-lg"

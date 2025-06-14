@@ -1,3 +1,15 @@
+/**
+ * bloqueado/page.tsx
+ *
+ * Componente de página para usuarios con acceso bloqueado al sistema.
+ *
+ * Este componente implementa una página de estado que se muestra a usuarios
+ * cuyo acceso ha sido bloqueado por el administrador del sistema. Proporciona
+ * información de contacto para soporte técnico y instrucciones claras sobre
+ * el proceso de desbloqueo. Incluye tiempos estimados de respuesta y canales
+ * de comunicación oficiales para resolver la situación.
+ */
+
 export default function Bloqueado() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -10,6 +22,7 @@ export default function Bloqueado() {
           <ul>
             <li className="mb-2">correo@pissa.com</li>
             <li className="mb-2">+52 9999999999</li>
+            {/* TODO: Editar el número de telefono a uno real */}
           </ul>
         </div>
         <p className="text-xs m-4">

@@ -1,3 +1,16 @@
+/**
+ * olvidaste/link/page.tsx
+ *
+ * Proporciona la página de establecimiento de contraseña mediante enlace de recuperación.
+ *
+ * Esta página del flujo de recuperación de contraseña presenta una interfaz para que
+ * los usuarios puedan establecer una nueva contraseña utilizando un enlace de
+ * verificación enviado por correo electrónico. Implementa el mismo patrón de diseño
+ * responsivo que otras páginas del flujo de autenticación, con layout dividido
+ * entre formulario funcional y panel visual corporativo. Optimizada para completar
+ * el proceso de recuperación de contraseña de manera segura y user-friendly.
+ */
+
 import EstablecerContrasenaLink from "../../components/establecerContrasenaLink";
 import Image from "next/image";
 import FondoBlanco from "../../components/fondo-blanco";
@@ -16,7 +29,6 @@ export default function EstablecerLink() {
       </div>
       <div className="block md:hidden">
         <FondoBlanco>
-
           <EstablecerContrasenaLink></EstablecerContrasenaLink>
         </FondoBlanco>
       </div>
@@ -29,7 +41,7 @@ export default function EstablecerLink() {
             src="/logo_pissa.png"
             className="pb-10 hidden md:block"
           />
-        
+
           <EstablecerContrasenaLink></EstablecerContrasenaLink>
         </div>
       </div>
