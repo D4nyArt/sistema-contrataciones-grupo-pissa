@@ -1,8 +1,8 @@
 [
   {
-    "origin": ["http://localhost:3000", "https://grupo-pissa.space"],
-    "method": ["GET", "HEAD"],
+    "origin": ["http://localhost:3000", "https://grupo-pissa.space", "https://*.grupo-pissa.space"],
+    "method": ["GET", "HEAD", "PUT", "POST"],
     "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type"]
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"]
   }
 ]
