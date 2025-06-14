@@ -23,7 +23,7 @@ export default async function CantCorporativo() {
       {/*<p className="text-blue-900 text-7xl">{totalUsers}</p>*/}
       {/*<p className="text-blue-900 text-xl">Usuarios</p>*/}
       <span className="text-xl text-gray-700">
-        <strong className="text-3xl text-[#212529]">{totalUsers}</strong>
+        <strong className="text-5xl md:text-3xl md:text-[#212529] text-white">{totalUsers}</strong>
       </span>
     </div>
   );

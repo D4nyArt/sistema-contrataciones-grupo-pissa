@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Clock, ThumbsUp, ThumbsDown, X } from "lucide-react";
-import { update, ref } from "firebase/database";
+import { update, ref} from "firebase/database";
 import DirectViewer from "./directFileView";
 import { database } from "@/firebaseConfig";
 import PopUp from "./pop-up";
 import { urbanist } from "./fonts";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -64,6 +66,11 @@ export default function ReviewContract({ uid }: { uid: string }) {
       estado: newState,
       notas: notes,
     });
+    const auth = getAuth();
+    const rhID = auth.currentUser?.uid;
+
+    const historyNote = newState === "aprobado" ? "Aprobación del contrato" : "Rechazo del contrato";
+    await addHistoryEntry(uid, "contratos", new Date().toISOString(), rhID, historyNote);
 
     if (approve) {
       const newRole = info.contract.id.startsWith("conproy")
@@ -116,8 +123,8 @@ export default function ReviewContract({ uid }: { uid: string }) {
       {/* Vista previa del contrato subido por el candidato */}
       {info.contract ? (
         <DirectViewer
-          folder={`pruebaInicial/expedientes/expediente${uid}/Contratos`}
-          fileName={info.active_contract ?? "NaC"}
+          folder={`pruebaInicial/expedientes/expediente${uid}/contratos`}
+          fileName={`contratoFirmado${uid}.pdf`}  
         />
       ) : (
         <p className="text-gray-500">

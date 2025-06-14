@@ -189,7 +189,7 @@ export default function FormularioOlvide() {
               await sendPasswordResetEmail(auth, email, {
                 url: process.env.NODE_ENV === 'development'
                 ? "http://localhost:3000/olvidaste/link"
-                : "https://sistema-contrataciones-grupo-pissa-b8fo.vercel.app/olvidaste/link",
+                : "https://www.grupo-pissa.space/olvidaste/link",
                 handleCodeInApp: true
               });
               console.log("Correo de recuperación enviado");
@@ -210,6 +210,14 @@ export default function FormularioOlvide() {
             break;
 
           case "enProceso":
+            setAlertaRecuperar({
+              type: "info",
+              mensaje:
+                "Ya tiene una solicitud en curso. Espere al administrador",
+            });
+            break;
+
+            case "cambioContrasena":
             setAlertaRecuperar({
               type: "info",
               mensaje:

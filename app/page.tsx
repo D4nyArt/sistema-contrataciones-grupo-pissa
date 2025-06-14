@@ -30,8 +30,8 @@ export default function Home() {
             src="/logo-blanco.png"
           />
         </div>
-        <LoginFAQ />
       </div>
+      <LoginFAQ />
     </div>
   )
 }

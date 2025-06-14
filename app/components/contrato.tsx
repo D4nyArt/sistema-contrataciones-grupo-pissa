@@ -14,7 +14,6 @@ export default function Contratos({ id }: { id: string }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        console.log(`contratos/corporativo/${id}`);
         const userRef = ref(database, `contratos/proyectos/${id}`);
         const snapshot = await get(userRef);
         let data = snapshot.val() || {};
@@ -26,7 +25,6 @@ export default function Contratos({ id }: { id: string }) {
           data = snapshot.val() || {};
         }
 
-        console.log(data);
         setName(data.name || "");
       } catch (e) {
         console.error(e);
@@ -37,7 +35,7 @@ export default function Contratos({ id }: { id: string }) {
 
   return (
     <div>
-      <div className="mb-8 animate-fade-in-up">
+      <div className="mb-8 animate-fade-in-up hover:text-[#08b177] text-[#495057]">
         <BotonRegresar />
       </div>
       <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6 animate-fade-in-up">

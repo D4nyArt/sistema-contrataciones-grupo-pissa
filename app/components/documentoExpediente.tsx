@@ -1,199 +1,251 @@
 import NotasExpediente from "./notasExpediente";
 import CamposExpediente from "./camposExpediente";
 import ArchivoExpediente from "./archivoExpediente";
+import { useState, useEffect, useCallback } from "react";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
 
-import {useState, useEffect} from "react";
+
+const auth = getAuth();
+const rhID = auth.currentUser?.uid;
+
+
 
 interface DocProps {
-    expedienteId: string;
-    documentoId: string;
-    rol: string;
+  expedienteId: string;
+  documentoId: string;
+  rol: string;
 }
 
 interface DocData {
-    nombre: string;
-    estadoGeneral: string;
-    estadoArchivo: string;
-    estadoCampos: string;
+  nombre: string;
+  estadoGeneral: string;
+  estadoArchivo: string;
+  estadoCampos: string;
 }
 
 type DocState = "aprobado" | "pendiente" | "rechazado" | "no_subido";
 
-
 const DOC_STATES: Record<string, DocState> = {
-    APROBADO: "aprobado",
-    PENDIENTE: "pendiente",
-    RECHAZADO: "rechazado",
-    NO_SUBIDO: "no_subido",
+  APROBADO: "aprobado",
+  PENDIENTE: "pendiente",
+  RECHAZADO: "rechazado",
+  NO_SUBIDO: "no_subido",
 };
 
+export default function DocumentoExpediente({
+  expedienteId,
+  documentoId,
+  rol,
+}: DocProps) {
+  const [docData, setDocData] = useState<DocData | undefined>();
+  const [hasFields, setHasFields] = useState<boolean>(false);
 
+  const fetchDoc = useCallback(async () => {
+    if (!expedienteId || !documentoId) return;
+    try {
+      const res = await fetch(
+        `/api/docExpediente?expedienteId=${expedienteId}&documentoId=${documentoId}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setDocData({
+          nombre: data.nombre,
+          estadoGeneral: data.estadoGeneral,
+          estadoArchivo: data.estadoArchivo,
+          estadoCampos: data.estadoCampos,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [expedienteId, documentoId]);
 
-export default function DocumentoExpediente({expedienteId, documentoId, rol}: DocProps) {
-    const [docData, setDocData] = useState<DocData | undefined>();
+  const fetchHasFields = useCallback(async () => {
+    if (!expedienteId || !documentoId) return;
+    try {
+      const res = await fetch(
+        `/api/fields?expedienteId=${expedienteId}&documentoId=${documentoId}`
+      );
+      const data = await res.json();
+      setHasFields(res.ok && data.fields && Object.keys(data.fields).length > 0);
+    } catch {
+      setHasFields(false);
+    }
+  }, [expedienteId, documentoId]);
 
-    const fetchDoc = async () => {
-        if (!expedienteId || !documentoId) return;
-        try {
-            const response = await fetch(`/api/docExpediente?expedienteId=${expedienteId}&documentoId=${documentoId}`);
+  useEffect(() => {
+    fetchDoc();
+    fetchHasFields();
+  }, [fetchDoc, fetchHasFields]);
 
-            const data = await response.json();
+  const handleApproveAll = async (): Promise<void> => {
+    if (!expedienteId || !documentoId) return;
+    try {
+      const res = await fetch("/api/docExpediente", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: rol,
+          expedienteId,
+          documentoId,
+          estadoArchivo: DOC_STATES.APROBADO,
+          estadoCampos: DOC_STATES.APROBADO,
+        }),
+      });
+      const uid = expedienteId.replace("expediente", "");
+      if (!res.ok) throw await res.json();
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, "Documento aprobado completamente");
 
-            if (response.ok) {
-                setDocData({nombre: data.nombre, estadoGeneral: data.estadoGeneral, estadoArchivo: data.estadoArchivo, estadoCampos: data.estadoCampos});
-                console.log("Document data:", data);
-            } else {
-                console.error("Error al obtener la informacion del documento:", data.error);
-            }
-        } catch (error) {
-            console.error("Error en la solicitud:", error);
-        }
-    };
+      fetchDoc();
+      fetchHasFields();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    useEffect(() => {
-        fetchDoc();
-    }, [expedienteId, documentoId]);
+  const handleRejectAll = async (): Promise<void> => {
+    if (!expedienteId || !documentoId) return;
+    try {
+      const res = await fetch("/api/docExpediente", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          expedienteId,
+          documentoId,
+          estadoArchivo: DOC_STATES.RECHAZADO,
+          estadoCampos: DOC_STATES.RECHAZADO,
+        }),
+      });
+      const uid = expedienteId.replace("expediente", "");
+      if (!res.ok) throw await res.json();
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, "Documento aprobado completamente");
 
-    const handleApproveAll = async (): Promise<void> => {
-        if (!expedienteId || !documentoId) return;
-        try {
-            const res = await fetch("/api/docExpediente", {
-                method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    role : rol,
-                    expedienteId,
-                    documentoId,
-                    estadoArchivo: DOC_STATES.APROBADO,
-                    estadoCampos: DOC_STATES.APROBADO,
-                }),
-            });
-            if (!res.ok) throw await res.json();
-            fetchDoc();
-        } catch (err) {
-            console.error("Error en aprobar todo:", err);
-        }
-    };
+      fetchDoc();
+      fetchHasFields();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    // Rechaza todo (archivo + campos)
-    const handleRejectAll = async (): Promise<void> => {
-        if (!expedienteId || !documentoId) return;
-        try {
-            const res = await fetch("/api/docExpediente", {
-                method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    expedienteId,
-                    documentoId,
-                    estadoArchivo: DOC_STATES.RECHAZADO,
-                    estadoCampos: DOC_STATES.RECHAZADO,
-                }),
-            });
-            if (!res.ok) throw await res.json();
-            fetchDoc();
-        } catch (err) {
-            console.error("Error en rechazar todo:", err);
-        }
-    };
-
-    return (
-        <div>
-            <div className="mb-4 p-3 rounded-lg shadow-sm bg-white">
-                <h2 className="text-lg font-bold mb-2">
-                    Estado del documento: {docData?.nombre}
-                </h2>
-                <div
-                    className={`p-2 rounded-md text-center font-medium ${docData?.estadoGeneral === DOC_STATES.APROBADO
-                        ? "bg-green-100 text-green-800"
-                        : docData?.estadoGeneral ===
-                            DOC_STATES.PENDIENTE
-                            ? "bg-yellow-100 text-yellow-800"
-                            : docData?.estadoGeneral ===
-                                DOC_STATES.RECHAZADO
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                >
-                    {docData?.estadoGeneral === DOC_STATES.APROBADO
-                        ? "✓ Apartado aprobado"
-                        : docData?.estadoGeneral === DOC_STATES.PENDIENTE
-                            ? "⟳ Pendiente de revisión"
-                            : docData?.estadoGeneral === DOC_STATES.RECHAZADO
-                                ? "✗ Apartado rechazado"
-                                : "✗ Apartado vacio"}
-                </div>
-            </div>
-            <h3 className="font-medium text-lg mb-3">
-                <div className="flex items-center justify-between">
-                    <span>Documento</span>
-                    <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${docData?.estadoArchivo === DOC_STATES.APROBADO
-                            ? "bg-green-100 text-green-800"
-                            : docData?.estadoArchivo ===
-                                DOC_STATES.PENDIENTE
-                                ? "bg-yellow-100 text-yellow-800"
-                                : docData?.estadoArchivo ===
-                                    DOC_STATES.RECHAZADO
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-800"
-                            }`}
-                    >
-                        {docData?.estadoArchivo === DOC_STATES.APROBADO
-                            ? "Aprobado"
-                            : docData?.estadoArchivo ===
-                                DOC_STATES.PENDIENTE
-                                ? "Pendiente"
-                                : docData?.estadoArchivo === DOC_STATES.RECHAZADO
-                                    ? "Rechazado"
-                                    : "No subido"}
-                    </span>
-                </div>
-            </h3>
-            <ArchivoExpediente role={rol} expedienteId={expedienteId} documentoId={documentoId} onChangeState={() => fetchDoc()} />
-            <div className="flex justify-between items-center mb-3">
-                <h3 className="font-medium text-lg">Datos del documento</h3>
-                <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${docData?.estadoCampos === DOC_STATES.APROBADO
-                        ? "bg-green-100 text-green-800"
-                        : docData?.estadoCampos ===
-                            DOC_STATES.PENDIENTE
-                            ? "bg-yellow-100 text-yellow-800"
-                            : docData?.estadoCampos ===
-                                DOC_STATES.RECHAZADO
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                >
-                    {docData?.estadoCampos === DOC_STATES.APROBADO
-                        ? "Campos aprobados"
-                        : docData?.estadoCampos ===
-                            DOC_STATES.PENDIENTE
-                            ? "Campos pendientes"
-                            : docData?.estadoCampos === DOC_STATES.RECHAZADO
-                                ? "Campos rechazados"
-                                : "Sin datos"}
-                </span>
-            </div>
-            <CamposExpediente role={rol} expedienteId={expedienteId} documentoId={documentoId} onChangeState={() => fetchDoc()} />
-            <NotasExpediente role={rol} expedienteId={expedienteId} />
-            {rol === "rh" || rol === "admin" && (
-                <div className="flex space-x-2">
-                    <button
-                        onClick={handleApproveAll}
-                        className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
-                        title="Aprueba el documento y todos sus campos"
-                    >
-                        Aprobar Todo
-                    </button>
-                    <button
-                        onClick={handleRejectAll}
-                        className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-                        title="Rechaza el documento y todos sus campos"
-                    >
-                        Rechazar Todo
-                    </button>
-                </div>
-            )}
+  return (
+    <div>
+      <div className="mb-4 p-3 rounded-lg shadow-sm bg-white">
+        <h2 className="text-lg font-bold mb-2">
+          Estado del documento: {docData?.nombre}
+        </h2>
+        <div
+          className={`p-2 rounded-md text-center font-medium ${
+            docData?.estadoGeneral === DOC_STATES.APROBADO
+              ? "bg-green-100 text-green-800"
+              : docData?.estadoGeneral === DOC_STATES.PENDIENTE
+              ? "bg-yellow-100 text-yellow-800"
+              : docData?.estadoGeneral === DOC_STATES.RECHAZADO
+              ? "bg-red-100 text-red-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {docData?.estadoGeneral === DOC_STATES.APROBADO
+            ? "✓ Apartado aprobado"
+            : docData?.estadoGeneral === DOC_STATES.PENDIENTE
+            ? "⟳ Pendiente de revisión"
+            : docData?.estadoGeneral === DOC_STATES.RECHAZADO
+            ? "✗ Apartado rechazado"
+            : "✗ Apartado vacío"}
         </div>
-    );
+      </div>
+
+      <h3 className="font-medium text-lg mb-3">
+        <div className="flex items-center justify-between">
+          <span>Documento</span>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              docData?.estadoArchivo === DOC_STATES.APROBADO
+                ? "bg-green-100 text-green-800"
+                : docData?.estadoArchivo === DOC_STATES.PENDIENTE
+                ? "bg-yellow-100 text-yellow-800"
+                : docData?.estadoArchivo === DOC_STATES.RECHAZADO
+                ? "bg-red-100 text-red-800"
+                : "bg-gray-100 text-gray-800"
+            }`}
+          >
+            {docData?.estadoArchivo === DOC_STATES.APROBADO
+              ? "Aprobado"
+              : docData?.estadoArchivo === DOC_STATES.PENDIENTE
+              ? "Pendiente"
+              : docData?.estadoArchivo === DOC_STATES.RECHAZADO
+              ? "Rechazado"
+              : "No subido"}
+          </span>
+        </div>
+      </h3>
+
+      <ArchivoExpediente
+        role={rol}
+        expedienteId={expedienteId}
+        documentoId={documentoId}
+        onChangeState={() => {
+          fetchDoc();
+          fetchHasFields();
+        }}
+      />
+
+      {hasFields && (
+        <>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-medium text-lg">Datos del documento</h3>
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                docData?.estadoCampos === DOC_STATES.APROBADO
+                  ? "bg-green-100 text-green-800"
+                  : docData?.estadoCampos === DOC_STATES.PENDIENTE
+                  ? "bg-yellow-100 text-yellow-800"
+                  : docData?.estadoCampos === DOC_STATES.RECHAZADO
+                  ? "bg-red-100 text-red-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {docData?.estadoCampos === DOC_STATES.APROBADO
+                ? "Campos aprobados"
+                : docData?.estadoCampos === DOC_STATES.PENDIENTE
+                ? "Campos pendientes"
+                : docData?.estadoCampos === DOC_STATES.RECHAZADO
+                ? "Campos rechazados"
+                : "Sin datos"}
+            </span>
+          </div>
+          <CamposExpediente
+            role={rol}
+            expedienteId={expedienteId}
+            documentoId={documentoId}
+            onChangeState={() => {
+              fetchDoc();
+              fetchHasFields();
+            }}
+          />
+        </>
+      )}
+
+      <NotasExpediente role={rol} expedienteId={expedienteId} />
+
+      {(rol === "rh" || rol === "admin") && (
+        <div className="flex space-x-2 justify-center mt-5">
+          <button
+            onClick={handleApproveAll}
+            className="cursor-pointer px-3 py-1 bg-green-600 text-white text-md rounded hover:bg-green-700 transition-colors"
+            title="Aprueba el documento y todos sus campos"
+          >
+            Aprobar Todo
+          </button>
+          <button
+            onClick={handleRejectAll}
+            className="cursor-pointer px-3 py-1 bg-red-600 text-white text-md rounded hover:bg-red-700 transition-colors"
+            title="Rechaza el documento y todos sus campos"
+          >
+            Rechazar Todo
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

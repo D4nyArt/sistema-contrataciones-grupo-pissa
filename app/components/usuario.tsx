@@ -6,13 +6,14 @@ import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { database } from "../../firebaseConfig";
-import { ref, get, set } from "firebase/database";
+import { ref, get } from "firebase/database";
 import ProfilePicture from "./profile-picture";
 
-import { handleBlock, handleUnblock } from "./block";
+import { handleBlock, handleRemoval, handleUnblock } from "./block";
 import {
   CircleCheck,
   Clock,
+  Key,
   Lock,
   LockOpen,
   Undo,
@@ -35,7 +36,21 @@ export default function Usuarios() {
   const [status, setStatus] = useState("");
   const [_attempt, setAttempt] = useState(0);
   const [_time, setTime] = useState("-");
+  const [ownid, setOwnid] = useState("");
   const id = pathname.split("/")[2];
+
+  let userRole = "N/A";
+  if (role === "enProyecto") {
+    userRole = "En Proyecto";
+  } else if (role === "enCorporativo") {
+    userRole = "En Corporativo";
+  } else if (role === "rh") {
+    userRole = "RH";
+  } else if (role === "admin") {
+    userRole = "ADMIN";
+  } else if (role === "candidato") {
+    userRole = "Candidato";
+  }
 
   useEffect(() => {
     const auth = getAuth();
@@ -45,19 +60,17 @@ export default function Usuarios() {
     return () => unsub();
   }, []);
 
-  const handleRemoval = async () => {
-    await set(
-      ref(database, `usuarios/${id}/estadoUsuario`),
-      "baja"
-    ).then(() => {
-      setStatus("baja");
-    });
-  };
   useEffect(() => {
     //get(ref(database, `usuarios/${id}`))
 
     const fetchUser = async () => {
       try {
+        const fetcher = await fetch("/api/getCurrentUserID");
+        const jason = await fetcher.json();
+
+        console.log("jason value", jason.value)
+        setOwnid(jason.value);
+
         const userRef = ref(database, `usuarios/${id}`);
         const snapshot = await get(userRef);
         const data = snapshot.val() || {};
@@ -76,7 +89,7 @@ export default function Usuarios() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-8 hover:text-[#08b177] text-[#495057]">
         <BotonRegresar />
       </div>
       <div className="flex flex-col md:flex-row items-center {/*border-b border-gray-300*/} pb-6">
@@ -127,6 +140,14 @@ export default function Usuarios() {
                     </p>
                   </div>
                 )}
+                {status === "cambioContrasena" && (
+                  <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
+                    <Key className="size-4 text-gray-800" />
+                    <p className="pl-1 text-gray-800 normal-case text-xs">
+                      Cambio de Contraseña
+                    </p>
+                  </div>
+                )}
                 {status === "previo" && (
                   <div className="flex flex-row items-center px-2 py-0.5 bg-gray-200 rounded-lg">
                     <Undo className="size-4 text-gray-800" />
@@ -137,14 +158,14 @@ export default function Usuarios() {
                 )}
               </div>
             </div>
-            <p className="text-[#2975a0] capitalize">{role}</p>
+            <p className="text-[#2975a0] capitalize">{userRole}</p>
           </div>
         </span>
         <div className="md:ml-auto flex">
-          {role === "candidato" && (
+          {role === "candidato" && ownid !== id && (
             <SeguimientoToggle rhUID={rhUID!} candidateUID={id}/>
           )}
-            {status !== "dado de baja" && (
+            {status !== "dado de baja" &&  ownid !== id && (
               <button
                 className={`justify-center border-2 py-2 px-4 rounded-lg mr-2 inline-flex transition-all duration-300 cursor-pointer ${
                   status === "bloqueado"
@@ -152,9 +173,9 @@ export default function Usuarios() {
                     : "border-gray-500 text-[#212529] hover:border-red-500 hover:text-red-700 hover:bg-red-100 w-40"
                 }`}
                 onClick={() =>
-                  status === "bloqueado"
+                  status === "bloqueado" && ownid !== id
                     ? handleUnblock(id, status, setStatus, setAttempt, setTime)
-                    : handleBlock(id, setStatus, status)
+                    : handleBlock(id, setStatus, role, status)
                 }
               >
                 {status === "bloqueado" ? (
@@ -169,12 +190,13 @@ export default function Usuarios() {
               </button>
             )}
 
-          <button
+          {ownid !== id ?
+            <button
             className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition inline-flex cursor-pointer"
-            onClick={handleRemoval}
+            onClick={() => handleRemoval(id, setStatus, role)}
           >
             <UserMinus className="pr-2" /> Dar de baja
-          </button>
+          </button> : null}
         </div>
       </div>
     </div>

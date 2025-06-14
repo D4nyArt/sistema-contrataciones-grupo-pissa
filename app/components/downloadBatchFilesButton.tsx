@@ -90,7 +90,7 @@ const DownloadBatchFilesButton: React.FC<Props> = ({expedienteId}) => {
     <button
       onClick={handleDownload}
       disabled={loading}
-      className="px-3.5 py-2 bg-blue-800 text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-100 hover:text-blue-800 transition-colors"
+      className="px-3.5 py-2 bg-[#2d4583] text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-100 hover:text-[#2d4583] transition-colors cursor-pointer"
     >
       {loading ? 'Preparando descarga…' : <FolderDown className="w-5" />}
     </button>

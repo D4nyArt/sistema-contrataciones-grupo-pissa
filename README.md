@@ -1,3 +1,3 @@
 # HRS-GrupoPissa
 
-Final deploy 30/05/2025
+Final ya, ahora si 

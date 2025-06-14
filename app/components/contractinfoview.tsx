@@ -4,108 +4,106 @@ import DirectViewer from "./directFileView";
 import { get, ref } from "firebase/database";
 import { database } from "@/firebaseConfig";
 import { urbanist } from "./fonts";
-import { Building, FolderOpenDot, File } from "lucide-react";
+import { File } from "lucide-react";
 
 // type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
 export default function ContractInfoView({ id }: { id: string }) {
   
 
-  const [duration, setDuration] = useState(""); // Duración del contrato en meses
-  const [selected, setSelected] = useState("");
-  //const [isproject, setIsproject] = useState(false);
-  //const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
+  //const [assignation, setAssignation] = useState("");
+  const [address, setAddress] = useState("");
+  const [name, setName] = useState("");
+  const [legalRepresentative,setLegalRepresentative] = useState("");
+  const [rfc, setRfc] = useState("");
+  const [url] = useState("");
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState("");
-  
+  //const [type, setType] = useState("");
+  const [fechaAdendum, setFechaAdendum] = useState("");
+  const [fechaContrato, setFechaContrato] = useState("");
+  const [fechaVigencia, setFechaVigencia] = useState("");
+  const [folioRepse, setFolioRepse] = useState("");
+  const [repse, setRepse] = useState("");
+  const [numcon, setNumcon] = useState("");
+
   useEffect(() => {
       const fetchUser = async () => {
         try {
-          console.log(`contratos/corporativo/${id}`);
-          const userRef = ref(database, `contratos/proyectos/${id}`);
-          const snapshot = await get(userRef);
-          let data = snapshot.val() || {};
-          console.log(id);
-          console.log(data);
-          console.log(type);
           
-          //if the contract is not in "proyectos" search in "corporativo"
-          if (!Object.keys(data).length) {
-            const userRef = ref(database, `contratos/corporativo/${id}`);
+            const type = id.startsWith("empresa") ? "empresas" : "clientes";
+            const userRef = ref(database, `contratos/${type}/${id}`);
             const snapshot = await get(userRef);
-            data = snapshot.val() || {};
+            const data = snapshot.val() || {};
            
-            setType("cor");
-            //setIsproject(false);
-          }
+            //setType("cor");
 
-          else {
-             setType("pro");
-            //setIsproject(true);
-          }
-  
-          console.log(data);
-          console.log(type);
+          setName(data.nombre || "");
+          setAddress(data.direccion || "");
+          setLegalRepresentative(data.representanteLegal || "");
+          setRfc(data.rfc || "");
+          setFechaAdendum(data.fechaAdendum || "");
+          setFechaContrato(data.fechaContrato || "");
+          setFechaVigencia(data.fechaVigencia || "");
+          setFolioRepse(data.folioRepse || "");
+          setNumcon(data.numeroContrato || "");
+          setRepse(data.repse || "");
 
-          setDuration(data.duration || "");
-          //setName(data.name || "");
-          setUrl(data.url || "");
+          
+          
         } catch (e) {
           console.error(e);
         }
-        setSelected(type);
         setLoading(true);
       };
       fetchUser();
-    }, [type]);
+    }, [id]);
 
-
-  //const contract = selectedProject || selectedCorporate;
   const folder = path.dirname(url);
   const fileName = path.basename(url);
-
-  //console.log("url: ", url);
-  //console.log("folder: ", folder);
-  //console.log("filename: ", fileName);
 //
   //// Acción al confirmar el envío
 //
-  //console.log("selected: ", selected);
 
-  const options = [
-    { id: "pro", label: "Proyecto", icon: FolderOpenDot },
-    { id: "cor", label: "Corporativo", icon: Building }
-  ];
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
       {/* Selección de contrato */}
       <div className="flex flex-col gap-4 md:w-1/3 p-6 bg-white rounded-xl shadow-md animate-fade-in-up">
+        {id.startsWith("empresa")?
+        <>
         <div className="border-b pb-6 border-gray-300">
-          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de contrato</h2>
+          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de plantilla</h2>
         </div>
-        <div className="flex space-x-2 mr-auto pt-2">
-          {options.map((option) => {
-            const LinkIcon = option.icon;
-            return (
-              <div key={option.id}
-                className={`flex items-center px-4 py-2 border-2 rounded-lg text-sm font-medium gap-2 cursor-pointer
-                ${selected === option.id
-                    ? "border-[#2975a0] text-[#2975a0]"
-                    : "border-gray-300 text-gray-500"}`}
-              >
-                <LinkIcon/>
-                {option.label}
-              </div>
-            );
-          })}
+        <p>Empresa</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Dirección</h2>
+        <p>{address || "N/A"}</p> 
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Nombre de la Empresa</h2>
+        <p>{name || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Representante Legal</h2>
+        <p>{legalRepresentative || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>RFC</h2>
+        <p>{rfc || "N/A"}</p>
+        </>
+        : 
+        <>
+        <div className="border-b pb-6 border-gray-300">
+          <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Tipo de plantilla</h2>
         </div>
-        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Duración del Contrato</h2>
-        <p>{duration || "N/A"}</p>
-        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Asignación</h2>
-        <p>{"N/A"}</p>
-      
+        <p>Clientes</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Adendum</h2>
+        <p>{fechaAdendum || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Contrato</h2>
+        <p>{fechaContrato || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Fecha Vigencia</h2>
+        <p>{fechaVigencia || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Folio Repse</h2>
+        <p>{folioRepse || "N/A"}</p>
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Repse</h2>
+        <p>{repse || "N/A"}</p> 
+        <h2 className={`${urbanist.className} text-xl font-semibold text-[#212529]`}>Numero Contrato</h2>
+        <p>{numcon || "N/A"}</p> 
+        
+        </>}
       </div>
 
       {/* Vista previa*/}
@@ -124,7 +122,6 @@ export default function ContractInfoView({ id }: { id: string }) {
           </div>
         )}
         </div>
-      
     </div>
   );
 }

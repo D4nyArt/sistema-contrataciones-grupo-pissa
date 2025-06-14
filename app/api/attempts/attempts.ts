@@ -1,4 +1,5 @@
 import { getDatabase, ref, query, orderByChild, equalTo, get, runTransaction, set, update } from "firebase/database";
+import { addHistoryEntry } from "../history/history";
 
 const MAX_ATTEMPTS = 3;
 
@@ -34,7 +35,7 @@ export async function incrementLoginAttempt(email: string): Promise<number> {
     }
 
     await runTransaction(totalRef, (currentTotal) => (currentTotal || 0) + 1);
-
+    await addHistoryEntry(uid, "contrasenas", new Date().toISOString(), undefined, "Intento fallido de inicio de sesión");
     await set(lastRef, now.toISOString());
 
     await checkAndBlockUser(uid);
@@ -60,11 +61,8 @@ async function checkAndBlockUser(uid: string) {
 
       if (total >= MAX_ATTEMPTS && status !== "bloqueado") {
         await update(userRef, { estadoUsuario: "bloqueado" });
-        //const historyBlock = new Date().toISOString();
-        /* Pendientes: guardar en la base de datos del historial 
-         *  Llamar a la función de history que lo hace
-         */
-      }
+        await addHistoryEntry(uid, 'contrasenas', new Date().toISOString(), undefined, 'Bloqueo de cuenta por múltiples intentos fallidos de inicio de sesión');
+        }
     }
   } catch {
     // Silent failure

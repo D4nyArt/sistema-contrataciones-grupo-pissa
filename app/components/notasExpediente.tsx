@@ -96,7 +96,7 @@ const NotasExpediente: React.FC<NotasExpedienteProps> = ({ role, expedienteId })
             <button
               onClick={saveNotes}
               disabled={saving}
-              className={`mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors ${
+              className={`cursor-pointer mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors ${
                 saving ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >

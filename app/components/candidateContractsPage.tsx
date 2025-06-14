@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import ManagerViewer from "./ManagerViewer";
 import { update, ref as dbRef, get } from "firebase/database";
@@ -6,6 +8,7 @@ import { urbanist } from "./fonts";
 import { Clock, ThumbsUp, ThumbsDown, X, Upload } from "lucide-react";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
 import sendEmailNotification from "@/app/components/sendEmailNotification";
+import PopUp from "./pop-up";
 
 type ContractState = "aprobado" | "revisando" | "rechazado" | "no_firmado";
 
@@ -34,6 +37,7 @@ const stateMap: Record<
 export default function CandidateContractsPage({ uid }: { uid: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const [contract, setContract] = useState<{
     id: string;
@@ -92,33 +96,23 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     }
 
     // 3) set dbPath based on contract id (STATIC: candidate always sees the contract template)
-    setDbPath(
-      contract.id.startsWith("conproy")
-        ? `contratos/proyectos/${contract.id}`
-        : contract.id.startsWith("concorp")
-        ? `contratos/corporativo/${contract.id}`
-        : ""
-    );
-  }, [contract]);
+    setDbPath(`expedientes/expediente${uid}/contratos/preview`);
+  }, [contract,uid]);
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !contract) {
-      return <p className="text-gray-500">No hay contratos disponibles.</p>;
+      return;
     }
 
-    // Subir archivo
     const fileName = file.name;
     setIsUploading(true);
     try {
       const fileReference = storageRef(
         storage,
-        `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`
+        `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}.pdf`
       );
-      const snapshot = await uploadBytes(fileReference, file);
-      console.log("Archivo subido correctamente:", snapshot);
-    } catch (error) {
-      console.log("Error al subir el archivo", error);
+      await uploadBytes(fileReference, file); // Usar uploadBytes aquí
     } finally {
       setIsUploading(false);
     }
@@ -126,9 +120,7 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
     // Expiracion
     const now = new Date();
     const signedDate = now.toISOString();
-    const expiration = new Date(now);
-    expiration.setMonth(expiration.getMonth() + contract.duration);
-    const expirationDate = expiration.toISOString();
+
 
     await update(dbRef(database, `usuarios/${uid}`), {
       contrato_activo: fileName,
@@ -137,10 +129,23 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       contrato_activo: fileName,
       estado: "revisando",
       fecha_firmado: signedDate,
-      fecha_vencimiento: expirationDate,
-      url: `pruebaInicial/expedientes/expediente${uid}/Contratos/${fileName}`,
+      //fecha_vencimiento: expirationDate,
+      url: `pruebaInicial/expedientes/expediente${uid}/contratos/contratoFirmado${uid}.pdf`,
     });
 
+    setContract((prev) =>
+      prev
+        ? {
+            ...prev,
+            state: "revisando",
+          }
+        : null
+    );
+
+    // Show success popup
+    setShowSuccessPopup(true);
+
+    // Notificaciones
     let nombre = uid; // Valor por defecto en caso de error
     try {
       const nombreSnap = await get(dbRef(database, `usuarios/${uid}/nombre`));
@@ -151,7 +156,6 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
       console.error("Error al obtener el nombre del candidato:", error);
     }
 
-    // Notificaciones
     const message = `El candidato ${nombre} subió el contrato "${fileName}"`;
     const timestamp = Date.now();
 
@@ -236,17 +240,17 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
         </h2>
       </div>
       <div>
-        <ManagerViewer dbPath={dbPath} />
+        <ManagerViewer userRole="rh" dbPath={dbPath} />
       </div>
       <div>
         <h2
           className={`${urbanist.className} mt-4 text-2xl font-semibold mb-4`}
         >
-          Subir nuevo contrato
+          Subir contrato firmado
         </h2>
         {/*Aquí es donde se sube un archivo*/}
         <label className={isUploading ? "opacity-50 pointer-events-none" : ""}>
-          <div className="bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg mb-2">
+          <div className="cursor-pointer bg-[#2d4583] hover:bg-[#08b177] text-white p-8 rounded-lg mb-2">
             <Upload size={32} />
           </div>
           <input
@@ -260,6 +264,19 @@ export default function CandidateContractsPage({ uid }: { uid: string }) {
           {isUploading && <p className="text-gray-500">Subiendo archivo...</p>}
         </label>
       </div>
+
+      {/* Success Popup */}
+      <PopUp show={showSuccessPopup} onClose={() => setShowSuccessPopup(false)}>
+        <div className="text-center">
+          <div className="text-green-600 mb-4">
+            <ThumbsUp size={48} className="mx-auto" />
+          </div>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">¡Éxito!</h3>
+          <p className="text-gray-700">
+            El contrato se ha subido correctamente
+          </p>
+        </div>
+      </PopUp>
     </div>
   );
 }

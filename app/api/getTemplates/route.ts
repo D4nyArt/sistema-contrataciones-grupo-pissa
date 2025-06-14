@@ -4,7 +4,7 @@ import { ref, get } from "firebase/database";
 
 export async function GET() {
   try {
-    const snapshot = await get(ref(database, "contratos/corporativo"));
+    const snapshot = await get(ref(database, "contratos/clientes"));
     if (!snapshot.exists()) return NextResponse.json([], { status: 200 });
 
     const dataValue = snapshot.val();
@@ -13,7 +13,7 @@ export async function GET() {
       ...(value as Record<string, unknown>),
     }));
 
-    const snapshot2 = await get(ref(database, "contratos/proyectos"));
+    const snapshot2 = await get(ref(database, "contratos/empresas"));
     
     if (!snapshot.exists()) return NextResponse.json([], { status: 200 });
 
@@ -24,7 +24,6 @@ export async function GET() {
     }));
 
     const usersArray_final = usersArray.concat(usersArray2);
-    console.log(usersArray_final);
 
 
     return NextResponse.json(usersArray_final, { status: 200 });

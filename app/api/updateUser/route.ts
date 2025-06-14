@@ -4,14 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDatabase, ref, query, orderByChild, equalTo, get, update } from "firebase/database";
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
-  try {
-    console.log("=== Iniciando actualización de usuario ===");
-    
+  try {    
     // Parsear el body
     const body = await request.json();
-    console.log("Body recibido:", JSON.stringify(body, null, 2));
     
-    const { telefono, emailSecundario, targetEmail } = body;
+    const { telefono, emailSecundario, targetEmail, sexo } = body;
 
     // Validaciones mejoradas
     if (!targetEmail) {
@@ -19,7 +16,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { 
           message: "El campo targetEmail es requerido para identificar al usuario.",
-          received: { telefono, emailSecundario, targetEmail }
+          received: { telefono, emailSecundario, targetEmail, sexo }
         },
         { status: 400 }
       );
@@ -31,22 +28,16 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { 
           message: "Se requiere al menos un campo para actualizar (telefono o emailSecundario).",
-          received: { telefono, emailSecundario, targetEmail }
+          received: { telefono, emailSecundario, targetEmail, sexo }
         },
         { status: 400 }
       );
     }
 
-    console.log("Validaciones pasadas");
-    console.log("Target email:", targetEmail);
-    console.log("Nuevo teléfono:", telefono || "sin cambios");
-    console.log("Email secundario:", emailSecundario === null ? "eliminar" : emailSecundario || "sin cambios");
-
     // Obtener referencia a la base de datos
     let db;
     try {
       db = getDatabase();
-      console.log("Base de datos obtenida correctamente");
     } catch (dbError) {
       console.error("Error al obtener la base de datos:", dbError);
       return NextResponse.json(
@@ -56,14 +47,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     }
 
     // Buscar usuario
-    console.log("Buscando usuario en la base de datos...");
     const usuariosRef = ref(db, "usuarios");
     const q = query(usuariosRef, orderByChild("email"), equalTo(targetEmail));
     
     let snapshot;
     try {
       snapshot = await get(q);
-      console.log("Query ejecutada, snapshot exists:", snapshot.exists());
     } catch (queryError) {
       console.error("Error en la query:", queryError);
       return NextResponse.json(
@@ -79,22 +68,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       try {
         const allUsersSnapshot = await get(usuariosRef);
         if (allUsersSnapshot.exists()) {
-          console.log("Usuarios existentes en la base de datos:");
           let userIndex = 1;
           allUsersSnapshot.forEach((child) => {
             const userData = child.val();
-            console.log(`Usuario ${userIndex}:`, {
-              key: child.key,
-              email: userData.email,
-              // Solo mostrar otros campos para debug si existen
-              ...(userData.nombre && { nombre: userData.nombre }),
-              ...(userData.telefono && { telefono: userData.telefono }),
-              ...(userData.emailSecundario && { emailSecundario: userData.emailSecundario })
-            });
             userIndex++;
+            console.debug(`Usuario ${userIndex}, userDate:`, userData);
           });
-        } else {
-          console.log("No hay usuarios en la base de datos");
         }
       } catch (debugError) {
         console.error("Error en debug de usuarios:", debugError);
@@ -106,8 +85,6 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    console.log("Usuario encontrado, preparando actualizaciones...");
-
     // Preparar actualizaciones
     const updates: Record<string, any> = {};
     let userKey = "";
@@ -116,14 +93,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     snapshot.forEach((child) => {
       userKey = child.key!;
       const userData = child.val();
-      console.log("Datos actuales del usuario:", userData);
       
       const path = `usuarios/${child.key}`;
       
       // Actualizar teléfono si se proporciona y es diferente
       if (telefono !== undefined && telefono !== userData.telefono) {
         updates[`${path}/telefono`] = telefono;
-        console.log(`Programando actualización de teléfono: ${userData.telefono || 'vacío'} → ${telefono}`);
         updatedCount++;
       }
       
@@ -133,32 +108,31 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
           // Eliminar email secundario si existe
           if (userData.emailSecundario) {
             updates[`${path}/emailSecundario`] = null;
-            console.log(`Programando eliminación de email secundario: ${userData.emailSecundario}`);
             updatedCount++;
           }
         } else if (emailSecundario !== userData.emailSecundario) {
           // Actualizar email secundario si es diferente
           updates[`${path}/emailSecundario`] = emailSecundario;
-          console.log(`Programando actualización de email secundario: ${userData.emailSecundario || 'vacío'} → ${emailSecundario}`);
           updatedCount++;
         }
+      }
+
+      if (sexo !== undefined && sexo !== userData.telefono) {
+        updates[`${path}/sexo`] = sexo;
+        updatedCount++;
       }
     });
 
     if (updatedCount === 0) {
-      console.log("No hay cambios que realizar");
       return NextResponse.json(
         { message: "No hay cambios que realizar." },
         { status: 200 }
       );
     }
 
-    console.log("Updates a aplicar:", JSON.stringify(updates, null, 2));
-
     // Aplicar actualizaciones
     try {
       await update(ref(db), updates);
-      console.log("Actualizaciones aplicadas correctamente");
     } catch (updateError) {
       console.error("Error al aplicar actualizaciones:", updateError);
       return NextResponse.json(
@@ -166,8 +140,6 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
         { status: 500 }
       );
     }
-
-    console.log("=== Usuario actualizado correctamente ===");
 
     return NextResponse.json(
       { 

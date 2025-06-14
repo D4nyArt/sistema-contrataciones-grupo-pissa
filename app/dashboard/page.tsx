@@ -3,6 +3,7 @@ import { ref, get } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import { urbanist } from "@/app/components/fonts";
 import Bento from "@/app/components/bento";
+import HomePage from "../components/homePagePhone";
 
 function obtenerSaludo(): string {
   const hora = new Date().getHours();
@@ -39,8 +40,11 @@ export default async function Inicio() {
           <strong>{obtenerSaludo()}</strong>
         </h1>
       </div>
-      <div className="flex h-full w-full p-4 animate-fade-in-up">
+      <div className="md:flex h-full w-full p-4 animate-fade-in-up hidden">
         <Bento />
+      </div>
+      <div className="h-full w-full p-4 animate-fade-in-up md:hidden">
+        <HomePage/>
       </div>
     </div>
   );

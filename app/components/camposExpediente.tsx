@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { Check, X, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
+import { addHistoryEntry } from "../api/history/history";
+import { getAuth } from "firebase/auth";
 
 interface CamposExpedienteProps {
   role: string;
@@ -31,8 +33,22 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
   onChangeState,
 }) => {
   const [fields, setFields] = useState<Record<string, FieldData>>({});
+  const [rhID, setRhID] = useState<string | null>(null);
 
   const canEdit = role === "admin" || role === "rh";
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setRhID(user.uid);
+      } else {
+        setRhID(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -112,7 +128,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
     fieldKey: string,
     approved: boolean
   ): Promise<void> => {
-    if (!expedienteId || !documentoId) return;
+    if (!expedienteId || !documentoId || !rhID) return;
     const newState = approved ? FIELD_STATES.APROBADO : FIELD_STATES.RECHAZADO;
 
     // 1. Actualiza localmente
@@ -135,8 +151,10 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
         }),
       });
       if (!res.ok) throw await res.json();
-      console.log(`Campo "${fieldKey}" marcado como "${newState}"`);
       onChangeState();
+      const uidP = expedienteId;
+      const uid = uidP.replace("expediente", "");
+      await addHistoryEntry(uid, "documentos", new Date().toISOString(), rhID, `Actualización de campo ${newState}`);
     } catch (err) {
       console.error("Error al actualizar estado del campo:", err);
     }
@@ -242,7 +260,7 @@ const CamposExpediente: React.FC<CamposExpedienteProps> = ({
           </div>
         ))}
 
-        {role === "candidato" && (
+        {canEdit && (
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleSaveFields}

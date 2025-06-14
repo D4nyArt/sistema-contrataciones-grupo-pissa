@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from "next/image";
 import { urbanist } from "@/app/components/fonts";
 
@@ -13,6 +13,7 @@ interface PdfModalProps {
 
 export default function PdfModal({ pdfUrl, type, onClose, onAccept }: PdfModalProps) {
   const [loadingAccept, setLoadingAccept] = useState(false);
+  const [iscandidato, setIsCandidato] = useState(false);
 
   async function handleAcceptClick() {
     setLoadingAccept(true);
@@ -25,6 +26,21 @@ export default function PdfModal({ pdfUrl, type, onClose, onAccept }: PdfModalPr
       setLoadingAccept(false);
     }
   }
+
+  useEffect(()=>{
+
+    const getRole = async () => {
+      const res = await fetch("/api/getCurrentUser");
+      const jason = await res.json();
+
+      if (jason.rol === "candidato" || jason.rol === "enProyecto" || jason.rol === "enCorporativo") {
+        setIsCandidato(true);
+      }
+    }
+
+    getRole();
+
+  }, [])
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -72,6 +88,7 @@ export default function PdfModal({ pdfUrl, type, onClose, onAccept }: PdfModalPr
       </div>
       </div>
         }
+        {iscandidato?
         <div className="mt-4 flex flex-col items-end">
           <p className="mb-2 text-sm text-gray-700">
             Haga clic en “Aceptar” para confirmar que ha leído este documento.
@@ -84,6 +101,7 @@ export default function PdfModal({ pdfUrl, type, onClose, onAccept }: PdfModalPr
             {loadingAccept ? 'Procesando…' : 'Aceptar'}
           </button>
         </div>
+        : null}
       </div>
     </div>
   );

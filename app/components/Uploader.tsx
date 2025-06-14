@@ -119,6 +119,7 @@ const Uploader: React.FC<UploaderProps> = ({
       }
 
       // e) Callback opcional
+      if (onFileUploaded) setIsUploading(false);
       await onFileUploaded?.();
     } catch (err) {
       console.error("Error al subir archivo o actualizar BD:", err);

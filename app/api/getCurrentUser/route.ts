@@ -10,12 +10,8 @@ export async function GET() {
 
   const cookieStore = await cookies();
   const userId = cookieStore.get("candidateId");
-  console.log("userID:", userId);
   const usuariosref = ref(dbref, `/usuarios/${userId?.value}`)
   const usuarios = await get(usuariosref);
-  console.log(usuarios.val())
-
-  //console.log(usuarios);
   // Validaciones opcionales: verificar en Firebase que exista el usuario, rol, etc.
 
 

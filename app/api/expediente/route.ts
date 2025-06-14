@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         const defaultStructure = {
             id_candidato: expedienteId,
             notas: "",
+            expediente_completo: false,
             documentos: {
                 INE: {
                     campos: {
@@ -70,7 +71,18 @@ export async function POST(request: NextRequest) {
                     extension: 'pdf'
                 },
                 ActaNacimiento: {
-                    campos: {},
+                    campos: {
+                        edad: {
+                            nombre: 'Edad',
+                            valor: '',
+                            estado: 'no_subido'
+                        },
+                        estadoCivil: {
+                            nombre: 'Estado Civil',
+                            valor: '',
+                            estado: 'no_subido'
+                        }
+                    },
                     estadoArchivo: 'no_subido',
                     estadoCampos: 'no_subido',
                     estadoGeneral: 'no_subido',
